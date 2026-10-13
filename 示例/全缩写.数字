@@ -1,0 +1,13 @@
+qj 整数: J          rd 就是 qj 整数: u32
+qj 串:   M          rd 指针
+qj 字节: S          rd 1 字节
+
+tt 加01a: JS, b: JS02 -> JS 08 zz a ht b 09
+
+tt 主0102 -> T 08
+    tz a: J  = 3
+    tz b: JS = 4
+    tz p: MH = "指针"
+    印01加01a, b0202         rd 一个标点、一个算术符号都没有
+    zz 0
+09

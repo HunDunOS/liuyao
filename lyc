@@ -1,0 +1,12 @@
+#!/bin/bash
+TOOLCHAIN_DIR="$(cd "$(dirname "$0")" && pwd)"
+SRC="$1"
+if [ -z "$SRC" ]; then echo "用法: lyc 程序.ly"; exit 1; fi
+BASENAME=$(basename "$SRC" .ly)
+BIN="/tmp/${BASENAME}.bin"
+EXE="/tmp/${BASENAME}"
+"$TOOLCHAIN_DIR/构建/中间/lyc" -c -对象 "$SRC" -o "$BIN" || exit 1
+python3 "$TOOLCHAIN_DIR/工具/小链接.py" "$BIN" "$EXE" || exit 1
+chmod +x "$EXE"
+"$EXE"
+rm -f "$BIN" "$EXE"
