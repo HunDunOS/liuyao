@@ -1,0 +1,19 @@
+00 hundunOS 仓库抓取脚本 (五行)
+00 用法: ./wuxing w.txt
+00 只用 jj(打印) 和 sh(shell)，100%不会崩
+
+jj "启动 hundunOS 仓库抓取器"
+jj ""
+sh "curl -L -o hundun.zip https://github.com/HunDunOS/HunDunOS/archive/refs/heads/main.zip"
+jj "下载完毕，开始解压"
+jj ""
+sh "unzip -o hundun.zip"
+jj "解压完成，文件列表:"
+jj ""
+sh "ls -la HunDunOS-main/"
+jj "开始读取所有文件内容:"
+jj ""
+sh "cat HunDunOS-main/*"
+jj "抓取完毕!"
+jj ""
+sh "echo done"
