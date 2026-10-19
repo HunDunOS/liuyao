@@ -36,8 +36,8 @@ tt 是数字(c) -> u32 08
 09
 
 tt 是标识续(c) -> u32 08
-    lr 是字母(c) == 1 08 zz 1 09
-    lr 是数字(c) == 1 08 zz 1 09
+    lr 是字母(c) 08 zz 1 09
+    lr 是数字(c) 08 zz 1 09
     zz 0
 09
 
@@ -65,36 +65,36 @@ tt 比较串(a, b) -> u32 08
 09
 
 tt 是关键字(w) -> u32 08
-    lr 比较串(w, "tt") == 1 08 zz 1 09
-    lr 比较串(w, "zz") == 1 08 zz 1 09
-    lr 比较串(w, "tz") == 1 08 zz 1 09
-    lr 比较串(w, "th") == 1 08 zz 1 09
-    lr 比较串(w, "tn") == 1 08 zz 1 09
-    lr 比较串(w, "tf") == 1 08 zz 1 09
-    lr 比较串(w, "ts") == 1 08 zz 1 09
-    lr 比较串(w, "tr") == 1 08 zz 1 09
-    lr 比较串(w, "td") == 1 08 zz 1 09
-    lr 比较串(w, "ht") == 1 08 zz 1 09
-    lr 比较串(w, "hz") == 1 08 zz 1 09
-    lr 比较串(w, "hh") == 1 08 zz 1 09
-    lr 比较串(w, "hl") == 1 08 zz 1 09
-    lr 比较串(w, "hf") == 1 08 zz 1 09
-    lr 比较串(w, "hs") == 1 08 zz 1 09
-    lr 比较串(w, "hr") == 1 08 zz 1 09
-    lr 比较串(w, "hd") == 1 08 zz 1 09
-    lr 比较串(w, "ll") == 1 08 zz 1 09
-    lr 比较串(w, "lr") == 1 08 zz 1 09
-    lr 比较串(w, "lz") == 1 08 zz 1 09
-    lr 比较串(w, "lh") == 1 08 zz 1 09
-    lr 比较串(w, "ls") == 1 08 zz 1 09
-    lr 比较串(w, "lf") == 1 08 zz 1 09
-    lr 比较串(w, "lt") == 1 08 zz 1 09
-    lr 比较串(w, "ld") == 1 08 zz 1 09
-    lr 比较串(w, "rd") == 1 08 zz 1 09
-    lr 比较串(w, "fh") == 1 08 zz 1 09
-    lr 比较串(w, "sh") == 1 08 zz 1 09
-    lr 比较串(w, "fl") == 1 08 zz 1 09
-    lr 比较串(w, "sl") == 1 08 zz 1 09
+    lr 比较串(w, "tt") 08 zz 1 09
+    lr 比较串(w, "zz") 08 zz 1 09
+    lr 比较串(w, "tz") 08 zz 1 09
+    lr 比较串(w, "th") 08 zz 1 09
+    lr 比较串(w, "tn") 08 zz 1 09
+    lr 比较串(w, "tf") 08 zz 1 09
+    lr 比较串(w, "ts") 08 zz 1 09
+    lr 比较串(w, "tr") 08 zz 1 09
+    lr 比较串(w, "td") 08 zz 1 09
+    lr 比较串(w, "ht") 08 zz 1 09
+    lr 比较串(w, "hz") 08 zz 1 09
+    lr 比较串(w, "hh") 08 zz 1 09
+    lr 比较串(w, "hl") 08 zz 1 09
+    lr 比较串(w, "hf") 08 zz 1 09
+    lr 比较串(w, "hs") 08 zz 1 09
+    lr 比较串(w, "hr") 08 zz 1 09
+    lr 比较串(w, "hd") 08 zz 1 09
+    lr 比较串(w, "ll") 08 zz 1 09
+    lr 比较串(w, "lr") 08 zz 1 09
+    lr 比较串(w, "lz") 08 zz 1 09
+    lr 比较串(w, "lh") 08 zz 1 09
+    lr 比较串(w, "ls") 08 zz 1 09
+    lr 比较串(w, "lf") 08 zz 1 09
+    lr 比较串(w, "lt") 08 zz 1 09
+    lr 比较串(w, "ld") 08 zz 1 09
+    lr 比较串(w, "rd") 08 zz 1 09
+    lr 比较串(w, "fh") 08 zz 1 09
+    lr 比较串(w, "sh") 08 zz 1 09
+    lr 比较串(w, "fl") 08 zz 1 09
+    lr 比较串(w, "sl") 08 zz 1 09
     zz 0
 09
 
@@ -105,7 +105,7 @@ tt 词法() -> u32 08
     ll 08
         tz c fh(源码 ht 源码位) hs 255
         lz c 0 08 ls 09
-        lr 是空白(c) == 1 08
+        lr 是空白(c) 08
             源码位 = 源码位 ht 1
             lf
         09
@@ -126,7 +126,7 @@ tt 词法() -> u32 08
                 源码位 = 源码位 ht 1
             09
         09
-        lr 是数字(c) == 1 08
+        lr 是数字(c) 08
             tz v 0
             tz 退5 0
             ll 08
@@ -144,7 +144,7 @@ tt 词法() -> u32 08
             tok_n = tok_n ht 1
             lf
         09
-        lr 是字母(c) == 1 08
+        lr 是字母(c) 08
             tz 词[256]
             tz wl 0
             tz 退4 0
@@ -212,7 +212,7 @@ tt 词法() -> u32 08
 tt 主() -> u32 08
     tz 测试[256]
     tz i 0
-    tz 源码串 "tt 主() -> u32 08 tz i 0 ll 08 lr i == 3 08 ls 09 tz i i ht 1 09 zz i 09"
+    tz 源码串 "tt 主() -> u32 08 tz x 3 ht 4 hh 2 zz x 09"
     ll 08
         tz c fh(源码串 ht i) hs 255
         sh(测试 ht i, c)
@@ -238,11 +238,12 @@ qj 在函数
 qj 循环顶[256]
 qj 循环尾[256]
 qj 循环深
+qj 块继续
 
 tt 输出字(s) -> u32 08
     tz i 0
     ll 08
-        tz c fh(s ht i)
+        tz c fh(s ht i) hs 255
         lz c 0 08 ls 09
         sh(输出汇 ht 输出汇位, c)
         输出汇位 = 输出汇位 ht 1
@@ -314,14 +315,14 @@ tt 跳过换行() -> u32 08
 09
 
 tt 取优先级(op) -> u32 08
-    lr 比较串(op, "hh") == 1 08 zz 10 09
-    lr 比较串(op, "hl") == 1 08 zz 10 09
-    lr 比较串(op, "hf") == 1 08 zz 10 09
-    lr 比较串(op, "ht") == 1 08 zz 9 09
-    lr 比较串(op, "hz") == 1 08 zz 9 09
-    lr 比较串(op, "hs") == 1 08 zz 5 09
-    lr 比较串(op, "hd") == 1 08 zz 4 09
-    lr 比较串(op, "hr") == 1 08 zz 3 09
+    lr 比较串(op, "hh") 08 zz 10 09
+    lr 比较串(op, "hl") 08 zz 10 09
+    lr 比较串(op, "hf") 08 zz 10 09
+    lr 比较串(op, "ht") 08 zz 9 09
+    lr 比较串(op, "hz") 08 zz 9 09
+    lr 比较串(op, "hs") 08 zz 5 09
+    lr 比较串(op, "hd") 08 zz 4 09
+    lr 比较串(op, "hr") 08 zz 3 09
     zz 0
 09
 
@@ -336,7 +337,8 @@ tt 是运算符() -> u32 08
 tt 解析表达式(最小优先级) -> u32 08
     解析基本式()
     ll 08
-        lr 是运算符() == 0 08 ls 09
+        lr 是运算符() 08 zz 0 09
+        lr 1 08 ls 09
         tz op[256]
         复制串(op, tok_s ht (tok_pos hh 256))
         tz 优先级 取优先级(op)
@@ -345,16 +347,16 @@ tt 解析表达式(最小优先级) -> u32 08
         输出行("push rax")
         解析表达式(优先级 ht 1)
         输出行("pop rcx")
-        lr 比较串(op, "ht") == 1 08 输出行("add rcx, rax") 09
-        lr 比较串(op, "hz") == 1 08 输出行("sub rcx, rax") 09
-        lr 比较串(op, "hh") == 1 08 输出行("imul rcx, rax") 09
+        lr 比较串(op, "ht") 08 输出行("add rcx, rax") 09
+        lr 比较串(op, "hz") 08 输出行("sub rcx, rax") 09
+        lr 比较串(op, "hh") 08 输出行("imul rcx, rax") 09
         输出行("mov rax, rcx")
     09
     zz 0
 09
 
 tt 解析基本式() -> u32 08
-    lr 是标点("(") == 1 08
+    lr 是标点("(") 08
         tok_pos = tok_pos ht 1
         解析表达式(0)
         吃标点(")")
@@ -364,7 +366,7 @@ tt 解析基本式() -> u32 08
         tz 名[256]
         复制串(名, tok_s ht (tok_pos hh 256))
         tok_pos = tok_pos ht 1
-        lr 是标点("(") == 1 08
+        lr 是标点("(") 08
             tok_pos = tok_pos ht 1
             tz 参数数 0
             lr 是标点(")") == 0 08
@@ -372,8 +374,8 @@ tt 解析基本式() -> u32 08
                     解析表达式(0)
                     输出行("push rax")
                     参数数 = 参数数 ht 1
-                    lr 是标点(",") == 1 08 tok_pos = tok_pos ht 1 09
-                    lr 是标点(")") == 1 08 ls 09
+                    lr 是标点(",") 08 tok_pos = tok_pos ht 1 09
+                    lr 是标点(")") 08 ls 09
                 09
             09
             吃标点(")")
@@ -432,7 +434,13 @@ tt 解析基本式() -> u32 08
 
 tt 解析语句() -> u32 08
     跳过换行()
-    lr 是关键字("ll") == 1 08
+    zt _rt_putc 01 91 02
+    zt _rt_puti 01 tok_pos 02
+    zt _rt_puti 01 tok_k[tok_pos] 02
+    zt _rt_puti 01 是关键字("ll") 02
+    zt _rt_puti 01 是关键字("tz") 02
+    zt _rt_putc 01 10 02
+    lr 是关键字("ll") 08
         tok_pos = tok_pos ht 1
         tz 顶号 新标号("ltop")
         tz 尾号 新标号("lend")
@@ -452,7 +460,7 @@ tt 解析语句() -> u32 08
         循环深 = 循环深 hz 1
         zz 0
     09
-    lr 是关键字("lr") == 1 08
+    lr 是关键字("lr") 08
         tok_pos = tok_pos ht 1
         解析表达式(0)
         输出行("test rax, rax")
@@ -466,45 +474,45 @@ tt 解析语句() -> u32 08
         输出换()
         zz 0
     09
-    lr 是关键字("ls") == 1 08
+    lr 是关键字("ls") 08
         tok_pos = tok_pos ht 1
         输出字("jmp .Llend")
         sh(输出汇 ht 输出汇位, 48 ht (循环尾[循环深 hz 1] hl 10))
         输出换()
         zz 0
     09
-    lr 是关键字("lf") == 1 08
+    lr 是关键字("lf") 08
         tok_pos = tok_pos ht 1
         输出字("jmp .Lltop")
         sh(输出汇 ht 输出汇位, 48 ht (循环顶[循环深 hz 1] hl 10))
         输出换()
         zz 0
     09
-    lr 是关键字("zt") == 1 08
+    lr 是关键字("zt") 08
         tok_pos = tok_pos ht 1
         解析表达式(0)
         zz 0
     09
-    lr 是关键字("tz") == 1 08
+    lr 是关键字("tz") 08
         tok_pos = tok_pos ht 1
         tz 名[256]
         复制串(名, tok_s ht (tok_pos hh 256))
         tok_pos = tok_pos ht 1
         tz 是数组 0
-        lr 是标点("[") == 1 08
+        lr 是标点("[") 08
             是数组 = 1
             tok_pos = tok_pos ht 1
             tz 退3 0
             ll 08
                 lr 退3 == 1 08 ls 09
-                lr 是标点("]") == 1 08
+                lr 是标点("]") 08
                     tok_pos = tok_pos ht 1
                     退3 = 1
                 09
                 lr 退3 == 0 08 tok_pos = tok_pos ht 1 09
             09
         09
-        lr 是标点("=") == 1 08
+        lr 是标点("=") 08
             tok_pos = tok_pos ht 1
             解析表达式(0)
             tz idx 加局部(名)
@@ -523,11 +531,43 @@ tt 解析语句() -> u32 08
             输出换()
             zz 0
         09
-        tz 简化 0
-                        lr tok_k[tok_pos] == 2 08 简化 = 1 09
-        lr tok_k[tok_pos] == 3 08 简化 = 1 09
-        lr tok_k[tok_pos] == 5 08 简化 = 1 09
-                    lr 简化 == 1 08
+        lr tok_k[tok_pos] == 2 08
+            解析表达式(0)
+            tz idx 加局部(名)
+            局部数组成[idx] = 是数组
+            输出字("mov [rbp")
+            tz 偏 局部偏[idx]
+            lr 偏 >= 0 08
+                sh(输出汇 ht 输出汇位, 43)
+                sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+            09
+            lr 偏 < 0 08
+                sh(输出汇 ht 输出汇位, 45)
+                sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+            09
+            输出字("], rax")
+            输出换()
+            zz 0
+        09
+        lr tok_k[tok_pos] == 3 08
+            解析表达式(0)
+            tz idx 加局部(名)
+            局部数组成[idx] = 是数组
+            输出字("mov [rbp")
+            tz 偏 局部偏[idx]
+            lr 偏 >= 0 08
+                sh(输出汇 ht 输出汇位, 43)
+                sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+            09
+            lr 偏 < 0 08
+                sh(输出汇 ht 输出汇位, 45)
+                sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+            09
+            输出字("], rax")
+            输出换()
+            zz 0
+        09
+        lr tok_k[tok_pos] == 5 08
             解析表达式(0)
             tz idx 加局部(名)
             局部数组成[idx] = 是数组
@@ -549,7 +589,7 @@ tt 解析语句() -> u32 08
         局部数组成[idx] = 是数组
         zz 0
     09
-    lr 是关键字("zz") == 1 08
+    lr 是关键字("zz") 08
         tok_pos = tok_pos ht 1
         解析表达式(0)
         输出字("mov rsp, rbp")
@@ -593,17 +633,18 @@ tt 解析语句() -> u32 08
 
 tt 解析块() -> u32 08
     吃标点("{")
-    tz 退出 0
+    块继续 = 1
     ll 08
-        lr 退出 == 1 08 ls 09
-        跳过换行()
-        lr 是标点("}") == 1 08
-            tok_pos = tok_pos ht 1
-            退出 = 1
+        lr 块继续 08
+            跳过换行()
+            lr 是标点("}") 08
+                tok_pos = tok_pos ht 1
+                块继续 = 0
+            09
+            lr 块继续 08 解析语句() 09
+            lf
         09
-        lr tok_k[tok_pos] == 0 08 退出 = 1 09
-        lr 退出 == 0 08 解析语句() 09
-        lf
+        ls
     09
     zz 0
 09
@@ -647,18 +688,18 @@ tt 解析顶层() -> u32 08
         lr 退出 == 1 08 ls 09
         跳过换行()
                         lr tok_k[tok_pos] == 0 08 退出 = 1 09
-        lr 是关键字("tt") == 1 08
+        lr 是关键字("tt") 08
             解析函数()
             zz 0
         09
-        lr 是关键字("qj") == 1 08
+        lr 是关键字("qj") 08
             tok_pos = tok_pos ht 1
             tok_pos = tok_pos ht 1
-            lr 是标点("[") == 1 08
+            lr 是标点("[") 08
                 tz 退2 0
                 ll 08
                     lr 退2 == 1 08 ls 09
-                    lr 是标点("]") == 1 08
+                    lr 是标点("]") 08
                         tok_pos = tok_pos ht 1
                         退2 = 1
                     09
@@ -678,7 +719,7 @@ tt 输出缓冲区() -> u32 08
     tz i 0
     ll 08
         lz i 输出汇位 08 ls 09
-        tz c fh(输出汇 ht i)
+        tz c fh(输出汇 ht i) hs 255
         zt _rt_putc 01 c 02
         i = i ht 1
     09
