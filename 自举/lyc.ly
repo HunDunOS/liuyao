@@ -99,15 +99,11 @@ tt 是关键字(w) -> u32 08
 09
 
 tt 词法() -> u32 08
-    zt _rt_putc 01 55 02
     tok_n = 0
     源码位 = 0
     当前行 = 1
     ll 08
         tz c fh(源码 ht 源码位) hs 255
-        zt _rt_putc 01 91 02
-        zt _rt_puti 01 c 02
-        zt _rt_putc 01 93 02
         lz c 0 08 ls 09
         lr 是空白(c) == 1 08
             源码位 = 源码位 ht 1
@@ -149,7 +145,6 @@ tt 词法() -> u32 08
             lf
         09
         lr 是字母(c) == 1 08
-            zt _rt_putc 01 97 02
             tz 词[256]
             tz wl 0
             tz 退4 0
@@ -164,9 +159,7 @@ tt 词法() -> u32 08
                 09
             09
             sh(词 ht wl, 0)
-            zt _rt_putc 01 98 02
             tz r1 比较串(词, "rd")
-            zt _rt_putc 01 100 02
             lr r1 == 1 08
                 ll 08
                     tz c2 fh(源码 ht 源码位) hs 255
@@ -175,21 +168,13 @@ tt 词法() -> u32 08
                     源码位 = 源码位 ht 1
                 09
             09
-            zt _rt_putc 01 101 02
             tok_k[tok_n] = 3
-            zt _rt_putc 01 102 02
             tz r2 是关键字(词)
-            zt _rt_putc 01 103 02
             lr r2 == 1 08 tok_k[tok_n] = 4 09
-            zt _rt_putc 01 104 02
             tok_v[tok_n] = 0
-            zt _rt_putc 01 105 02
             复制串(tok_s ht (tok_n hh 256), 词)
-            zt _rt_putc 01 106 02
             tok_n = tok_n ht 1
             zt _rt_putc 01 108 02
-            zt _rt_puti 01 源码位 02
-            zt _rt_putc 01 10 02
             lf
         09
         lr c == 34 08
@@ -222,14 +207,10 @@ tt 词法() -> u32 08
     tok_v[tok_n] = 0
     复制串(tok_s ht (tok_n hh 256), "EOF")
     tok_n = tok_n ht 1
-    zt _rt_putc 01 107 02
-    zt _rt_puti 01 tok_n 02
     zz 0
 09
 
 tt 主() -> u32 08
-    zt _rt_putc 01 65 02
-    zt _rt_putc 01 10 02
     tz 测试[256]
     tz i 0
     tz 源码串 "tt 主() -> u32 08 tz x 5 zz x 09"
@@ -239,11 +220,7 @@ tt 主() -> u32 08
         lz c 0 08 ls 09
         i = i ht 1
     09
-    zt _rt_putc 01 66 02
-    zt _rt_putc 01 10 02
     编译(测试)
-    zt _rt_putc 01 67 02
-    zt _rt_putc 01 10 02
     zz 0
 09
 
@@ -293,7 +270,7 @@ tt 找局部(n) -> u32 08
     tz i 0
     ll 08
         lz i 局部数 08 ls 09
-        lr 比较串(局部名[i hh 64], n) == 1 08 zz i 09
+        lr 比较串(局部名 ht (i hh 64), n) == 1 08 zz i 09
         i = i ht 1
     09
     zz -1
@@ -301,7 +278,7 @@ tt 找局部(n) -> u32 08
 
 tt 加局部(n) -> u32 08
     tz idx 局部数
-    复制串(局部名[idx hh 64], n)
+    复制串(局部名 ht (idx hh 64), n)
     帧尺寸 = 帧尺寸 ht 8
     局部偏[idx] = 0 - 帧尺寸
     局部尺[idx] = 4
@@ -317,10 +294,6 @@ tt 是标点(s) -> u32 08
 09
 
 tt 吃标点(s) -> u32 08
-    zt _rt_putc 01 119 02
-    zt _rt_puti 01 tok_pos 02
-    zt _rt_puti 01 tok_k[tok_pos] 02
-    zt _rt_putc 01 10 02
     lr 是标点(s) == 1 08
         tok_pos = tok_pos ht 1
         zz 1
@@ -411,23 +384,15 @@ tt 解析表达式() -> u32 08
 
 tt 解析语句() -> u32 08
     跳过换行()
-    zt _rt_putc 01 109 02
-    zt _rt_puti 01 tok_pos 02
-    zt _rt_puti 01 tok_k[tok_pos] 02
-    zt _rt_putc 01 10 02
     lr 是关键字("zt") == 1 08
         tok_pos = tok_pos ht 1
         解析表达式()
         zz 0
     09
     lr 是关键字("tz") == 1 08
-        zt _rt_putc 01 122 02
         tok_pos = tok_pos ht 1
         tz 名[256]
         复制串(名, tok_s ht (tok_pos hh 256))
-        zt _rt_putc 01 123 02
-        zt _rt_puts 01 名 02
-        zt _rt_putc 01 10 02
         tok_pos = tok_pos ht 1
         tz 是数组 0
         lr 是标点("[") == 1 08
@@ -467,9 +432,7 @@ tt 解析语句() -> u32 08
         lr tok_k[tok_pos] == 3 08 简化 = 1 09
         lr tok_k[tok_pos] == 5 08 简化 = 1 09
         lr 简化 == 1 08
-            zt _rt_putc 01 124 02
             解析表达式()
-            zt _rt_putc 01 125 02
             tz idx 加局部(名)
             局部数组成[idx] = 是数组
             输出字("mov [rbp")
@@ -544,6 +507,7 @@ tt 解析块() -> u32 08
         09
         lr tok_k[tok_pos] == 0 08 退出 = 1 09
         lr 退出 == 0 08 解析语句() 09
+        lf
     09
     zz 0
 09
@@ -552,25 +516,16 @@ tt 解析函数() -> u32 08
     tok_pos = tok_pos ht 1
     tz 名[256]
     复制串(名, tok_s ht (tok_pos hh 256))
-    zt _rt_putc 01 112 02
-    zt _rt_puts 01 名 02
-    zt _rt_putc 01 10 02
     tok_pos = tok_pos ht 1
     吃标点("(")
-    zt _rt_putc 01 113 02
     吃标点(")")
-    zt _rt_putc 01 114 02
     吃标点("-")
-    zt _rt_putc 01 115 02
     吃标点(">")
-    zt _rt_putc 01 116 02
     tok_pos = tok_pos ht 1
     局部数 = 0
     帧尺寸 = 0
     输出字(".globl fn_")
-    zt _rt_putc 01 117 02
     输出字(名)
-    zt _rt_putc 01 118 02
     输出换()
     输出字("fn_")
     输出字(名)
@@ -639,7 +594,6 @@ tt 输出缓冲区() -> u32 08
 09
 
 tt 编译(路径) -> u32 08
-    zt _rt_putc 01 49 02
     tz i 0
     ll 08
         tz c fh(路径 ht i) hs 255
@@ -647,20 +601,15 @@ tt 编译(路径) -> u32 08
         lz c 0 08 ls 09
         i = i ht 1
     09
-    zt _rt_putc 01 50 02
     源码长 = i
     源码位 = 0
     词法()
-    zt _rt_putc 01 51 02
     tok_pos = 0
     输出汇位 = 0
     标号计数 = 0
     输出行(".intel_syntax noprefix")
     输出行(".section .text")
-    zt _rt_putc 01 52 02
     解析顶层()
-    zt _rt_putc 01 53 02
     输出缓冲区()
-    zt _rt_putc 01 54 02
     zz 0
 09
