@@ -7,6 +7,7 @@ qj tok_k[8192]
 qj tok_v[8192]
 qj tok_s[2097152]
 qj tok_n
+qj tok_pos
 qj 当前行
 
 tt 是空白(c) -> u32 08
@@ -212,4 +213,309 @@ tt 主(path) -> u32 08
     源码长 = i
     词法()
     zz tok_n
+09
+
+rd ========== Stage 2: 语法分析器 + 代码生成器 ==========
+
+qj 输出汇[262144]
+qj 输出汇位
+qj 标号计数
+qj 局部名[16384]
+qj 局部偏[256]
+qj 局部尺[256]
+qj 局部数
+qj 帧尺寸
+qj 在函数
+
+tt 输出字(s) -> u32 08
+    tz i 0
+    ll 08
+        tz c fh(s ht i)
+        lz c 0 08 ls 09
+        sh(输出汇 ht 输出汇位, c)
+        输出汇位 = 输出汇位 ht 1
+        i = i ht 1
+    09
+    zz i
+09
+
+tt 输出换() -> u32 08
+    sh(输出汇 ht 输出汇位, 10)
+    输出汇位 = 输出汇位 ht 1
+    zz 0
+09
+
+tt 输出行(s) -> u32 08
+    输出字(s)
+    输出换()
+    zz 0
+09
+
+tt 新标号(pre) -> u32 08
+    标号计数 = 标号计数 ht 1
+    zz 标号计数
+09
+
+tt 找局部(n) -> u32 08
+    tz i 0
+    ll 08
+        lz i 局部数 08 ls 09
+        lr 比较串(局部名[i hh 64], n) == 1 08 zz i 09
+        i = i ht 1
+    09
+    zz -1
+09
+
+tt 加局部(n) -> u32 08
+    tz idx 局部数
+    复制串(局部名[idx hh 64], n)
+    帧尺寸 = 帧尺寸 ht 8
+    局部偏[idx] = 0 - 帧尺寸
+    局部尺[idx] = 4
+    局部数 = 局部数 ht 1
+    zz idx
+09
+
+tt 是标点(s) -> u32 08
+    lr tok_k[tok_pos] == 6 08
+        lr 比较串(tok_s[tok_pos hh 256], s) == 1 08 zz 1 09
+    09
+    zz 0
+09
+
+tt 是关键字(s) -> u32 08
+    lr tok_k[tok_pos] == 4 08
+        lr 比较串(tok_s[tok_pos hh 256], s) == 1 08 zz 1 09
+    09
+    zz 0
+09
+
+tt 吃标点(s) -> u32 08
+    lr 是标点(s) == 1 08
+        tok_pos = tok_pos ht 1
+        zz 1
+    09
+    zz 0
+09
+
+tt 跳过换行() -> u32 08
+    ll 08
+        lr tok_k[tok_pos] == 1 08
+            tok_pos = tok_pos ht 1
+        09
+        lr tok_k[tok_pos] != 1 08 ls 09
+    09
+    zz 0
+09
+
+tt 解析表达式() -> u32 08
+    lr tok_k[tok_pos] == 3 08
+        tz 名[256]
+        复制串(名, tok_s[tok_pos hh 256])
+        tok_pos = tok_pos ht 1
+        lr 是标点("(") == 1 08
+            tok_pos = tok_pos ht 1
+            tz 参数数 0
+            lr 是标点(")") == 0 08
+                ll 08
+                    解析表达式()
+                    参数数 = 参数数 ht 1
+                    lr 是标点(",") == 1 08 tok_pos = tok_pos ht 1 09
+                    lr 是标点(")") == 1 08 ls 09
+                09
+            09
+            吃标点(")")
+            输出字("call fn_")
+            输出字(名)
+            输出换()
+            lr 参数数 > 0 08
+                输出字("add rsp, ")
+                tz 参字节 参数数 hh 8
+                sh(输出汇 ht 输出汇位, 48 ht (参字节 hl 10))
+                输出换()
+            09
+            zz 0
+        09
+        tz idx 找局部(名)
+        lr idx >= 0 08
+            输出字("mov rax, [rbp")
+            tz 偏 局部偏[idx]
+            lr 偏 >= 0 08
+                sh(输出汇 ht 输出汇位, 43)
+                sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+            09
+            lr 偏 < 0 08
+                sh(输出汇 ht 输出汇位, 45)
+                sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+            09
+            输出字("]")
+            输出换()
+        09
+        zz 0
+    09
+    lr tok_k[tok_pos] == 2 08
+        tz v tok_v[tok_pos]
+        tok_pos = tok_pos ht 1
+        输出字("mov rax, ")
+        sh(输出汇 ht 输出汇位, 48 ht (v hl 10))
+        输出换()
+        zz 0
+    09
+    lr tok_k[tok_pos] == 5 08
+        tz 串号 新标号("str")
+        输出字("lea rax, [rip+.Lstr")
+        sh(输出汇 ht 输出汇位, 48 ht (串号 hl 10))
+        输出字("]")
+        输出换()
+        tok_pos = tok_pos ht 1
+        zz 0
+    09
+    zz 0
+09
+
+tt 解析语句() -> u32 08
+    跳过换行()
+    lr 是关键字("tz") == 1 08
+        tok_pos = tok_pos ht 1
+        tz 名[256]
+        复制串(名, tok_s[tok_pos hh 256])
+        tok_pos = tok_pos ht 1
+        lr 是标点("=") == 1 08
+            tok_pos = tok_pos ht 1
+            解析表达式()
+            tz idx 加局部(名)
+            输出字("mov [rbp")
+            tz 偏 局部偏[idx]
+            lr 偏 >= 0 08
+                sh(输出汇 ht 输出汇位, 43)
+                sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+            09
+            lr 偏 < 0 08
+                sh(输出汇 ht 输出汇位, 45)
+                sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+            09
+            输出字("], rax")
+            输出换()
+        09
+        zz 0
+    09
+    lr 是关键字("zz") == 1 08
+        tok_pos = tok_pos ht 1
+        解析表达式()
+        输出字("mov rsp, rbp")
+        输出换()
+        输出字("pop rbp")
+        输出换()
+        输出字("ret")
+        输出换()
+        zz 0
+    09
+    lr tok_k[tok_pos] == 3 08
+        lr 是标点("(") == 0 08
+            tz 名[256]
+            复制串(名, tok_s[tok_pos hh 256])
+            lr 是标点("=") == 0 08
+                解析表达式()
+                tz idx 找局部(名)
+                lr idx >= 0 08
+                    输出字("mov [rbp")
+                    tz 偏 局部偏[idx]
+                    lr 偏 >= 0 08
+                        sh(输出汇 ht 输出汇位, 43)
+                        sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+                    09
+                    lr 偏 < 0 08
+                        sh(输出汇 ht 输出汇位, 45)
+                        sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+                    09
+                    输出字("], rax")
+                    输出换()
+                09
+                zz 0
+            09
+        09
+        解析表达式()
+        zz 0
+    09
+    tok_pos = tok_pos ht 1
+    zz 0
+09
+
+tt 解析块() -> u32 08
+    吃标点("{")
+    tz 退出 0
+    ll 08
+        lr 退出 == 1 08 ls 09
+        跳过换行()
+        lr 是标点("}") == 1 08
+            tok_pos = tok_pos ht 1
+            退出 = 1
+        09
+        lr tok_k[tok_pos] == 0 08 退出 = 1 09
+        lr 退出 == 0 08 解析语句() 09
+    09
+    zz 0
+09
+
+tt 解析函数() -> u32 08
+    tok_pos = tok_pos ht 1
+    tz 名[256]
+    复制串(名, tok_s[tok_pos hh 256])
+    tok_pos = tok_pos ht 1
+    吃标点("(")
+    吃标点(")")
+    吃标点("->")
+    tok_pos = tok_pos ht 1
+    局部数 = 0
+    帧尺寸 = 0
+    输出字(".globl fn_")
+    输出字(名)
+    输出换()
+    输出字("fn_")
+    输出字(名)
+    输出字(":")
+    输出换()
+    输出字("push rbp")
+    输出换()
+    输出字("mov rbp, rsp")
+    输出换()
+    解析块()
+    输出字("mov rsp, rbp")
+    输出换()
+    输出字("pop rbp")
+    输出换()
+    输出字("ret")
+    输出换()
+    zz 0
+09
+
+tt 解析顶层() -> u32 08
+    tz 退出 0
+    ll 08
+        lr 退出 == 1 08 ls 09
+        跳过换行()
+        lr tok_k[tok_pos] == 0 08 退出 = 1 09
+        lr 是关键字("tt") == 1 08
+            解析函数()
+            zz 0
+        09
+        lr 是关键字("qj") == 1 08
+            tok_pos = tok_pos ht 1
+            tok_pos = tok_pos ht 1
+            lr 是标点("[") == 1 08
+                tz 退2 0
+                ll 08
+                    lr 退2 == 1 08 ls 09
+                    lr 是标点("]") == 1 08
+                        tok_pos = tok_pos ht 1
+                        退2 = 1
+                    09
+                    lr 退2 == 0 08 tok_pos = tok_pos ht 1 09
+                09
+            09
+            zz 0
+        09
+        tok_pos = tok_pos ht 1
+    09
+    zz 0
 09
