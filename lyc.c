@@ -98,7 +98,7 @@ static char *还原数字标点(const char *src) {
                 continue;
             }
             while (k < numlen) {
-                if (k+1 < numlen && start[k]=='0' && start[k+1]>='0' && start[k+1]<='9') {
+                if (k+1 < numlen && start[k]=='0' && start[k+1]>='0' && start[k+1]<='9' && k == 0) {
                     char 码 = start[k+1];
                     if (码 == '3' || 码 == '4') { out[o++] = '"'; 在串里 = !在串里; }
                     else if (码 == '7' && 在串里) { out[o++] = '\n'; }
