@@ -311,12 +311,16 @@ tt 加局部(n) -> u32 08
 
 tt 是标点(s) -> u32 08
     lr tok_k[tok_pos] == 6 08
-        lr 比较串(tok_s[tok_pos hh 256], s) == 1 08 zz 1 09
+        lr 比较串(tok_s ht (tok_pos hh 256), s) == 1 08 zz 1 09
     09
     zz 0
 09
 
 tt 吃标点(s) -> u32 08
+    zt _rt_putc 01 119 02
+    zt _rt_puti 01 tok_pos 02
+    zt _rt_puti 01 tok_k[tok_pos] 02
+    zt _rt_putc 01 10 02
     lr 是标点(s) == 1 08
         tok_pos = tok_pos ht 1
         zz 1
@@ -516,16 +520,26 @@ tt 解析块() -> u32 08
 tt 解析函数() -> u32 08
     tok_pos = tok_pos ht 1
     tz 名[256]
-    复制串(名, tok_s[tok_pos hh 256])
+    复制串(名, tok_s ht (tok_pos hh 256))
+    zt _rt_putc 01 112 02
+    zt _rt_puts 01 名 02
+    zt _rt_putc 01 10 02
     tok_pos = tok_pos ht 1
     吃标点("(")
+    zt _rt_putc 01 113 02
     吃标点(")")
-    吃标点("->")
+    zt _rt_putc 01 114 02
+    吃标点("-")
+    zt _rt_putc 01 115 02
+    吃标点(">")
+    zt _rt_putc 01 116 02
     tok_pos = tok_pos ht 1
     局部数 = 0
     帧尺寸 = 0
     输出字(".globl fn_")
+    zt _rt_putc 01 117 02
     输出字(名)
+    zt _rt_putc 01 118 02
     输出换()
     输出字("fn_")
     输出字(名)

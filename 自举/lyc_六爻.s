@@ -2458,6 +2458,7 @@ fn__e6_98_af_e6_a0_87_e7_82_b9:
 	test rax, rax
 	jz .Lelse110
 	mov rax, offset g_tok_s
+	push rax
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
 	push rax
@@ -2465,17 +2466,9 @@ fn__e6_98_af_e6_a0_87_e7_82_b9:
 	mov rcx, rax
 	pop rax
 	imul rax, rcx
-	cmp rax, 2097152
-	jb .Lbok111
-	call _rt_oob
-.Lbok111:
-	imul rax, 4
-	push rax
-	mov rax, offset g_tok_s
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov eax, [rax]
 	push rax
 	lea rax, [rbp+16]
 	mov eax, [rax]
@@ -2490,10 +2483,10 @@ fn__e6_98_af_e6_a0_87_e7_82_b9:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse112
+	jz .Lelse111
 	mov rax, 1
 	jmp .Lret__e6_98_af_e6_a0_87_e7_82_b9
-.Lelse112:
+.Lelse111:
 .Lelse110:
 	mov rax, 0
 	jmp .Lret__e6_98_af_e6_a0_87_e7_82_b9
@@ -2507,6 +2500,36 @@ fn__e5_90_83_e6_a0_87_e7_82_b9:
 	push rbp
 	mov rbp, rsp
 	mov rax, 0
+	mov rax, 119
+	push rax
+	call fn__rt_putc
+	add rsp, 8
+	mov rax, offset g_tok_pos
+	mov eax, [rax]
+	push rax
+	call fn__rt_puti
+	add rsp, 8
+	mov rax, offset g_tok_k
+	mov rax, offset g_tok_pos
+	mov eax, [rax]
+	cmp rax, 8192
+	jb .Lbok112
+	call _rt_oob
+.Lbok112:
+	imul rax, 4
+	push rax
+	mov rax, offset g_tok_k
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov eax, [rax]
+	push rax
+	call fn__rt_puti
+	add rsp, 8
+	mov rax, 10
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	lea rax, [rbp+16]
 	mov eax, [rax]
 	push rax
@@ -3962,6 +3985,7 @@ fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0:
 	lea rax, [rbp-2048]
 	push rax
 	mov rax, offset g_tok_s
+	push rax
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
 	push rax
@@ -3969,20 +3993,24 @@ fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0:
 	mov rcx, rax
 	pop rax
 	imul rax, rcx
-	cmp rax, 2097152
-	jb .Lbok176
-	call _rt_oob
-.Lbok176:
-	imul rax, 4
-	push rax
-	mov rax, offset g_tok_s
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov eax, [rax]
 	push rax
 	call fn__e5_a4_8d_e5_88_b6_e4_b8_b2
 	add rsp, 16
+	mov rax, 112
+	push rax
+	call fn__rt_putc
+	add rsp, 8
+	lea rax, [rbp-2048]
+	push rax
+	call fn__rt_puts
+	add rsp, 8
+	mov rax, 10
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
 	push rax
@@ -3995,13 +4023,33 @@ fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0:
 	push rax
 	call fn__e5_90_83_e6_a0_87_e7_82_b9
 	add rsp, 8
+	mov rax, 113
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, offset .Lstr69
 	push rax
 	call fn__e5_90_83_e6_a0_87_e7_82_b9
 	add rsp, 8
+	mov rax, 114
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, offset .Lstr70
 	push rax
 	call fn__e5_90_83_e6_a0_87_e7_82_b9
+	add rsp, 8
+	mov rax, 115
+	push rax
+	call fn__rt_putc
+	add rsp, 8
+	mov rax, offset .Lstr71
+	push rax
+	call fn__e5_90_83_e6_a0_87_e7_82_b9
+	add rsp, 8
+	mov rax, 116
+	push rax
+	call fn__rt_putc
 	add rsp, 8
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
@@ -4015,28 +4063,31 @@ fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0:
 	mov dword ptr [g__e5_b1_80_e9_83_a8_e6_95_b0], eax
 	mov rax, 0
 	mov dword ptr [g__e5_b8_a7_e5_b0_ba_e5_af_b8], eax
-	mov rax, offset .Lstr71
-	push rax
-	call fn__e8_be_93_e5_87_ba_e5_ad_97
-	add rsp, 8
-	lea rax, [rbp-2048]
-	push rax
-	call fn__e8_be_93_e5_87_ba_e5_ad_97
-	add rsp, 8
-	call fn__e8_be_93_e5_87_ba_e6_8d_a2
 	mov rax, offset .Lstr72
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
+	mov rax, 117
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	lea rax, [rbp-2048]
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
+	mov rax, 118
+	push rax
+	call fn__rt_putc
+	add rsp, 8
+	call fn__e8_be_93_e5_87_ba_e6_8d_a2
 	mov rax, offset .Lstr73
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
-	call fn__e8_be_93_e5_87_ba_e6_8d_a2
+	lea rax, [rbp-2048]
+	push rax
+	call fn__e8_be_93_e5_87_ba_e5_ad_97
+	add rsp, 8
 	mov rax, offset .Lstr74
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
@@ -4047,18 +4098,23 @@ fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0:
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
 	call fn__e8_be_93_e5_87_ba_e6_8d_a2
-	call fn__e8_a7_a3_e6_9e_90_e5_9d_97
 	mov rax, offset .Lstr76
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
 	call fn__e8_be_93_e5_87_ba_e6_8d_a2
+	call fn__e8_a7_a3_e6_9e_90_e5_9d_97
 	mov rax, offset .Lstr77
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
 	call fn__e8_be_93_e5_87_ba_e6_8d_a2
 	mov rax, offset .Lstr78
+	push rax
+	call fn__e8_be_93_e5_87_ba_e5_ad_97
+	add rsp, 8
+	call fn__e8_be_93_e5_87_ba_e6_8d_a2
+	mov rax, offset .Lstr79
 	push rax
 	call fn__e8_be_93_e5_87_ba_e5_ad_97
 	add rsp, 8
@@ -4078,7 +4134,7 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-8], rax
-.Lltop177:
+.Lltop176:
 	lea rax, [rbp-8]
 	mov eax, [rax]
 	push rax
@@ -4089,9 +4145,9 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse179
-	jmp .Llend178
-.Lelse179:
+	jz .Lelse178
+	jmp .Llend177
+.Lelse178:
 	call fn__e8_b7_b3_e8_bf_87_e6_8d_a2_e8_a1_8c
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
@@ -4115,9 +4171,9 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
 	cmp rax, 8192
-	jb .Lbok180
+	jb .Lbok179
 	call _rt_oob
-.Lbok180:
+.Lbok179:
 	imul rax, 4
 	push rax
 	mov rax, offset g_tok_k
@@ -4133,27 +4189,10 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse181
+	jz .Lelse180
 	mov rax, 1
 	mov [rbp-8], rax
-.Lelse181:
-	mov rax, offset .Lstr79
-	push rax
-	call fn__e6_98_af_e5_85_b3_e9_94_ae_e5_ad_97
-	add rsp, 8
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse182
-	call fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0
-	mov rax, 0
-	jmp .Lret__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82
-.Lelse182:
+.Lelse180:
 	mov rax, offset .Lstr80
 	push rax
 	call fn__e6_98_af_e5_85_b3_e9_94_ae_e5_ad_97
@@ -4166,24 +4205,41 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse183
-	mov rax, offset g_tok_pos
-	mov eax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov dword ptr [g_tok_pos], eax
-	mov rax, offset g_tok_pos
-	mov eax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov dword ptr [g_tok_pos], eax
+	jz .Lelse181
+	call fn__e8_a7_a3_e6_9e_90_e5_87_bd_e6_95_b0
+	mov rax, 0
+	jmp .Lret__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82
+.Lelse181:
 	mov rax, offset .Lstr81
+	push rax
+	call fn__e6_98_af_e5_85_b3_e9_94_ae_e5_ad_97
+	add rsp, 8
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse182
+	mov rax, offset g_tok_pos
+	mov eax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov dword ptr [g_tok_pos], eax
+	mov rax, offset g_tok_pos
+	mov eax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov dword ptr [g_tok_pos], eax
+	mov rax, offset .Lstr82
 	push rax
 	call fn__e6_98_af_e6_a0_87_e7_82_b9
 	add rsp, 8
@@ -4195,10 +4251,10 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse184
+	jz .Lelse183
 	mov rax, 0
 	mov [rbp-16], rax
-.Lltop185:
+.Lltop184:
 	lea rax, [rbp-16]
 	mov eax, [rax]
 	push rax
@@ -4209,15 +4265,37 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse187
-	jmp .Llend186
-.Lelse187:
-	mov rax, offset .Lstr82
+	jz .Lelse186
+	jmp .Llend185
+.Lelse186:
+	mov rax, offset .Lstr83
 	push rax
 	call fn__e6_98_af_e6_a0_87_e7_82_b9
 	add rsp, 8
 	push rax
 	mov rax, 1
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse187
+	mov rax, offset g_tok_pos
+	mov eax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov dword ptr [g_tok_pos], eax
+	mov rax, 1
+	mov [rbp-16], rax
+.Lelse187:
+	lea rax, [rbp-16]
+	mov eax, [rax]
+	push rax
+	mov rax, 0
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
@@ -4233,35 +4311,13 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	pop rax
 	add rax, rcx
 	mov dword ptr [g_tok_pos], eax
-	mov rax, 1
-	mov [rbp-16], rax
 .Lelse188:
-	lea rax, [rbp-16]
-	mov eax, [rax]
-	push rax
-	mov rax, 0
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse189
-	mov rax, offset g_tok_pos
-	mov eax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov dword ptr [g_tok_pos], eax
-.Lelse189:
-	jmp .Lltop185
-.Llend186:
-.Lelse184:
+	jmp .Lltop184
+.Llend185:
+.Lelse183:
 	mov rax, 0
 	jmp .Lret__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82
-.Lelse183:
+.Lelse182:
 	mov rax, offset g_tok_pos
 	mov eax, [rax]
 	push rax
@@ -4270,8 +4326,8 @@ fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
 	pop rax
 	add rax, rcx
 	mov dword ptr [g_tok_pos], eax
-	jmp .Lltop177
-.Llend178:
+	jmp .Lltop176
+.Llend177:
 	mov rax, 0
 	jmp .Lret__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82
 .Lret__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82:
@@ -4287,7 +4343,7 @@ fn__e8_be_93_e5_87_ba_e7_bc_93_e5_86_b2_e5_8c_ba:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-8], rax
-.Lltop190:
+.Lltop189:
 	lea rax, [rbp-8]
 	mov eax, [rax]
 	push rax
@@ -4296,9 +4352,9 @@ fn__e8_be_93_e5_87_ba_e7_bc_93_e5_86_b2_e5_8c_ba:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse192
-	jmp .Llend191
-.Lelse192:
+	jne .Lelse191
+	jmp .Llend190
+.Lelse191:
 	mov rax, offset g__e8_be_93_e5_87_ba_e6_b1_87
 	push rax
 	lea rax, [rbp-8]
@@ -4323,8 +4379,8 @@ fn__e8_be_93_e5_87_ba_e7_bc_93_e5_86_b2_e5_8c_ba:
 	pop rax
 	add rax, rcx
 	mov [rbp-8], rax
-	jmp .Lltop190
-.Llend191:
+	jmp .Lltop189
+.Llend190:
 	lea rax, [rbp-8]
 	mov eax, [rax]
 	jmp .Lret__e8_be_93_e5_87_ba_e7_bc_93_e5_86_b2_e5_8c_ba
@@ -4345,7 +4401,7 @@ fn__e7_bc_96_e8_af_91:
 	add rsp, 8
 	mov rax, 0
 	mov [rbp-8], rax
-.Lltop193:
+.Lltop192:
 	lea rax, [rbp+16]
 	mov eax, [rax]
 	push rax
@@ -4383,9 +4439,9 @@ fn__e7_bc_96_e8_af_91:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse195
-	jmp .Llend194
-.Lelse195:
+	jne .Lelse194
+	jmp .Llend193
+.Lelse194:
 	lea rax, [rbp-8]
 	mov eax, [rax]
 	push rax
@@ -4394,8 +4450,8 @@ fn__e7_bc_96_e8_af_91:
 	pop rax
 	add rax, rcx
 	mov [rbp-8], rax
-	jmp .Lltop193
-.Llend194:
+	jmp .Lltop192
+.Llend193:
 	mov rax, 50
 	push rax
 	call fn__rt_putc
@@ -4416,11 +4472,11 @@ fn__e7_bc_96_e8_af_91:
 	mov dword ptr [g__e8_be_93_e5_87_ba_e6_b1_87_e4_bd_8d], eax
 	mov rax, 0
 	mov dword ptr [g__e6_a0_87_e5_8f_b7_e8_ae_a1_e6_95_b0], eax
-	mov rax, offset .Lstr83
+	mov rax, offset .Lstr84
 	push rax
 	call fn__e8_be_93_e5_87_ba_e8_a1_8c
 	add rsp, 8
-	mov rax, offset .Lstr84
+	mov rax, offset .Lstr85
 	push rax
 	call fn__e8_be_93_e5_87_ba_e8_a1_8c
 	add rsp, 8
@@ -4609,33 +4665,35 @@ fn__e7_bc_96_e8_af_91:
 .Lstr69:
 	.asciz ")"
 .Lstr70:
-	.asciz "->"
+	.asciz "-"
 .Lstr71:
-	.asciz ".globl fn_"
+	.asciz ">"
 .Lstr72:
-	.asciz "fn_"
+	.asciz ".globl fn_"
 .Lstr73:
-	.asciz ":"
+	.asciz "fn_"
 .Lstr74:
-	.asciz "push rbp"
+	.asciz ":"
 .Lstr75:
-	.asciz "mov rbp, rsp"
+	.asciz "push rbp"
 .Lstr76:
-	.asciz "mov rsp, rbp"
+	.asciz "mov rbp, rsp"
 .Lstr77:
-	.asciz "pop rbp"
+	.asciz "mov rsp, rbp"
 .Lstr78:
-	.asciz "ret"
+	.asciz "pop rbp"
 .Lstr79:
-	.asciz "tt"
+	.asciz "ret"
 .Lstr80:
-	.asciz "qj"
+	.asciz "tt"
 .Lstr81:
-	.asciz "["
+	.asciz "qj"
 .Lstr82:
-	.asciz "]"
+	.asciz "["
 .Lstr83:
-	.asciz ".intel_syntax noprefix"
+	.asciz "]"
 .Lstr84:
+	.asciz ".intel_syntax noprefix"
+.Lstr85:
 	.asciz ".section .text"
 	.section .text
