@@ -1,0 +1,84 @@
+00 五行全指令最终测试
+00 覆盖所有基础指令，全部通过才算OK
+
+jj "=== 1. jj打印字符串 ==="
+jj "PASS"
+
+jj "=== 2. jj打印数字 ==="
+jj 42
+jj 100
+jj 0
+
+jj "=== 3. tj变量赋值 ==="
+tj a 10
+tj b 20
+jj a
+jj b
+
+jj "=== 4. tm变量赋值(别名) ==="
+tm c 30
+jj c
+
+jj "=== 5. mj加等 ==="
+tj d 5
+mj d 3
+jj d
+
+jj "=== 6. mm减等 ==="
+tj e 10
+mm e 4
+jj e
+
+jj "=== 7. ms乘等 ==="
+tj f 6
+ms f 7
+jj f
+
+jj "=== 8. md除等 ==="
+tj g 20
+md g 4
+jj g
+
+jj "=== 9. 表达式 ht/hz/hh/hl ==="
+tj h 3
+tj h2 4
+tj h3 2
+tj r1 h ht h2
+tj r2 h hz h2
+tj r3 h hh h2
+tj r4 20 hl 4
+jj r1
+jj r2
+jj r3
+jj r4
+
+jj "=== 10. sj相等比较 ==="
+tj i 5
+sj res i 5
+jj res
+
+jj "=== 11. sm不等比较 ==="
+sm res2 i 3
+jj res2
+
+jj "=== 12. ss大于比较 ==="
+ss res3 i 3
+jj res3
+
+jj "=== 13. sd小于比较 ==="
+sd res4 i 10
+jj res4
+
+jj "=== 14. st大于等于 ==="
+st res5 i 5
+jj res5
+
+jj "=== 15. sh执行shell ==="
+sh "echo SHELL_PASS"
+
+jj "=== 16. 注释00 ==="
+00 这行不会执行
+jj "COMMENT_PASS"
+
+jj "=== 全部测试完成 ==="
+sh "echo ALL_TESTS_DONE"

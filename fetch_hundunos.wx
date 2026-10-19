@@ -1,0 +1,11 @@
+00 hundunOS 仓库抓取脚本（全sh版，最稳）
+jj "启动 hundunOS 仓库抓取器"
+jj "正在下载源码包..."
+sh "curl -L -s -o h.zip https://github.com/HunDunOS/HunDunOS/archive/refs/heads/main.zip"
+jj "下载完成"
+jj "正在解压..."
+sh "unzip -o -q h.zip"
+jj "解压完成"
+jj "仓库文件列表:"
+sh "ls -la HunDunOS-main/"
+jj "抓取完毕！"
