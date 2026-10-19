@@ -945,6 +945,10 @@ fn__e8_af_8d_e6_b3_95:
 	mov rbp, rsp
 	sub rsp, 34896
 	mov rax, 0
+	mov rax, 55
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, 0
 	mov dword ptr [g_tok_n], eax
 	mov rax, 0
@@ -1317,6 +1321,10 @@ fn__e8_af_8d_e6_b3_95:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse70
+	mov rax, 97
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, 0
 	mov [rbp-2088], rax
 .Lltop71:
@@ -1390,6 +1398,10 @@ fn__e8_af_8d_e6_b3_95:
 	push rax
 	call fn_sh
 	add rsp, 16
+	mov rax, 98
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	lea rax, [rbp-2080]
 	push rax
 	mov rax, offset .Lstr32
@@ -4055,12 +4067,20 @@ fn__e7_bc_96_e8_af_91:
 	mov [rbp-8], rax
 	jmp .Lltop183
 .Llend184:
+	mov rax, 50
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	lea rax, [rbp-8]
 	mov eax, [rax]
 	mov dword ptr [g__e6_ba_90_e7_a0_81_e9_95_bf], eax
 	mov rax, 0
 	mov dword ptr [g__e6_ba_90_e7_a0_81_e4_bd_8d], eax
 	call fn__e8_af_8d_e6_b3_95
+	mov rax, 51
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, 0
 	mov dword ptr [g_tok_pos], eax
 	mov rax, 0
@@ -4075,8 +4095,20 @@ fn__e7_bc_96_e8_af_91:
 	push rax
 	call fn__e8_be_93_e5_87_ba_e8_a1_8c
 	add rsp, 8
+	mov rax, 52
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	call fn__e8_a7_a3_e6_9e_90_e9_a1_b6_e5_b1_82
+	mov rax, 53
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	call fn__e8_be_93_e5_87_ba_e7_bc_93_e5_86_b2_e5_8c_ba
+	mov rax, 54
+	push rax
+	call fn__rt_putc
+	add rsp, 8
 	mov rax, 0
 	jmp .Lret__e7_bc_96_e8_af_91
 .Lret__e7_bc_96_e8_af_91:

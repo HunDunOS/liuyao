@@ -99,6 +99,7 @@ tt 是关键字(w) -> u32 08
 09
 
 tt 词法() -> u32 08
+    zt _rt_putc 01 55 02
     tok_n = 0
     源码位 = 0
     当前行 = 1
@@ -143,6 +144,7 @@ tt 词法() -> u32 08
             zz 0
         09
         lr 是字母(c) == 1 08
+            zt _rt_putc 01 97 02
             tz 词[256]
             tz wl 0
             ll 08
@@ -153,6 +155,7 @@ tt 词法() -> u32 08
                 源码位 = 源码位 ht 1
             09
             sh(词 ht wl, 0)
+            zt _rt_putc 01 98 02
             lr 比较串(词, "rd") == 1 08
                 ll 08
                     tz c2 fh(源码 ht 源码位)
@@ -548,15 +551,20 @@ tt 编译(路径) -> u32 08
         lz c 0 08 ls 09
         i = i ht 1
     09
+    zt _rt_putc 01 50 02
     源码长 = i
     源码位 = 0
     词法()
+    zt _rt_putc 01 51 02
     tok_pos = 0
     输出汇位 = 0
     标号计数 = 0
     输出行(".intel_syntax noprefix")
     输出行(".section .text")
+    zt _rt_putc 01 52 02
     解析顶层()
+    zt _rt_putc 01 53 02
     输出缓冲区()
+    zt _rt_putc 01 54 02
     zz 0
 09
