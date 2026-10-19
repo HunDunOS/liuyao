@@ -212,7 +212,7 @@ tt 词法() -> u32 08
 tt 主() -> u32 08
     tz 测试[256]
     tz i 0
-    tz 源码串 "tt 主() -> u32 08 tz x 3 ht 4 zz x 09"
+    tz 源码串 "tt 主() -> u32 08 tz i 0 ll 08 lr i == 3 08 ls 09 tz i i ht 1 09 zz i 09"
     ll 08
         tz c fh(源码串 ht i) hs 255
         sh(测试 ht i, c)
@@ -235,6 +235,9 @@ qj 局部数组成[256]
 qj 局部数
 qj 帧尺寸
 qj 在函数
+qj 循环顶[256]
+qj 循环尾[256]
+qj 循环深
 
 tt 输出字(s) -> u32 08
     tz i 0
@@ -429,6 +432,54 @@ tt 解析基本式() -> u32 08
 
 tt 解析语句() -> u32 08
     跳过换行()
+    lr 是关键字("ll") == 1 08
+        tok_pos = tok_pos ht 1
+        tz 顶号 新标号("ltop")
+        tz 尾号 新标号("lend")
+        循环顶[循环深] = 顶号
+        循环尾[循环深] = 尾号
+        循环深 = 循环深 ht 1
+        输出字(".Lltop")
+        sh(输出汇 ht 输出汇位, 48 ht (顶号 hl 10))
+        输出换()
+        解析块()
+        输出字("jmp .Lltop")
+        sh(输出汇 ht 输出汇位, 48 ht (顶号 hl 10))
+        输出换()
+        输出字(".Llend")
+        sh(输出汇 ht 输出汇位, 48 ht (尾号 hl 10))
+        输出换()
+        循环深 = 循环深 hz 1
+        zz 0
+    09
+    lr 是关键字("lr") == 1 08
+        tok_pos = tok_pos ht 1
+        解析表达式(0)
+        输出行("test rax, rax")
+        tz 否则号 新标号("else")
+        输出字("jz .Lelse")
+        sh(输出汇 ht 输出汇位, 48 ht (否则号 hl 10))
+        输出换()
+        解析块()
+        输出字(".Lelse")
+        sh(输出汇 ht 输出汇位, 48 ht (否则号 hl 10))
+        输出换()
+        zz 0
+    09
+    lr 是关键字("ls") == 1 08
+        tok_pos = tok_pos ht 1
+        输出字("jmp .Llend")
+        sh(输出汇 ht 输出汇位, 48 ht (循环尾[循环深 hz 1] hl 10))
+        输出换()
+        zz 0
+    09
+    lr 是关键字("lf") == 1 08
+        tok_pos = tok_pos ht 1
+        输出字("jmp .Lltop")
+        sh(输出汇 ht 输出汇位, 48 ht (循环顶[循环深 hz 1] hl 10))
+        输出换()
+        zz 0
+    09
     lr 是关键字("zt") == 1 08
         tok_pos = tok_pos ht 1
         解析表达式(0)
