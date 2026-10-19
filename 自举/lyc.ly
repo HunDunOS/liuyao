@@ -113,7 +113,7 @@ tt 词法() -> u32 08
         lr c == 10 08
             tok_k[tok_n] = 1
             tok_v[tok_n] = 0
-            复制串(tok_s[tok_n hh 256], "")
+            复制串(tok_s ht (tok_n hh 256), "")
             tok_n = tok_n ht 1
             当前行 = 当前行 ht 1
             源码位 = 源码位 ht 1
@@ -139,7 +139,7 @@ tt 词法() -> u32 08
             09
             tok_k[tok_n] = 2
             tok_v[tok_n] = v
-            复制串(tok_s[tok_n hh 256], "")
+            复制串(tok_s ht (tok_n hh 256), "")
             tok_n = tok_n ht 1
             zz 0
         09
@@ -167,10 +167,17 @@ tt 词法() -> u32 08
                 09
                 zz 0
             09
+            zt _rt_putc 01 101 02
             tok_k[tok_n] = 3
-            lr 是关键字(词) == 1 08 tok_k[tok_n] = 4 09
+            zt _rt_putc 01 102 02
+            tz r2 是关键字(词)
+            zt _rt_putc 01 103 02
+            lr r2 == 1 08 tok_k[tok_n] = 4 09
+            zt _rt_putc 01 104 02
             tok_v[tok_n] = 0
-            复制串(tok_s[tok_n hh 256], 词)
+            zt _rt_putc 01 105 02
+            复制串(tok_s ht (tok_n hh 256), 词)
+            zt _rt_putc 01 106 02
             tok_n = tok_n ht 1
             zz 0
         09
@@ -190,7 +197,7 @@ tt 词法() -> u32 08
             源码位 = 源码位 ht 1
             tok_k[tok_n] = 5
             tok_v[tok_n] = sl
-            复制串(tok_s[tok_n hh 256], 串)
+            复制串(tok_s ht (tok_n hh 256), 串)
             tok_n = tok_n ht 1
             zz 0
         09
@@ -202,7 +209,7 @@ tt 词法() -> u32 08
     09
     tok_k[tok_n] = 0
     tok_v[tok_n] = 0
-    复制串(tok_s[tok_n hh 256], "EOF")
+    复制串(tok_s ht (tok_n hh 256), "EOF")
     tok_n = tok_n ht 1
     zz 0
 09
