@@ -1,0 +1,6 @@
+*.o
+*.o.*
+构建/
+lyc
+wuxing
+*.wx
