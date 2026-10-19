@@ -44,7 +44,7 @@ tt 是标识续(c) -> u32 08
 tt 复制串(dst, src) -> u32 08
     tz i 0
     ll 08
-        tz c fh(src ht i)
+        tz c fh(src ht i) hs 255
         sh(dst ht i, c)
         lz c 0 08 ls 09
         i = i ht 1
@@ -55,8 +55,8 @@ tt 复制串(dst, src) -> u32 08
 tt 比较串(a, b) -> u32 08
     tz i 0
     ll 08
-        tz ca fh(a ht i)
-        tz cb fh(b ht i)
+        tz ca fh(a ht i) hs 255
+        tz cb fh(b ht i) hs 255
         lr ca != cb 08 zz 0 09
         lz ca 0 08 zz 1 09
         i = i ht 1
@@ -104,11 +104,14 @@ tt 词法() -> u32 08
     源码位 = 0
     当前行 = 1
     ll 08
-        tz c fh(源码 ht 源码位)
+        tz c fh(源码 ht 源码位) hs 255
+        zt _rt_putc 01 91 02
+        zt _rt_puti 01 c 02
+        zt _rt_putc 01 93 02
         lz c 0 08 ls 09
         lr 是空白(c) == 1 08
             源码位 = 源码位 ht 1
-            zz 0
+            lf
         09
         lr c == 10 08
             tok_k[tok_n] = 1
@@ -117,42 +120,48 @@ tt 词法() -> u32 08
             tok_n = tok_n ht 1
             当前行 = 当前行 ht 1
             源码位 = 源码位 ht 1
-            zz 0
+            lf
         09
         lr c == 64 08
             ll 08
-                tz c2 fh(源码 ht 源码位)
+                tz c2 fh(源码 ht 源码位) hs 255
                 lz c2 0 08 ls 09
                 lr c2 == 10 08 ls 09
                 源码位 = 源码位 ht 1
             09
-            zz 0
         09
         lr 是数字(c) == 1 08
             tz v 0
+            tz 退5 0
             ll 08
-                tz c2 fh(源码 ht 源码位)
-                lr 是数字(c2) == 0 08 ls 09
-                v = v hh 10
-                v = v ht (c2 hz 48)
-                源码位 = 源码位 ht 1
+                lr 退5 == 1 08 ls 09
+                tz c2 fh(源码 ht 源码位) hs 255
+                lr 是数字(c2) == 0 08 退5 = 1 09
+                lr 退5 == 0 08
+                        v = v ht (c2 hz 48)
+                    源码位 = 源码位 ht 1
+                09
             09
             tok_k[tok_n] = 2
             tok_v[tok_n] = v
             复制串(tok_s ht (tok_n hh 256), "")
             tok_n = tok_n ht 1
-            zz 0
+            lf
         09
         lr 是字母(c) == 1 08
             zt _rt_putc 01 97 02
             tz 词[256]
             tz wl 0
+            tz 退4 0
             ll 08
-                tz c2 fh(源码 ht 源码位)
-                lr 是标识续(c2) == 0 08 ls 09
-                sh(词 ht wl, c2)
-                wl = wl ht 1
-                源码位 = 源码位 ht 1
+                lr 退4 == 1 08 ls 09
+                tz c2 fh(源码 ht 源码位) hs 255
+                lr 是标识续(c2) == 0 08 退4 = 1 09
+                lr 退4 == 0 08
+                    sh(词 ht wl, c2)
+                    wl = wl ht 1
+                    源码位 = 源码位 ht 1
+                09
             09
             sh(词 ht wl, 0)
             zt _rt_putc 01 98 02
@@ -160,12 +169,11 @@ tt 词法() -> u32 08
             zt _rt_putc 01 100 02
             lr r1 == 1 08
                 ll 08
-                    tz c2 fh(源码 ht 源码位)
+                    tz c2 fh(源码 ht 源码位) hs 255
                     lz c2 0 08 ls 09
                     lr c2 == 10 08 ls 09
                     源码位 = 源码位 ht 1
                 09
-                zz 0
             09
             zt _rt_putc 01 101 02
             tok_k[tok_n] = 3
@@ -179,14 +187,17 @@ tt 词法() -> u32 08
             复制串(tok_s ht (tok_n hh 256), 词)
             zt _rt_putc 01 106 02
             tok_n = tok_n ht 1
-            zz 0
+            zt _rt_putc 01 108 02
+            zt _rt_puti 01 源码位 02
+            zt _rt_putc 01 10 02
+            lf
         09
         lr c == 34 08
             源码位 = 源码位 ht 1
             tz 串[4096]
             tz sl 0
             ll 08
-                tz c2 fh(源码 ht 源码位)
+                tz c2 fh(源码 ht 源码位) hs 255
                 lz c2 0 08 ls 09
                 lr c2 == 34 08 ls 09
                 sh(串 ht sl, c2)
@@ -199,11 +210,11 @@ tt 词法() -> u32 08
             tok_v[tok_n] = sl
             复制串(tok_s ht (tok_n hh 256), 串)
             tok_n = tok_n ht 1
-            zz 0
+            lf
         09
         tok_k[tok_n] = 6
-        sh(tok_s[tok_n hh 256], c)
-        sh(tok_s[tok_n hh 256] ht 1, 0)
+        sh(tok_s ht (tok_n hh 256), c)
+        sh(tok_s ht (tok_n hh 256) ht 1, 0)
         tok_n = tok_n ht 1
         源码位 = 源码位 ht 1
     09
@@ -211,6 +222,8 @@ tt 词法() -> u32 08
     tok_v[tok_n] = 0
     复制串(tok_s ht (tok_n hh 256), "EOF")
     tok_n = tok_n ht 1
+    zt _rt_putc 01 107 02
+    zt _rt_puti 01 tok_n 02
     zz 0
 09
 
@@ -221,7 +234,7 @@ tt 主() -> u32 08
     tz i 0
     tz 源码串 "tt 主() -> u32 08 tz x 5 zz x 09"
     ll 08
-        tz c fh(源码串 ht i)
+        tz c fh(源码串 ht i) hs 255
         sh(测试 ht i, c)
         lz c 0 08 ls 09
         i = i ht 1
@@ -537,6 +550,10 @@ tt 解析顶层() -> u32 08
     ll 08
         lr 退出 == 1 08 ls 09
         跳过换行()
+        zt _rt_puti 01 tok_pos 02
+        zt _rt_putc 01 47 02
+        zt _rt_puti 01 tok_n 02
+        zt _rt_putc 01 10 02
         lr tok_k[tok_pos] == 0 08 退出 = 1 09
         lr 是关键字("tt") == 1 08
             解析函数()
@@ -580,7 +597,7 @@ tt 编译(路径) -> u32 08
     zt _rt_putc 01 49 02
     tz i 0
     ll 08
-        tz c fh(路径 ht i)
+        tz c fh(路径 ht i) hs 255
         sh(源码 ht i, c)
         lz c 0 08 ls 09
         i = i ht 1
