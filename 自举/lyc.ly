@@ -202,17 +202,24 @@ tt 词法() -> u32 08
     zz 0
 09
 
-tt 主(path) -> u32 08
+tt 主() -> u32 08
+    zt _rt_putc 01 65 02
+    zt _rt_putc 01 10 02
+    tz 测试[256]
     tz i 0
+    tz 源码串 "tt 主() -> u32 08 tz x 5 zz x 09"
     ll 08
-        tz c fh(path ht i)
-        sh(源码 ht i, c)
+        tz c fh(源码串 ht i)
+        sh(测试 ht i, c)
         lz c 0 08 ls 09
         i = i ht 1
     09
-    源码长 = i
-    词法()
-    zz tok_n
+    zt _rt_putc 01 66 02
+    zt _rt_putc 01 10 02
+    编译(测试)
+    zt _rt_putc 01 67 02
+    zt _rt_putc 01 10 02
+    zz 0
 09
 
 rd ========== Stage 2: 语法分析器 + 代码生成器 ==========
@@ -283,13 +290,6 @@ tt 是标点(s) -> u32 08
     zz 0
 09
 
-tt 是关键字(s) -> u32 08
-    lr tok_k[tok_pos] == 4 08
-        lr 比较串(tok_s[tok_pos hh 256], s) == 1 08 zz 1 09
-    09
-    zz 0
-09
-
 tt 吃标点(s) -> u32 08
     lr 是标点(s) == 1 08
         tok_pos = tok_pos ht 1
@@ -319,6 +319,7 @@ tt 解析表达式() -> u32 08
             lr 是标点(")") == 0 08
                 ll 08
                     解析表达式()
+                    输出行("push rax")
                     参数数 = 参数数 ht 1
                     lr 是标点(",") == 1 08 tok_pos = tok_pos ht 1 09
                     lr 是标点(")") == 1 08 ls 09
@@ -375,6 +376,11 @@ tt 解析表达式() -> u32 08
 
 tt 解析语句() -> u32 08
     跳过换行()
+    lr 是关键字("zt") == 1 08
+        tok_pos = tok_pos ht 1
+        解析表达式()
+        zz 0
+    09
     lr 是关键字("tz") == 1 08
         tok_pos = tok_pos ht 1
         tz 名[256]
@@ -517,5 +523,40 @@ tt 解析顶层() -> u32 08
         09
         tok_pos = tok_pos ht 1
     09
+    zz 0
+09
+
+rd ========== Stage 3: 输出 + 主函数 ==========
+
+tt 输出缓冲区() -> u32 08
+    tz i 0
+    ll 08
+        lz i 输出汇位 08 ls 09
+        tz c fh(输出汇 ht i)
+        zt _rt_putc 01 c 02
+        i = i ht 1
+    09
+    zz i
+09
+
+tt 编译(路径) -> u32 08
+    zt _rt_putc 01 49 02
+    tz i 0
+    ll 08
+        tz c fh(路径 ht i)
+        sh(源码 ht i, c)
+        lz c 0 08 ls 09
+        i = i ht 1
+    09
+    源码长 = i
+    源码位 = 0
+    词法()
+    tok_pos = 0
+    输出汇位 = 0
+    标号计数 = 0
+    输出行(".intel_syntax noprefix")
+    输出行(".section .text")
+    解析顶层()
+    输出缓冲区()
     zz 0
 09
