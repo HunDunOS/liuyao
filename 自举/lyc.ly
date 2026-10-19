@@ -411,15 +411,23 @@ tt 解析表达式() -> u32 08
 
 tt 解析语句() -> u32 08
     跳过换行()
+    zt _rt_putc 01 109 02
+    zt _rt_puti 01 tok_pos 02
+    zt _rt_puti 01 tok_k[tok_pos] 02
+    zt _rt_putc 01 10 02
     lr 是关键字("zt") == 1 08
         tok_pos = tok_pos ht 1
         解析表达式()
         zz 0
     09
     lr 是关键字("tz") == 1 08
+        zt _rt_putc 01 122 02
         tok_pos = tok_pos ht 1
         tz 名[256]
-        复制串(名, tok_s[tok_pos hh 256])
+        复制串(名, tok_s ht (tok_pos hh 256))
+        zt _rt_putc 01 123 02
+        zt _rt_puts 01 名 02
+        zt _rt_putc 01 10 02
         tok_pos = tok_pos ht 1
         tz 是数组 0
         lr 是标点("[") == 1 08
@@ -452,11 +460,34 @@ tt 解析语句() -> u32 08
             09
             输出字("], rax")
             输出换()
+            zz 0
         09
-        lr 是标点("=") == 0 08
+        tz 简化 0
+        lr tok_k[tok_pos] == 2 08 简化 = 1 09
+        lr tok_k[tok_pos] == 3 08 简化 = 1 09
+        lr tok_k[tok_pos] == 5 08 简化 = 1 09
+        lr 简化 == 1 08
+            zt _rt_putc 01 124 02
+            解析表达式()
+            zt _rt_putc 01 125 02
             tz idx 加局部(名)
             局部数组成[idx] = 是数组
+            输出字("mov [rbp")
+            tz 偏 局部偏[idx]
+            lr 偏 >= 0 08
+                sh(输出汇 ht 输出汇位, 43)
+                sh(输出汇 ht 输出汇位, 48 ht (偏 hl 10))
+            09
+            lr 偏 < 0 08
+                sh(输出汇 ht 输出汇位, 45)
+                sh(输出汇 ht 输出汇位, 48 ht ((0 hz 偏) hl 10))
+            09
+            输出字("], rax")
+            输出换()
+            zz 0
         09
+        tz idx 加局部(名)
+        局部数组成[idx] = 是数组
         zz 0
     09
     lr 是关键字("zz") == 1 08
