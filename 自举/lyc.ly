@@ -156,7 +156,9 @@ tt 词法() -> u32 08
             09
             sh(词 ht wl, 0)
             zt _rt_putc 01 98 02
-            lr 比较串(词, "rd") == 1 08
+            tz r1 比较串(词, "rd")
+            zt _rt_putc 01 100 02
+            lr r1 == 1 08
                 ll 08
                     tz c2 fh(源码 ht 源码位)
                     lz c2 0 08 ls 09
@@ -233,6 +235,7 @@ qj 标号计数
 qj 局部名[16384]
 qj 局部偏[256]
 qj 局部尺[256]
+qj 局部数组成[256]
 qj 局部数
 qj 帧尺寸
 qj 在函数
@@ -342,7 +345,12 @@ tt 解析表达式() -> u32 08
         09
         tz idx 找局部(名)
         lr idx >= 0 08
-            输出字("mov rax, [rbp")
+            lr 局部数组成[idx] == 1 08
+                输出字("lea rax, [rbp")
+            09
+            lr 局部数组成[idx] == 0 08
+                输出字("mov rax, [rbp")
+            09
             tz 偏 局部偏[idx]
             lr 偏 >= 0 08
                 sh(输出汇 ht 输出汇位, 43)
@@ -389,10 +397,25 @@ tt 解析语句() -> u32 08
         tz 名[256]
         复制串(名, tok_s[tok_pos hh 256])
         tok_pos = tok_pos ht 1
+        tz 是数组 0
+        lr 是标点("[") == 1 08
+            是数组 = 1
+            tok_pos = tok_pos ht 1
+            tz 退3 0
+            ll 08
+                lr 退3 == 1 08 ls 09
+                lr 是标点("]") == 1 08
+                    tok_pos = tok_pos ht 1
+                    退3 = 1
+                09
+                lr 退3 == 0 08 tok_pos = tok_pos ht 1 09
+            09
+        09
         lr 是标点("=") == 1 08
             tok_pos = tok_pos ht 1
             解析表达式()
             tz idx 加局部(名)
+            局部数组成[idx] = 是数组
             输出字("mov [rbp")
             tz 偏 局部偏[idx]
             lr 偏 >= 0 08
@@ -405,6 +428,10 @@ tt 解析语句() -> u32 08
             09
             输出字("], rax")
             输出换()
+        09
+        lr 是标点("=") == 0 08
+            tz idx 加局部(名)
+            局部数组成[idx] = 是数组
         09
         zz 0
     09
