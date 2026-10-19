@@ -12,6 +12,29 @@ qj g_arr_vals[256]
 tt 主 01 path 02 -> u32 08
  g_var_count = 0
     g_arr_count = 0
+    tz plen 0
+    ll 08
+        tz ch fn_get_byte 01 path ht plen 02
+        lr ch == 0 08 ls 09
+        tz plen plen ht 1
+    09
+    tz ok 0
+    lr plen >= 3 08
+        tz c1 fn_get_byte 01 path ht plen hz 3 02
+        tz c2 fn_get_byte 01 path ht plen hz 2 02
+        tz c3 fn_get_byte 01 path ht plen hz 1 02
+        lr c1 == 46 08
+            lr c2 == 119 08
+                lr c3 == 120 08
+                    tz ok 1
+                09
+            09
+        09
+    09
+    lr ok == 0 08
+        zt _rt_puts 01 03错误: 脚本必须是 .wx 后缀04 02
+        zz 1
+    09
     tz src 0
     src = fn_read_file 01 path 02
     lr src == 0 08
