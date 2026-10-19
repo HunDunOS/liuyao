@@ -174,8 +174,7 @@ tt 词法() -> u32 08
             tok_v[tok_n] = 0
             复制串(tok_s ht (tok_n hh 256), 词)
             tok_n = tok_n ht 1
-            zt _rt_putc 01 108 02
-            lf
+                    lf
         09
         lr c == 34 08
             源码位 = 源码位 ht 1
@@ -213,7 +212,7 @@ tt 词法() -> u32 08
 tt 主() -> u32 08
     tz 测试[256]
     tz i 0
-    tz 源码串 "tt 主() -> u32 08 tz x 5 zz x 09"
+    tz 源码串 "tt 主() -> u32 08 tz x 3 ht 4 zz x 09"
     ll 08
         tz c fh(源码串 ht i) hs 255
         sh(测试 ht i, c)
@@ -311,17 +310,63 @@ tt 跳过换行() -> u32 08
     zz 0
 09
 
-tt 解析表达式() -> u32 08
+tt 取优先级(op) -> u32 08
+    lr 比较串(op, "hh") == 1 08 zz 10 09
+    lr 比较串(op, "hl") == 1 08 zz 10 09
+    lr 比较串(op, "hf") == 1 08 zz 10 09
+    lr 比较串(op, "ht") == 1 08 zz 9 09
+    lr 比较串(op, "hz") == 1 08 zz 9 09
+    lr 比较串(op, "hs") == 1 08 zz 5 09
+    lr 比较串(op, "hd") == 1 08 zz 4 09
+    lr 比较串(op, "hr") == 1 08 zz 3 09
+    zz 0
+09
+
+tt 是运算符() -> u32 08
+    lr tok_k[tok_pos] != 4 08 zz 0 09
+    tz op[256]
+    复制串(op, tok_s ht (tok_pos hh 256))
+    lr 取优先级(op) > 0 08 zz 1 09
+    zz 0
+09
+
+tt 解析表达式(最小优先级) -> u32 08
+    解析基本式()
+    ll 08
+        lr 是运算符() == 0 08 ls 09
+        tz op[256]
+        复制串(op, tok_s ht (tok_pos hh 256))
+        tz 优先级 取优先级(op)
+        lr 优先级 < 最小优先级 08 ls 09
+        tok_pos = tok_pos ht 1
+        输出行("push rax")
+        解析表达式(优先级 ht 1)
+        输出行("pop rcx")
+        lr 比较串(op, "ht") == 1 08 输出行("add rcx, rax") 09
+        lr 比较串(op, "hz") == 1 08 输出行("sub rcx, rax") 09
+        lr 比较串(op, "hh") == 1 08 输出行("imul rcx, rax") 09
+        输出行("mov rax, rcx")
+    09
+    zz 0
+09
+
+tt 解析基本式() -> u32 08
+    lr 是标点("(") == 1 08
+        tok_pos = tok_pos ht 1
+        解析表达式(0)
+        吃标点(")")
+        zz 0
+    09
     lr tok_k[tok_pos] == 3 08
         tz 名[256]
-        复制串(名, tok_s[tok_pos hh 256])
+        复制串(名, tok_s ht (tok_pos hh 256))
         tok_pos = tok_pos ht 1
         lr 是标点("(") == 1 08
             tok_pos = tok_pos ht 1
             tz 参数数 0
             lr 是标点(")") == 0 08
                 ll 08
-                    解析表达式()
+                    解析表达式(0)
                     输出行("push rax")
                     参数数 = 参数数 ht 1
                     lr 是标点(",") == 1 08 tok_pos = tok_pos ht 1 09
@@ -386,7 +431,7 @@ tt 解析语句() -> u32 08
     跳过换行()
     lr 是关键字("zt") == 1 08
         tok_pos = tok_pos ht 1
-        解析表达式()
+        解析表达式(0)
         zz 0
     09
     lr 是关键字("tz") == 1 08
@@ -410,7 +455,7 @@ tt 解析语句() -> u32 08
         09
         lr 是标点("=") == 1 08
             tok_pos = tok_pos ht 1
-            解析表达式()
+            解析表达式(0)
             tz idx 加局部(名)
             局部数组成[idx] = 是数组
             输出字("mov [rbp")
@@ -428,11 +473,11 @@ tt 解析语句() -> u32 08
             zz 0
         09
         tz 简化 0
-        lr tok_k[tok_pos] == 2 08 简化 = 1 09
+                        lr tok_k[tok_pos] == 2 08 简化 = 1 09
         lr tok_k[tok_pos] == 3 08 简化 = 1 09
         lr tok_k[tok_pos] == 5 08 简化 = 1 09
-        lr 简化 == 1 08
-            解析表达式()
+                    lr 简化 == 1 08
+            解析表达式(0)
             tz idx 加局部(名)
             局部数组成[idx] = 是数组
             输出字("mov [rbp")
@@ -455,7 +500,7 @@ tt 解析语句() -> u32 08
     09
     lr 是关键字("zz") == 1 08
         tok_pos = tok_pos ht 1
-        解析表达式()
+        解析表达式(0)
         输出字("mov rsp, rbp")
         输出换()
         输出字("pop rbp")
@@ -467,9 +512,9 @@ tt 解析语句() -> u32 08
     lr tok_k[tok_pos] == 3 08
         lr 是标点("(") == 0 08
             tz 名[256]
-            复制串(名, tok_s[tok_pos hh 256])
+            复制串(名, tok_s ht (tok_pos hh 256))
             lr 是标点("=") == 0 08
-                解析表达式()
+                解析表达式(0)
                 tz idx 找局部(名)
                 lr idx >= 0 08
                     输出字("mov [rbp")
@@ -488,7 +533,7 @@ tt 解析语句() -> u32 08
                 zz 0
             09
         09
-        解析表达式()
+        解析表达式(0)
         zz 0
     09
     tok_pos = tok_pos ht 1
@@ -550,11 +595,7 @@ tt 解析顶层() -> u32 08
     ll 08
         lr 退出 == 1 08 ls 09
         跳过换行()
-        zt _rt_puti 01 tok_pos 02
-        zt _rt_putc 01 47 02
-        zt _rt_puti 01 tok_n 02
-        zt _rt_putc 01 10 02
-        lr tok_k[tok_pos] == 0 08 退出 = 1 09
+                        lr tok_k[tok_pos] == 0 08 退出 = 1 09
         lr 是关键字("tt") == 1 08
             解析函数()
             zz 0
