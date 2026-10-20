@@ -12,6 +12,13 @@ qj g_arr_vals[256]
 tt 主 01 path 02 -> u32 08
  g_var_count = 0
     g_arr_count = 0
+    tz plat zt _rt_platform 01 02
+    zt wx_set_var 01 03lin04, 3, 0 02
+    zt wx_set_var 01 03win04, 3, 0 02
+    zt wx_set_var 01 03hun04, 3, 0 02
+    lr plat == 1 08 zt wx_set_var 01 03lin04, 3, 1 02 09
+    lr plat == 2 08 zt wx_set_var 01 03win04, 3, 1 02 09
+    lr plat == 3 08 zt wx_set_var 01 03hun04, 3, 1 02 09
     tz plen 0
     ll 08
         tz ch fn_get_byte 01 path ht plen 02

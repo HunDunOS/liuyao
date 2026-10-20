@@ -1215,7 +1215,7 @@ static void emit_runtime(void) {
     }
     /* 模块模式下，别的模块也要调运行时 —— 所以运行时的符号必须导出 */
     fprintf(out, "\t.globl _rt_putc, _rt_puts, _rt_puti, _rt_cls, _rt_goto,"
-                 " _rt_scroll, _rt_oob, _rt_getc, _rt_getkey, _kernel_stack_top\n");
+                 " _rt_scroll, _rt_oob, _rt_getc, _rt_getkey, _kernel_stack_top, _rt_platform\n");
     /* 必须显式切回代码段：调用方可能刚写过 .bss（全局变量） */
     fprintf(out, "\n\t.section .text\n");
     fprintf(out, "# ---- 运行时：VGA 文本控制台(0xB8000) + COM1 串口 双路输出 ----\n");
@@ -1405,6 +1405,17 @@ static void emit_runtime(void) {
     em("pop esi"); em("pop ebx"); em("ret");
 
     fprintf(out, "\n.Loob_msg:\n\t.asciz \"\\n[越界] 数组下标超出范围，程序已停止\\n\"\n");
+
+    /* 平台检测：1=Linux 2=Windows 3=hundunOS */
+#ifdef __linux__
+    fprintf(out, "\n_rt_platform:\n\tmov eax, 1\n\tret\n");
+#elif _WIN32
+    fprintf(out, "\n_rt_platform:\n\tmov eax, 2\n\tret\n");
+#elif __hundun__
+    fprintf(out, "\n_rt_platform:\n\tmov eax, 3\n\tret\n");
+#else
+    fprintf(out, "\n_rt_platform:\n\tmov eax, 0\n\tret\n");
+#endif
 
     fprintf(out, "\n\t.section .bss\n\t.align 16\n_kernel_stack:\n\t.space 16384\n"
                  "_kernel_stack_top:\n");

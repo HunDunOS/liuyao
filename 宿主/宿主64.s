@@ -155,6 +155,12 @@ _rt_oob:
 	syscall
 
 # ── 图形一整套：宿主上全是空实现 ───────────────────────────────────────
+
+# ── 平台检测：1=Linux 2=Windows 3=hundunOS ──
+	.globl _rt_platform
+_rt_platform:
+	mov eax, 1
+	ret
 	.globl _gfx_init, _gfx_px, _gfx_fill, _gfx_frame, _gfx_fillblend
 	.globl _gfx_text, _gfx_num, _gfx_hex, _gfx_getpx, _gfx_getw, _gfx_geth
 	.globl _gfx_getfb, _gfx_getmem, _gfx_scrollup, _gfx_scrollrect
@@ -393,6 +399,8 @@ _input_buf:	.space 1024
 	.set fn__rt_putc, _rt_putc
 	.set fn__rt_puts, _rt_puts
 	.set fn__rt_puti, _rt_puti
+	.globl fn__rt_platform
+	.set fn__rt_platform, _rt_platform
 	.globl fn_fn_fh, fn_fn_sh, fn_fn_fl, fn_fn_sl
 	.set fn_fn_fh, fn_fh
 	.set fn_fn_sh, fn_sh
