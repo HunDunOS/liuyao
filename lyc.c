@@ -644,8 +644,8 @@ static void binop_emit(const char *op) {
         !strcmp(op, "<=") || !strcmp(op, ">") || !strcmp(op, ">=")) {
         em("cmp rax, rcx");
         const char *cc = !strcmp(op, "==") ? "e" : !strcmp(op, "!=") ? "ne" :
-                         !strcmp(op, "<") ? "l" : !strcmp(op, "<=") ? "le" :
-                         !strcmp(op, ">") ? "g" : "ge";
+                         !strcmp(op, "<") ? "b" : !strcmp(op, "<=") ? "be" :
+                         !strcmp(op, ">") ? "a" : "ae";
         em("set%s al", cc); em("movzx rax, al"); return;
     }
     if (!strcmp(op, "&&")) {
