@@ -164,6 +164,7 @@ tt 主 01 path 02 -> u32 08
         lr c1 == 67 08
             lr c2 == 109 08
                 tz loop_start cur_ip
+                tz cur_loop_type 1
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
@@ -196,6 +197,7 @@ tt 主 01 path 02 -> u32 08
         lr c1 == 108 08
             lr c2 == 108 08
                 tz while_start cur_ip
+                tz cur_loop_type 2
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
@@ -367,13 +369,61 @@ tt 主 01 path 02 -> u32 08
             zt wx_exec_line 01 src ht off, llen 02
         09
         lr jumped == 0 08
+            lr c1 == 108 08
+                lr c2 == 115 08
+                    tz brk_ip cur_ip ht 1
+                    tz brk_depth 1
+                    ll 08
+                        lz brk_ip lc 08 ls 09
+                        lr brk_depth == 0 08 ls 09
+                        tz brk_off g_offsets[brk_ip]
+                        tz bc1 fn_get_byte 01 src ht brk_off 02
+                        tz bc2 fn_get_byte 01 src ht brk_off ht 1 02
+                        lr bc1 == 67 08
+                            lr bc2 == 106 08 tz brk_depth brk_depth ht 1 09
+                            lr bc2 == 109 08 tz brk_depth brk_depth ht 1 09
+                        09
+                        lr bc1 == 108 08
+                            lr bc2 == 108 08 tz brk_depth brk_depth ht 1 09
+                        09
+                        lr bc1 == 67 08
+                            lr bc2 == 116 08
+                                tz brk_depth brk_depth hz 1
+                                lr brk_depth == 0 08
+                                    tz cur_ip brk_ip ht 1
+                                    tz jumped 1
+                                09
+                            09
+                        09
+                        lr bc1 == 108 08
+                            lr bc2 == 100 08
+                                tz brk_depth brk_depth hz 1
+                                lr brk_depth == 0 08
+                                    tz cur_ip brk_ip ht 1
+                                    tz jumped 1
+                                09
+                            09
+                        09
+                        tz brk_ip brk_ip ht 1
+                    09
+                09
+                lr c2 == 102 08
+                    lr cur_loop_type == 1 08 tz cur_ip loop_start 09
+                    lr cur_loop_type == 2 08 tz cur_ip while_start 09
+                    tz jumped 1
+                09
+            09
             lr c1 == 67 08
                 lr c2 == 116 08 tz cur_ip loop_start 09
                 lr c2 != 116 08 tz cur_ip cur_ip ht 1 09
             09
             lr c1 == 108 08
                 lr c2 == 100 08 tz cur_ip while_start 09
-                lr c2 != 100 08 tz cur_ip cur_ip ht 1 09
+                lr c2 != 100 08
+                    lr c2 != 115 08
+                        lr c2 != 102 08 tz cur_ip cur_ip ht 1 09
+                    09
+                09
             09
             lr c1 != 67 08
                 lr c1 != 108 08 tz cur_ip cur_ip ht 1 09
@@ -1619,7 +1669,10 @@ tt wx_eval 01 expr, elen 02 -> u32 08
                     lr nc == 122 08 tz is_wx 1 09
                     lr nc == 104 08 tz is_wx 1 09
                     lr nc == 108 08 tz is_wx 1 09
-                    lr nc == 109 08 tz is_wx 1 09
+                    lr nc == 102 08 tz is_wx 1 09
+                    lr nc == 115 08 tz is_wx 1 09
+                    lr nc == 114 08 tz is_wx 1 09
+                    lr nc == 100 08 tz is_wx 1 09
                     lr is_wx == 1 08
                         lr op == 43 08 tz result result ht cur_num 09
                         lr op == 45 08 tz result result hz cur_num 09
@@ -1630,11 +1683,17 @@ tt wx_eval 01 expr, elen 02 -> u32 08
                         lr op == 37 08
                             lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
                         09
+                        lr op == 38 08 tz result zt fn_and 01 result, cur_num 02 09
+                        lr op == 39 08 tz result zt fn_or 01 result, cur_num 02 09
+                        lr op == 40 08 tz result zt fn_xor 01 result, cur_num 02 09
                         lr nc == 116 08 tz op 43 09
                         lr nc == 122 08 tz op 45 09
                         lr nc == 104 08 tz op 42 09
                         lr nc == 108 08 tz op 47 09
-                        lr nc == 109 08 tz op 37 09
+                        lr nc == 102 08 tz op 37 09
+                        lr nc == 115 08 tz op 38 09
+                        lr nc == 114 08 tz op 39 09
+                        lr nc == 100 08 tz op 40 09
                         tz cur_num 0
                         tz i i ht 1
                         tz done 1
@@ -1692,6 +1751,9 @@ tt wx_eval 01 expr, elen 02 -> u32 08
                 lr op == 37 08
                     lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
                 09
+                lr op == 38 08 tz result zt fn_and 01 result, cur_num 02 09
+                lr op == 39 08 tz result zt fn_or 01 result, cur_num 02 09
+                lr op == 40 08 tz result zt fn_xor 01 result, cur_num 02 09
                 lr op == 60 08
                     tz left result
                     tz result 0
@@ -1748,6 +1810,9 @@ tt wx_eval 01 expr, elen 02 -> u32 08
     lr op == 37 08
         lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
     09
+    lr op == 38 08 tz result zt fn_and 01 result, cur_num 02 09
+    lr op == 39 08 tz result zt fn_or 01 result, cur_num 02 09
+    lr op == 40 08 tz result zt fn_xor 01 result, cur_num 02 09
     lr op == 60 08
         tz left result
         tz result 0

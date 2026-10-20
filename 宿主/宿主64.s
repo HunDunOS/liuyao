@@ -422,6 +422,9 @@ _input_buf:	.space 1024
 	.set fn_fn_read_stdin, fn_read_stdin
 	.set fn_fn_write_file, fn_write_file
 	.set fn_fn_mod, fn_mod
+	.set fn_fn_and, fn_and
+	.set fn_fn_or, fn_or
+	.set fn_fn_xor, fn_xor
 
 # ── fn_test() —— 测试用，返回42 ──────────────────────────────────
 	.globl fn_test
@@ -451,6 +454,39 @@ fn_mod:
 	xor rdx, rdx
 	idiv rcx
 	mov rax, rdx
+	leave
+	ret
+
+# ── fn_and(a, b) —— 位与 a & b ─────────────────────────────────
+	.globl fn_and
+fn_and:
+	push rbp
+	mov rbp, rsp
+	mov rax, [rbp+24]
+	mov rcx, [rbp+16]
+	and rax, rcx
+	leave
+	ret
+
+# ── fn_or(a, b) —— 位或 a | b ──────────────────────────────────
+	.globl fn_or
+fn_or:
+	push rbp
+	mov rbp, rsp
+	mov rax, [rbp+24]
+	mov rcx, [rbp+16]
+	or rax, rcx
+	leave
+	ret
+
+# ── fn_xor(a, b) —— 位异或 a ^ b ───────────────────────────────
+	.globl fn_xor
+fn_xor:
+	push rbp
+	mov rbp, rsp
+	mov rax, [rbp+24]
+	mov rcx, [rbp+16]
+	xor rax, rcx
 	leave
 	ret
 
