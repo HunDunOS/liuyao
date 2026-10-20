@@ -157,6 +157,11 @@ tt 主 01 path 02 -> u32 08
             09
         09
         lr c1 == 67 08
+            lr c2 == 106 08
+                zt wx_do_tj 01 src ht off ht 2, llen hz 2 02
+            09
+        09
+        lr c1 == 67 08
             lr c2 == 109 08
                 tz loop_start cur_ip
                 tz ci 0
@@ -1572,7 +1577,8 @@ tt wx_find_var 01 name, nlen 02 -> u32 08
             lz j nlen 08 ls 09
             tz c1 fn_get_byte 01 name ht j 02
             tz c2 fn_get_byte 01 g_var_names ht off ht j 02
-            lr c1 != c2 08 tz match 0 09
+            tz vdiff c1 hz c2
+            lr vdiff != 0 08 tz match 0 09
             tz j j ht 1
         09
         tz endc fn_get_byte 01 g_var_names ht off ht nlen 02
