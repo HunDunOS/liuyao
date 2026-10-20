@@ -401,6 +401,13 @@ _input_buf:	.space 1024
 	.set fn__rt_puti, _rt_puti
 	.globl fn__rt_platform
 	.set fn__rt_platform, _rt_platform
+	.globl fn__rt_getc, fn__rt_getkey, fn__rt_cls, fn__rt_goto, fn__rt_scroll, fn__rt_oob
+	.set fn__rt_getc, _rt_getc
+	.set fn__rt_getkey, _rt_getkey
+	.set fn__rt_cls, _rt_cls
+	.set fn__rt_goto, _rt_goto
+	.set fn__rt_scroll, _rt_scroll
+	.set fn__rt_oob, _rt_oob
 	.globl fn_fn_fh, fn_fn_sh, fn_fn_fl, fn_fn_sl
 	.set fn_fn_fh, fn_fh
 	.set fn_fn_sh, fn_sh

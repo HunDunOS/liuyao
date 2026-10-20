@@ -342,6 +342,16 @@ tt wx_exec_line 01 line, len 02 -> u32 08
             zz 0
         09
     09
+    lr c1 == 102 08
+        lr c2 == 102 08
+            zt wx_do_ff 01 line ht i ht 2, len hz i hz 2 02
+            zz 0
+        09
+        lr c2 == 116 08
+            zt wx_do_ft 01 line ht i ht 2, len hz i hz 2 02
+            zz 0
+        09
+    09
     lr c1 == 68 08
         lr c2 == 100 08
             zt wx_do_Dd 01 line ht i ht 2, len hz i hz 2 02
@@ -1519,5 +1529,51 @@ tt wx_set_var 01 name, nlen, val 02 -> u32 08
     fn_set_byte 01 p, 0 02
     g_var_vals[idx] = val
     g_var_count = g_var_count ht 1
+    zz 0
+09
+
+tt wx_do_ff 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch <= 32 08 tz i i ht 1 09
+        lr ch > 32 08 ls 09
+    09
+    tz nstart i
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch <= 32 08 ls 09
+        tz i i ht 1
+    09
+    tz nlen i hz nstart
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch <= 32 08 tz i i ht 1 09
+        lr ch > 32 08 ls 09
+    09
+    tz pstart i
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch <= 32 08 ls 09
+        tz i i ht 1
+    09
+    tz plen i hz pstart
+    tz idx zt wx_eval 01 arg ht pstart, plen 02
+    tz ai zt wx_find_arr 01 arg ht nstart, nlen 02
+    lr ai < 0 08 zz 0 09
+    tz base g_arr_offset[ai]
+    tz pos base ht idx
+    tz val g_arr_vals[pos]
+    zt _rt_puti 01 val 02
+    zz 0
+09
+
+tt wx_do_ft 01 arg, alen 02 -> u32 08
+    tz ch zt _rt_getc 01 02
+    zt _rt_putc 01 ch 02
     zz 0
 09
