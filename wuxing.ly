@@ -105,6 +105,38 @@ tt 主 01 path 02 -> u32 08
                 09
             09
         09
+        lr c1 == 108 08
+            lr c2 == 108 08
+                tz loop_start cur_ip
+                tz ci 0
+                ll 08
+                    lz ci llen 08 ls 09
+                    tz cc fn_get_byte 01 src ht off ht ci 02
+                    lr cc == 32 08 tz ci ci ht 1 09
+                    lr cc != 32 08 ls 09
+                09
+                tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                lr cond == 0 08
+                    tz skip_ip cur_ip ht 1
+                    tz found 0
+                    ll 08
+                        lz skip_ip lc 08 ls 09
+                        lr found == 1 08 ls 09
+                        tz soff g_offsets[skip_ip]
+                        tz sc1 fn_get_byte 01 src ht soff 02
+                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        lr sc1 == 108 08
+                            lr sc2 == 100 08
+                                tz cur_ip skip_ip ht 1
+                                tz jumped 1
+                                tz found 1
+                            09
+                        09
+                        tz skip_ip skip_ip ht 1
+                    09
+                09
+            09
+        09
         lr c1 == 88 08
             lr c2 == 106 08
                 tz ci 0
@@ -194,6 +226,12 @@ tt 主 01 path 02 -> u32 08
                 tz jumped 1
             09
         09
+        lr c1 == 108 08
+            lr c2 == 100 08
+                tz cur_ip loop_start
+                tz jumped 1
+            09
+        09
         lr c1 == 68 08
             lr c2 == 115 08
                 zz 0
@@ -207,8 +245,12 @@ tt 主 01 path 02 -> u32 08
                 lr c2 == 116 08 tz cur_ip loop_start 09
                 lr c2 != 116 08 tz cur_ip cur_ip ht 1 09
             09
+            lr c1 == 108 08
+                lr c2 == 100 08 tz cur_ip loop_start 09
+                lr c2 != 100 08 tz cur_ip cur_ip ht 1 09
+            09
             lr c1 != 67 08
-                tz cur_ip cur_ip ht 1
+                lr c1 != 108 08 tz cur_ip cur_ip ht 1 09
             09
         09
         tz jumped 0
