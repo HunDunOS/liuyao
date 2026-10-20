@@ -10,6 +10,12 @@ qj g_arr_size[32]
 qj g_arr_vals[256]
 qj if_taken
 qj while_start
+qj g_func_names[512]
+qj g_func_start[32]
+qj g_func_count
+qj g_ret_stack[16]
+qj g_ret_sp
+qj exec_mode
 
 tt 主 01 path 02 -> u32 08
  g_var_count = 0
@@ -76,6 +82,46 @@ tt 主 01 path 02 -> u32 08
     tz cur_ip 0
     tz loop_start 0
     tz jumped 0
+    tz g_func_count 0
+    tz g_ret_sp 0
+    tz exec_mode 0
+    tz fi 0
+    ll 08
+        lz fi lc 08 ls 09
+        tz foff g_offsets[fi]
+        tz fc1 0
+        tz fc2 0
+        lr fi < lc 08 tz fc1 fn_get_byte 01 src ht foff 02 09
+        lr fi < lc 08 tz fc2 fn_get_byte 01 src ht foff ht 1 02 09
+        lr fc1 == 100 08
+            lr fc2 == 116 08
+                tz fci 3
+                ll 08
+                    lz fci 64 08 ls 09
+                    tz fcc fn_get_byte 01 src ht foff ht fci 02
+                    lr fcc == 32 08 tz fci fci ht 1 09
+                    lr fcc != 32 08 ls 09
+                09
+                tz fname_idx g_func_count ht 4
+                tz fni 0
+                ll 08
+                    lz fni 15 08 ls 09
+                    tz fcc fn_get_byte 01 src ht foff ht fci ht fni 02
+                    lr fcc == 32 08 ls 09
+                    lr fcc == 10 08 ls 09
+                    lr fcc == 0 08 ls 09
+                    tz name_off fname_idx ht fni
+                    g_func_names[name_off] = fcc
+                    tz fni fni ht 1
+                09
+                tz name_off fname_idx ht fni
+                g_func_names[name_off] = 0
+                g_func_start[g_func_count] = fi ht 1
+                tz g_func_count g_func_count ht 1
+            09
+        09
+        tz fi fi ht 1
+    09
     ll 08
         lz cur_ip lc 08 ls 09
         tz off g_offsets[cur_ip]
@@ -85,6 +131,31 @@ tt 主 01 path 02 -> u32 08
         tz c1 fn_get_byte 01 src ht off 02
         tz c2 0
         lr llen > 1 08 tz c2 fn_get_byte 01 src ht off ht 1 02 09
+        lr c1 == 100 08
+            lr c2 == 116 08
+                lr exec_mode == 1 08
+                    tz g_ret_sp g_ret_sp hz 1
+                    tz cur_ip g_ret_stack[g_ret_sp]
+                    tz jumped 1
+                    tz exec_mode 0
+                09
+                lr exec_mode == 0 08
+                    tz nxt cur_ip ht 1
+                    ll 08
+                        lz nxt lc 08 ls 09
+                        tz nfo g_offsets[nxt]
+                        tz nc1 fn_get_byte 01 src ht nfo 02
+                        tz nc2 fn_get_byte 01 src ht nfo ht 1 02
+                        lr nc1 == 100 08
+                            lr nc2 == 116 08 ls 09
+                        09
+                        tz nxt nxt ht 1
+                    09
+                    tz cur_ip nxt
+                    tz jumped 1
+                09
+            09
+        09
         lr c1 == 67 08
             lr c2 == 109 08
                 tz loop_start cur_ip
