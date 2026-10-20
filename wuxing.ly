@@ -9,6 +9,7 @@ qj g_arr_offset[32]
 qj g_arr_size[32]
 qj g_arr_vals[256]
 qj if_taken
+qj while_start
 
 tt 主 01 path 02 -> u32 08
  g_var_count = 0
@@ -57,7 +58,17 @@ tt 主 01 path 02 -> u32 08
         tz c fn_get_byte 01 src ht pos 02
         lr c == 0 08 ls 09
         lr c == 10 08
-            g_offsets[lc] = pos ht 1
+            tz npos pos ht 1
+            ll 08
+                tz nc fn_get_byte 01 src ht npos 02
+                lr nc == 0 08 ls 09
+                lr nc == 32 08 tz npos npos ht 1 09
+                lr nc == 9 08 tz npos npos ht 1 09
+                lr nc != 32 08
+                    lr nc != 9 08 ls 09
+                09
+            09
+            g_offsets[lc] = npos
             tz lc lc ht 1
         09
         tz pos pos ht 1
@@ -108,7 +119,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 108 08
             lr c2 == 108 08
-                tz loop_start cur_ip
+                tz while_start cur_ip
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
@@ -267,7 +278,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 108 08
             lr c2 == 100 08
-                tz cur_ip loop_start
+                tz cur_ip while_start
                 tz jumped 1
             09
         09
@@ -285,7 +296,7 @@ tt 主 01 path 02 -> u32 08
                 lr c2 != 116 08 tz cur_ip cur_ip ht 1 09
             09
             lr c1 == 108 08
-                lr c2 == 100 08 tz cur_ip loop_start 09
+                lr c2 == 100 08 tz cur_ip while_start 09
                 lr c2 != 100 08 tz cur_ip cur_ip ht 1 09
             09
             lr c1 != 67 08
