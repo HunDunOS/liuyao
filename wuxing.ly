@@ -647,12 +647,16 @@ tt wx_do_sj 01 arg, alen 02 -> u32 08
         lr ch == 32 08 tz i i ht 1 09
         lr ch != 32 08 ls 09
     09
+    tz fch fn_get_byte 01 arg ht i 02
+    lr fch == 34 08 tz i i ht 1 09
     tz ci 0
     ll 08
-        lz ci alen hz i 08 ls 09
-        tz ch fn_get_byte 01 arg ht i ht ci 02
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 34 08 ls 09
         fn_set_byte 01 cmd_buf ht ci, ch 02
         tz ci ci ht 1
+        tz i i ht 1
     09
     fn_set_byte 01 cmd_buf ht ci, 0 02
     zt fn_system 01 cmd_buf 02
@@ -953,8 +957,8 @@ tt wx_eval 01 expr, elen 02 -> u32 08
     ll 08
         lz i elen 08 ls 09
         tz ch fn_get_byte 01 expr ht i 02
-        lr ch == 32 08 lf 09
         tz done 0
+        lr ch == 32 08 tz done 1 09
         tz is_d 0
         lr ch > 47 08
             lr ch < 58 08 tz is_d 1 09
@@ -1077,17 +1081,26 @@ tt wx_eval 01 expr, elen 02 -> u32 08
             09
             lr ch == 60 08
                 tz ni i ht 1
-                lr ni < elen 08
-                    tz nc fn_get_byte 01 expr ht ni 02
-                    lr nc == 61 08 tz op 44 09
-                    lr nc == 61 08 tz i i ht 1 09
+                tz nc 32
+                lr ni < elen 08 tz nc fn_get_byte 01 expr ht ni 02 09
+                lr nc == 61 08
+                    tz op 44
+                    tz i i ht 1
                 09
+                lr nc != 61 08 tz op 60 09
             09
-            lr ch != 60 08
-                lr ch != 62 08
-                    lr ch != 61 08 tz op ch 09
+            lr ch == 62 08
+                tz ni i ht 1
+                tz nc 32
+                lr ni < elen 08 tz nc fn_get_byte 01 expr ht ni 02 09
+                lr nc == 61 08
+                    tz op 46
+                    tz i i ht 1
                 09
+                lr nc != 61 08 tz op 62 09
             09
+            lr ch == 61 08 tz op 61 09
+            tz cur_num 0
         09
         tz i i ht 1
     09
