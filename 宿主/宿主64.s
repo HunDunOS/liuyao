@@ -395,10 +395,12 @@ _input_buf:	.space 1024
 	.section .text
 
 # ── 小链接别名（fn_前缀）──────────────────────────────────────
-	.globl fn__rt_putc, fn__rt_puts, fn__rt_puti
+	.globl fn__rt_putc, fn__rt_puts, fn__rt_puti, fn__rt_exit, fn__rt_sleep
 	.set fn__rt_putc, _rt_putc
 	.set fn__rt_puts, _rt_puts
 	.set fn__rt_puti, _rt_puti
+	.set fn__rt_exit, _rt_exit
+	.set fn__rt_sleep, _rt_sleep
 	.globl fn__rt_platform
 	.set fn__rt_platform, _rt_platform
 	.globl fn__rt_getc, fn__rt_getkey, fn__rt_cls, fn__rt_goto, fn__rt_scroll, fn__rt_oob
@@ -524,4 +526,37 @@ fn_fn_set_byte:
 	mov rax, [rbp+24]
 	mov [rax], cl
 	pop rbp
+	ret
+
+# ── _rt_exit(code) —— 退出进程 ─────────────────────────────────────────────
+	.globl _rt_exit
+_rt_exit:
+	push rbp
+	mov rbp, rsp
+	mov rdi, [rbp+16]
+	mov rax, 60
+	syscall
+	pop rbp
+	ret
+
+# ── _rt_sleep(ms) —— 休眠毫秒 ──────────────────────────────────────────────
+	.globl _rt_sleep
+_rt_sleep:
+	push rbp
+	mov rbp, rsp
+	sub rsp, 16
+	mov rax, [rbp+16]
+	mov rcx, 1000
+	xor rdx, rdx
+	div rcx
+	mov [rbp-16], rax
+	mov rax, rdx
+	mov rcx, 1000000
+	mul rcx
+	mov [rbp-8], rax
+	lea rdi, [rbp-16]
+	xor rsi, rsi
+	mov rax, 35
+	syscall
+	leave
 	ret

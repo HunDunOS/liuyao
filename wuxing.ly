@@ -511,6 +511,7 @@ tt wx_do_jm 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_jd 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -565,6 +566,7 @@ tt wx_do_tj 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_tm 01 arg, alen 02 -> u32 08
+    zz 0
     zt wx_do_tj 01 arg, alen 02
     zz 0
 09
@@ -604,6 +606,7 @@ tt wx_do_shell 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_jr 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -643,6 +646,7 @@ tt wx_do_jr 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_sd 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -687,6 +691,7 @@ tt wx_do_sd 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_cmp 01 arg, alen, mode 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -827,6 +832,7 @@ tt wx_do_Cd 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_rf 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -862,6 +868,7 @@ tt wx_do_rf 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_wf 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -906,6 +913,16 @@ tt wx_do_wf 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qj 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz code zt wx_eval 01 arg ht i, alen hz i 02
+    zt _rt_exit 01 code 02
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -1002,6 +1019,7 @@ tt wx_do_Qj 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qm 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -1211,6 +1229,16 @@ tt wx_do_Dd 01 arg, alen 02 -> u32 08
     ll 08
         lz i alen 08 ls 09
         tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz ms zt wx_eval 01 arg ht i, alen hz i 02
+    zt _rt_sleep 01 ms 02
+    zz 0
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
         lr ch <= 32 08 tz i i ht 1 09
         lr ch > 32 08 ls 09
     09
@@ -1225,6 +1253,7 @@ tt wx_do_Dd 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_dt 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -1245,6 +1274,7 @@ tt wx_do_dt 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_dj 01 arg, alen 02 -> u32 08
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
@@ -1386,6 +1416,16 @@ tt wx_do_ds 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_dd 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz val zt wx_eval 01 arg ht i, alen hz i 02
+    zt _rt_puti 01 val 02
+    zz 0
     tz i 0
     ll 08
         lz i alen 08 ls 09
