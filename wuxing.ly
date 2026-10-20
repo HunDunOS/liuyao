@@ -1429,6 +1429,7 @@ tt wx_eval 01 expr, elen 02 -> u32 08
     tz result 0
     tz cur_num 0
     tz op 43
+    tz left 0
     ll 08
         lz i elen 08 ls 09
         tz ch fn_get_byte 01 expr ht i 02
@@ -1508,6 +1509,13 @@ tt wx_eval 01 expr, elen 02 -> u32 08
         09
         lr done == 0 08
             lr ch != 32 08
+                lr ch == 61 08
+                    tz ni i ht 1
+                    lr ni < elen 08
+                        tz nc fn_get_byte 01 expr ht ni 02
+                        lr nc == 61 08 tz i i ht 1 09
+                    09
+                09
                 lr op == 43 08 tz result result ht cur_num 09
                 lr op == 45 08 tz result result hz cur_num 09
                 lr op == 42 08 tz result result hh cur_num 09
@@ -1517,7 +1525,48 @@ tt wx_eval 01 expr, elen 02 -> u32 08
                 lr op == 37 08
                     lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
                 09
+                lr op == 60 08
+                    tz left result
+                    tz result 0
+                    lr left < cur_num 08 tz result 1 09
+                09
+                lr op == 62 08
+                    tz left result
+                    tz result 0
+                    lr left > cur_num 08 tz result 1 09
+                09
+                lr op == 61 08
+                    tz left result
+                    tz result 0
+                    lr left == cur_num 08 tz result 1 09
+                09
+                lr op == 44 08
+                    tz left result
+                    tz result 0
+                    lr left <= cur_num 08 tz result 1 09
+                09
+                lr op == 46 08
+                    tz left result
+                    tz result 0
+                    lr left >= cur_num 08 tz result 1 09
+                09
                 tz op ch
+                lr ch == 60 08
+                    tz ni i ht 1
+                    lr ni < elen 08
+                        tz nc fn_get_byte 01 expr ht ni 02
+                        lr nc == 61 08 tz op 44 09
+                        lr nc == 61 08 tz i i ht 1 09
+                    09
+                09
+                lr ch == 62 08
+                    tz ni i ht 1
+                    lr ni < elen 08
+                        tz nc fn_get_byte 01 expr ht ni 02
+                        lr nc == 61 08 tz op 46 09
+                        lr nc == 61 08 tz i i ht 1 09
+                    09
+                09
                 tz cur_num 0
             09
         09
@@ -1531,6 +1580,31 @@ tt wx_eval 01 expr, elen 02 -> u32 08
     09
     lr op == 37 08
         lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
+    09
+    lr op == 60 08
+        tz left result
+        tz result 0
+        lr left < cur_num 08 tz result 1 09
+    09
+    lr op == 62 08
+        tz left result
+        tz result 0
+        lr left > cur_num 08 tz result 1 09
+    09
+    lr op == 61 08
+        tz left result
+        tz result 0
+        lr left == cur_num 08 tz result 1 09
+    09
+    lr op == 44 08
+        tz left result
+        tz result 0
+        lr left <= cur_num 08 tz result 1 09
+    09
+    lr op == 46 08
+        tz left result
+        tz result 0
+        lr left >= cur_num 08 tz result 1 09
     09
     zz result
 09
