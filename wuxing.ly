@@ -256,6 +256,11 @@ tt 主 01 path 02 -> u32 08
                                 tz jumped 1
                                 tz found 1
                             09
+                            lr sc2 == 115 08
+                                tz cur_ip skip_ip
+                                tz jumped 1
+                                tz found 1
+                            09
                             lr sc2 == 116 08
                                 tz cur_ip skip_ip ht 1
                                 tz jumped 1
@@ -426,48 +431,31 @@ tt wx_exec_line 01 line, len 02 -> u32 08
             zz 0
         09
         lr c2 == 109 08
-            zt wx_do_tm 01 line ht i ht 2, len hz i hz 2 02
+            zt wx_do_tj 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
         lr c2 == 115 08
-            zt wx_do_rf 01 line ht i ht 2, len hz i hz 2 02
-            zz 0
-        09
-        lr c2 == 100 08
-            zt wx_do_wf 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
     09
     lr c1 == 115 08
-        zt _rt_puts 01 03[sblk] c2=04 02
-        zt _rt_puti 01 c2 02
-        zt _rt_putc 01 10 02
-        lr c2 == 104 08
+        lr c2 == 106 08
             zt wx_do_shell 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
-        lr c2 == 106 08
-            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 0 02
+        lr c2 == 104 08
+            zt wx_do_shell 01 03ls -la04, 6 02
             zz 0
         09
         lr c2 == 109 08
-            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 1 02
+            zt wx_do_shell 01 03env04, 3 02
             zz 0
         09
         lr c2 == 115 08
-            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 2 02
+            zt wx_do_shell 01 03date +%s04, 8 02
             zz 0
         09
         lr c2 == 116 08
-            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 3 02
-            zz 0
-        09
-        lr c2 == 100 08
-            zt wx_do_sd 01 line ht i ht 2, len hz i hz 2 02
-            zz 0
-        09
-        lr c2 == 116 08
-            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 3 02
             zz 0
         09
     09
@@ -605,6 +593,7 @@ tt wx_do_jm 01 arg, alen 02 -> u32 08
     09
     tz val wx_eval 01 arg ht i, alen hz i 02
     zt _rt_puti 01 val 02
+    zt _rt_putc 01 10 02
     zz 0
 09
 
@@ -1884,5 +1873,114 @@ tt wx_do_ff 01 arg, alen 02 -> u32 08
 tt wx_do_ft 01 arg, alen 02 -> u32 08
     tz ch zt _rt_getc 01 02
     zt _rt_putc 01 ch 02
+    zz 0
+09
+
+tt wx_do_Qget 01 arg, alen 02 -> u32 08
+    tz ci 0
+    fn_set_byte 01 cmd_buf ht ci, 99 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 117 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 114 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 108 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 45 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 115 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    tz j 0
+    ll 08
+        lz j alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht j 02
+        lr ch <= 32 08 tz j j ht 1 09
+        lr ch > 32 08 ls 09
+    09
+    ll 08
+        lz j alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht j 02
+        fn_set_byte 01 cmd_buf ht ci, ch 02
+        tz ci ci ht 1
+        tz j j ht 1
+    09
+    fn_set_byte 01 cmd_buf ht ci, 0 02
+    zt fn_system 01 cmd_buf 02
+    zz 0
+09
+
+tt wx_do_Qpost 01 arg, alen 02 -> u32 08
+    tz ci 0
+    fn_set_byte 01 cmd_buf ht ci, 99 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 117 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 114 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 108 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 45 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 88 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 80 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 79 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 83 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 84 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    tz j 0
+    ll 08
+        lz j alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht j 02
+        fn_set_byte 01 cmd_buf ht ci, ch 02
+        tz ci ci ht 1
+        tz j j ht 1
+    09
+    fn_set_byte 01 cmd_buf ht ci, 0 02
+    zt fn_system 01 cmd_buf 02
+    zz 0
+09
+
+tt wx_do_Qdl 01 arg, alen 02 -> u32 08
+    tz ci 0
+    fn_set_byte 01 cmd_buf ht ci, 99 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 117 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 114 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 108 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 45 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 111 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 32 02
+    tz ci ci ht 1
+    tz j 0
+    ll 08
+        lz j alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht j 02
+        fn_set_byte 01 cmd_buf ht ci, ch 02
+        tz ci ci ht 1
+        tz j j ht 1
+    09
+    fn_set_byte 01 cmd_buf ht ci, 0 02
+    zt fn_system 01 cmd_buf 02
     zz 0
 09
