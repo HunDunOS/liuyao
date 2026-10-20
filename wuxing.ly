@@ -369,64 +369,18 @@ tt 主 01 path 02 -> u32 08
             zt wx_exec_line 01 src ht off, llen 02
         09
         lr jumped == 0 08
-            lr c1 == 108 08
-                lr c2 == 115 08
-                    tz brk_ip cur_ip ht 1
-                    tz brk_depth 1
-                    ll 08
-                        lz brk_ip lc 08 ls 09
-                        lr brk_depth == 0 08 ls 09
-                        tz brk_off g_offsets[brk_ip]
-                        tz bc1 fn_get_byte 01 src ht brk_off 02
-                        tz bc2 fn_get_byte 01 src ht brk_off ht 1 02
-                        lr bc1 == 67 08
-                            lr bc2 == 106 08 tz brk_depth brk_depth ht 1 09
-                            lr bc2 == 109 08 tz brk_depth brk_depth ht 1 09
-                        09
-                        lr bc1 == 108 08
-                            lr bc2 == 108 08 tz brk_depth brk_depth ht 1 09
-                        09
-                        lr bc1 == 67 08
-                            lr bc2 == 116 08
-                                tz brk_depth brk_depth hz 1
-                                lr brk_depth == 0 08
-                                    tz cur_ip brk_ip ht 1
-                                    tz jumped 1
-                                09
-                            09
-                        09
-                        lr bc1 == 108 08
-                            lr bc2 == 100 08
-                                tz brk_depth brk_depth hz 1
-                                lr brk_depth == 0 08
-                                    tz cur_ip brk_ip ht 1
-                                    tz jumped 1
-                                09
-                            09
-                        09
-                        tz brk_ip brk_ip ht 1
-                    09
-                09
-                lr c2 == 102 08
-                    lr cur_loop_type == 1 08 tz cur_ip loop_start 09
-                    lr cur_loop_type == 2 08 tz cur_ip while_start 09
-                    tz jumped 1
-                09
-            09
             lr c1 == 67 08
                 lr c2 == 116 08 tz cur_ip loop_start 09
                 lr c2 != 116 08 tz cur_ip cur_ip ht 1 09
             09
             lr c1 == 108 08
                 lr c2 == 100 08 tz cur_ip while_start 09
-                lr c2 != 100 08
-                    lr c2 != 115 08
-                        lr c2 != 102 08 tz cur_ip cur_ip ht 1 09
-                    09
-                09
+                lr c2 != 100 08 tz cur_ip cur_ip ht 1 09
             09
             lr c1 != 67 08
-                lr c1 != 108 08 tz cur_ip cur_ip ht 1 09
+                lr c1 != 108 08
+                    lr c1 != 68 08 tz cur_ip cur_ip ht 1 09
+                09
             09
         09
         tz jumped 0
@@ -457,7 +411,7 @@ tt wx_exec_line 01 line, len 02 -> u32 08
             zt wx_do_jm 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
-        lr c2 == 100 08
+        lr c2 == 115 08
             zt wx_do_jd 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
@@ -485,6 +439,9 @@ tt wx_exec_line 01 line, len 02 -> u32 08
         09
     09
     lr c1 == 115 08
+        zt _rt_puts 01 03[sblk] c2=04 02
+        zt _rt_puti 01 c2 02
+        zt _rt_putc 01 10 02
         lr c2 == 104 08
             zt wx_do_shell 01 line ht i ht 2, len hz i hz 2 02
             zz 0
@@ -499,6 +456,10 @@ tt wx_exec_line 01 line, len 02 -> u32 08
         09
         lr c2 == 115 08
             zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 2 02
+            zz 0
+        09
+        lr c2 == 116 08
+            zt wx_do_cmp 01 line ht i ht 2, len hz i hz 2, 3 02
             zz 0
         09
         lr c2 == 100 08
@@ -555,7 +516,7 @@ tt wx_exec_line 01 line, len 02 -> u32 08
         09
     09
     lr c1 == 67 08
-        lr c2 == 100 08
+        lr c2 == 115 08
             zt wx_do_Cd 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
@@ -571,7 +532,7 @@ tt wx_exec_line 01 line, len 02 -> u32 08
         09
     09
     lr c1 == 68 08
-        lr c2 == 100 08
+        lr c2 == 116 08
             zt wx_do_Dd 01 line ht i ht 2, len hz i hz 2 02
             zz 0
         09
