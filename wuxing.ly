@@ -8,6 +8,7 @@ qj g_arr_names[1024]
 qj g_arr_offset[32]
 qj g_arr_size[32]
 qj g_arr_vals[256]
+qj if_taken
 
 tt 主 01 path 02 -> u32 08
  g_var_count = 0
@@ -139,6 +140,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 88 08
             lr c2 == 106 08
+                tz if_taken 0
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
@@ -147,7 +149,38 @@ tt 主 01 path 02 -> u32 08
                     lr cc != 32 08 ls 09
                 09
                 tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                lr cond != 0 08
+                    tz if_taken 1
+                09
                 lr cond == 0 08
+                    tz skip_ip cur_ip ht 1
+                    tz found 0
+                    ll 08
+                        lz skip_ip lc 08 ls 09
+                        lr found == 1 08 ls 09
+                        tz soff g_offsets[skip_ip]
+                        tz sc1 fn_get_byte 01 src ht soff 02
+                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        lr sc1 == 88 08
+                            lr sc2 == 109 08
+                                tz cur_ip skip_ip
+                                tz jumped 1
+                                tz found 1
+                            09
+                            lr sc2 == 116 08
+                                tz cur_ip skip_ip ht 1
+                                tz jumped 1
+                                tz found 1
+                            09
+                        09
+                        tz skip_ip skip_ip ht 1
+                    09
+                09
+            09
+        09
+        lr c1 == 88 08
+            lr c2 == 109 08
+                lr if_taken == 1 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
@@ -166,35 +199,41 @@ tt 主 01 path 02 -> u32 08
                         tz skip_ip skip_ip ht 1
                     09
                 09
-            09
-        09
-        lr c1 == 88 08
-            lr c2 == 109 08
-                tz ci 0
-                ll 08
-                    lz ci llen 08 ls 09
-                    tz cc fn_get_byte 01 src ht off ht ci 02
-                    lr cc == 32 08 tz ci ci ht 1 09
-                    lr cc != 32 08 ls 09
-                09
-                tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
-                lr cond != 0 08
-                    tz skip_ip cur_ip ht 1
-                    tz found 0
+                lr if_taken == 0 08
+                    tz ci 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
-                        lr found == 1 08 ls 09
-                        tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
-                        lr sc1 == 88 08
-                            lr sc2 == 116 08
-                                tz cur_ip skip_ip ht 1
-                                tz jumped 1
-                                tz found 1
+                        lz ci llen 08 ls 09
+                        tz cc fn_get_byte 01 src ht off ht ci 02
+                        lr cc == 32 08 tz ci ci ht 1 09
+                        lr cc != 32 08 ls 09
+                    09
+                    tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                    lr cond != 0 08
+                        tz if_taken 1
+                    09
+                    lr cond == 0 08
+                        tz skip_ip cur_ip ht 1
+                        tz found 0
+                        ll 08
+                            lz skip_ip lc 08 ls 09
+                            lr found == 1 08 ls 09
+                            tz soff g_offsets[skip_ip]
+                            tz sc1 fn_get_byte 01 src ht soff 02
+                            tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                            lr sc1 == 88 08
+                                lr sc2 == 109 08
+                                    tz cur_ip skip_ip
+                                    tz jumped 1
+                                    tz found 1
+                                09
+                                lr sc2 == 116 08
+                                    tz cur_ip skip_ip ht 1
+                                    tz jumped 1
+                                    tz found 1
+                                09
                             09
+                            tz skip_ip skip_ip ht 1
                         09
-                        tz skip_ip skip_ip ht 1
                     09
                 09
             09
