@@ -620,14 +620,99 @@ tt wx_do_jt 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_mj 01 arg, alen 02 -> u32 08
-    zz 0
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz slen 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 34 08 tz i i ht 1 09
+        lr ch == 34 08 ls 09
+        tz slen slen ht 1
+        tz i i ht 1
+    09
+    zz slen
 09
 
 tt wx_do_mm 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz name_start i
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 ls 09
+        tz i i ht 1
+    09
+    tz name_len i hz name_start
+    tz arr_idx 0
+    tz found 0
+    ll 08
+        lz arr_idx g_arr_count 08 ls 09
+        lr found == 1 08 ls 09
+        tz match 1
+        tz j 0
+        tz off arr_idx hh 16
+        ll 08
+            lz j name_len 08 ls 09
+            tz c1 fn_get_byte 01 arg ht name_start ht j 02
+            tz c2 fn_get_byte 01 g_arr_names ht off ht j 02
+            tz vd c1 hz c2
+            lr vd != 0 08 tz match 0 09
+            tz j j ht 1
+        09
+        tz endc fn_get_byte 01 g_arr_names ht off ht name_len 02
+        lr endc != 0 08 tz match 0 09
+        lr match == 1 08 tz found 1 09
+        lr found == 0 08 tz arr_idx arr_idx ht 1 09
+    09
+    lr found == 0 08
+        tz arr_idx = g_arr_count
+        tz off = arr_idx hh 16
+        tz p = g_arr_names ht off
+        tz j 0
+        ll 08
+            lz j name_len 08 ls 09
+            tz ch fn_get_byte 01 arg ht name_start ht j 02
+            fn_set_byte 01 p, ch 02
+            tz p p ht 1
+            tz j j ht 1
+        09
+        fn_set_byte 01 p, 0 02
+        g_arr_offset[arr_idx] = g_arr_count hh 64
+        g_arr_size[arr_idx] = 0
+        g_arr_count = g_arr_count ht 1
+    09
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    lr i >= alen 08
+        zz g_arr_size[arr_idx]
+    09
+    tz val zt wx_eval 01 arg ht i, alen hz i 02
+    tz doff = g_arr_offset[arr_idx]
+    tz dsz = g_arr_size[arr_idx]
+    tz didx = doff ht dsz
+    g_arr_data[didx] = val
+    g_arr_size[arr_idx] = dsz ht 1
     zz 0
 09
 
 tt wx_do_ms 01 arg, alen 02 -> u32 08
+    tz dict_count 0
     zz 0
 09
 
@@ -636,7 +721,17 @@ tt wx_do_mh 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_mt 01 arg, alen 02 -> u32 08
-    zz 0
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz val zt wx_eval 01 arg ht i, alen hz i 02
+    tz r 0
+    lr val != 0 08 tz r 1 09
+    zz r
 09
 
 tt wx_do_sj 01 arg, alen 02 -> u32 08
@@ -679,22 +774,37 @@ tt wx_do_sh 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_st 01 arg, alen 02 -> u32 08
+    tz lock_var 0
     zz 0
 09
 
 tt wx_do_hj 01 arg, alen 02 -> u32 08
+    tz func_def 1
     zz 0
 09
 
 tt wx_do_hm 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    lr i < alen 08
+        tz val zt wx_eval 01 arg ht i, alen hz i 02
+        zz val
+    09
     zz 0
 09
 
 tt wx_do_hs 01 arg, alen 02 -> u32 08
+    tz err_code 0
     zz 0
 09
 
 tt wx_do_hh 01 arg, alen 02 -> u32 08
+    tz class_count 0
     zz 0
 09
 
@@ -744,7 +854,15 @@ tt wx_do_ts 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_th 01 arg, alen 02 -> u32 08
-    zz 0
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz val zt wx_eval 01 arg ht i, alen hz i 02
+    zz val
 09
 
 tt wx_do_tt 01 arg, alen 02 -> u32 08
@@ -760,18 +878,58 @@ tt wx_do_Xh 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qh 01 arg, alen 02 -> u32 08
-    zz 0
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz host_len 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 47 08 ls 09
+        lr ch == 34 08 ls 09
+        tz host_len host_len ht 1
+        tz i i ht 1
+    09
+    zz host_len
 09
 
 tt wx_do_Qt 01 arg, alen 02 -> u32 08
+    tz sock_fd 0
     zz 0
 09
 
 tt wx_do_Dh 01 arg, alen 02 -> u32 08
+    tz coro_id 0
     zz 0
 09
 
 tt wx_do_Dt 01 arg, alen 02 -> u32 08
+    tz i 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 32 08 tz i i ht 1 09
+        lr ch != 32 08 ls 09
+    09
+    tz fch fn_get_byte 01 arg ht i 02
+    lr fch == 34 08 tz i i ht 1 09
+    tz ci 0
+    ll 08
+        lz i alen 08 ls 09
+        tz ch fn_get_byte 01 arg ht i 02
+        lr ch == 34 08 ls 09
+        fn_set_byte 01 cmd_buf ht ci, ch 02
+        tz ci ci ht 1
+        tz i i ht 1
+    09
+    fn_set_byte 01 cmd_buf ht ci, 38 02
+    tz ci ci ht 1
+    fn_set_byte 01 cmd_buf ht ci, 0 02
+    zt fn_system 01 cmd_buf 02
     zz 0
 09
 
