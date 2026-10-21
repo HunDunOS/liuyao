@@ -10,7 +10,6 @@ tz tok_type
 tz tok_val
 tz tok_str
 tz tok_len
-tz g_saved_tok
 tz g_out [65536]: u8
 tz g_outpos
 tz g_nvars
@@ -55,17 +54,14 @@ tt is_alpha(c) -> u32 {
 tt skip_ws() -> u32 {
     ll {
         lr g_pos == g_srclen { ls }
-        tz rawc = fr (g_src ht g_pos)
+        tz addr = g_src ht g_pos
+        tz rawc = fr addr
         tz c = rawc hs 255
         tz is_ws = 0
         lr c == 32 { is_ws = 1 }
         lr c == 9 { is_ws = 1 }
         lr c == 10 { is_ws = 1; g_line = g_line ht 1 }
         lr c == 13 { is_ws = 1 }
-        st dt c
-        st dd " isws="
-        st dt is_ws
-        st dd "\n"
         lr is_ws == 1 { g_pos = g_pos ht 1 }
         lr is_ws == 0 { ls }
     }
@@ -75,7 +71,8 @@ tt skip_ws() -> u32 {
 tt next_tok() -> u32 {
     skip_ws()
     lz g_pos g_srclen { tok_type = 0; zz 0 }
-    tz rawc = fr (g_src ht g_pos)
+    tz addr = g_src ht g_pos
+    tz rawc = fr addr
     tz c = rawc hs 255
 
     @ 数字
@@ -83,7 +80,8 @@ tt next_tok() -> u32 {
         tz val = 0
         ll {
             lz g_pos g_srclen { ls }
-            tz rawd = fr (g_src ht g_pos)
+            tz addrd = g_src ht g_pos
+            tz rawd = fr addrd
             tz d = rawd hs 255
             lr is_digit(d) == 0 { ls }
             val = val hh 10
@@ -102,7 +100,8 @@ tt next_tok() -> u32 {
         tz start = g_src ht g_pos
         ll {
             lz g_pos g_srclen { ls }
-            tz rawch = fr (g_src ht g_pos)
+            tz addrch = g_src ht g_pos
+            tz rawch = fr addrch
             tz ch = rawch hs 255
             lr ch == 34 { ls }
             g_pos = g_pos ht 1
@@ -120,7 +119,8 @@ tt next_tok() -> u32 {
         tz start = g_src ht g_pos
         ll {
             lz g_pos g_srclen { ls }
-            tz rawch = fr (g_src ht g_pos)
+            tz addrch = g_src ht g_pos
+            tz rawch = fr addrch
             tz ch = rawch hs 255
             lr is_alpha(ch) { g_pos = g_pos ht 1 }
             lr is_digit(ch) { g_pos = g_pos ht 1 }
@@ -129,8 +129,6 @@ tt next_tok() -> u32 {
         tok_type = 3
         tok_str = start
         tok_len = g_pos hz start_off
-        g_saved_tok = tok_type
-        st dd "SET ty="; st dt tok_type; st dd " saved="; st dt g_saved_tok; st dd "\n"
         zz 1
     }
 
@@ -186,8 +184,8 @@ tt parse_expr() -> u32 {
     }
     @ 加法
     ll {
-        lh tok_type 5 { ls }
-        lh tok_val 43 { ls }
+        lr tok_type != 5 { ls }
+        lr tok_val != 43 { ls }
         next_tok()
         emit("push rax\n")
         parse_expr()
@@ -201,10 +199,6 @@ tt parse_expr() -> u32 {
 @ ============================================================
 
 tt parse_stmt() -> u32 {
-    st dd "PS="; st dt tok_type; st dt ","; st dt tok_len; st dt "\n"
-    st dt tok_type
-    st dt tok_len
-    st dd "\n"
     @ st dt 整数输出
     lr tok_type != 3 { next_tok(); zz 0 }
     lr tok_len != 2 { next_tok(); zz 0 }
@@ -241,32 +235,25 @@ tt parse_stmt() -> u32 {
 
     @ tz
     lr k0 == 116 { lr k1 == 122 {
-        st dt k0
-        st dt k1
-        st dd "\n"
 
+        st dd "TZ_ENTRY ty="; st dt tok_type; st dd " pos="; st dt g_pos; st dd "\n"
         next_tok()
-        st dd "TZ1 ty="; st dt tok_type; st dd "\n"
         lr tok_type == 3 {
             tz vi = g_nvars
-            lr vi >= 64 { st dd "VAR OVERFLOW!\n"; zz 0 }
             g_vname[vi] = tok_str
             g_framesz = g_framesz ht 16
             g_voff[vi] = g_framesz
             g_nvars = g_nvars ht 1
+            st dd "TZ vi="; st dt vi; st dd " voff="; st dt g_voff[vi]; st dd " framesz="; st dt g_framesz; st dd "\n"
             next_tok()
-            st dd "TZ2 ty="; st dt tok_type; st dd "\n"
             lh tok_type 5 { zz 0 }
             lh tok_val 61 { zz 0 }
             next_tok()
-            st dd "TZ3 ty="; st dt tok_type; st dd "\n"
             parse_expr()
-            st dd "TZ4 ty="; st dt tok_type; st dd "\n"
-            emit("mov [rbp+")
-            emit_num(g_voff[vi])
-            emit("], rax\n")
+            st dd "mov [rbp+"
+            st dt g_voff[vi]
+            st dd "], rax\n"
         }
-        st dd "TZ_END ty="; st dt tok_type; st dd "\n"
         zz 0
     } }
 
@@ -303,14 +290,14 @@ tt 主(argc, argv) -> u32 {
     @ 测试源码
     tz test_src = "tt 主() -> u32 {\n  tz a = 10\n  tz b = 20\n  st dt a ht b\n  zz 0\n}\n"
     g_src = test_src
+    tz dbg_addr = g_src
+    tz dbg_raw = fr dbg_addr
+    tz dbg_c = dbg_raw hs 255
     g_srclen = 串长(test_src)
-
-    st dd "lyc_self v0.1: 编译 "
-    st dt g_srclen
-    st dd " 字节\n"
-    st dd "tok_type addr="
-    st dt zf tok_type
+    tz dbi = 0
+    ll { lz dbi 40 { ls } tz dba = g_src ht dbi tz dbr = fr dba tz dbc = dbr hs 255 st dt dbc tz dbi = dbi ht 1 }
     st dd "\n"
+
 
     @ 输出汇编头部
     emit(".intel_syntax noprefix\n.section .text\n.globl fn_main\nfn_main:\npush rbp\nmov rbp, rsp\n")
@@ -319,9 +306,7 @@ tt 主(argc, argv) -> u32 {
     next_tok()
     ll {
         lz tok_type 0 { ls }
-        st dd "BEFORE ty="; st dt tok_type; st dd " saved="; st dt g_saved_tok; st dd "\n"
         parse_stmt()
-        st dd "AFTER ty="; st dt tok_type; st dt "\n"
     }
 
     @ 结语
@@ -329,7 +314,6 @@ tt 主(argc, argv) -> u32 {
     emit_num(g_framesz)
     emit("\n.Lret_main:\nmov rsp, rbp\npop rbp\nret\n")
 
-    st dd "--- 生成汇编结束 ---\n"
 
     zz 0
 }
