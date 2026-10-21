@@ -127,7 +127,6 @@ static char *还原数字标点(const char *src) {
         out[o++] = *p++; 上个是码 = 0;
     }
     out[o] = 0;
-    fprintf(stderr, "PRE_OUT: [%s]\n", out);
     return out;
 }
 
@@ -163,7 +162,17 @@ static void lex(const char *src) {
             continue;
         }
         if (*p >= '0' && *p <= '9') {
+            const char *start = p;
             char *end; long v = strtol(p, &end, 0);
+            if (*end == '.') {
+                float f = strtof(start, NULL);
+                union { float f; unsigned u; } cvt; cvt.f = f;
+                toks[ntoks++] = (Tok){TK_NUM, (long)cvt.u, NULL, srcline};
+                p = end + 1;
+                while (*p >= '0' && *p <= '9') p++;
+                if (*p == 'e' || *p == 'E') { p++; if (*p == '+' || *p == '-') p++; while (*p >= '0' && *p <= '9') p++; }
+                continue;
+            }
             toks[ntoks++] = (Tok){TK_NUM, v, NULL, srcline};
             p = end; continue;
         }
@@ -210,7 +219,6 @@ static void lex(const char *src) {
         die("第 %d 行：不认识的字符 '%c'", srcline, *p);
     }
     toks[ntoks++] = (Tok){TK_EOF, 0, NULL, srcline};
-    for (int i = 0; i < ntoks; i++) fprintf(stderr, "TOK[%d]: k=%d v=%ld s=%s\n", i, toks[i].k, toks[i].v, toks[i].s?toks[i].s:"NULL");
 }
 
 /* ================================================================ 输出 */
@@ -283,7 +291,7 @@ static int global_find(const char *n) {
 static int var_new(const char *n) {
     int i = var_find_local(n);
     if (i >= 0) return i;
-    vars[nvars].name = (char *)n; vars[nvars].off = 0; vars[nvars].size = 4;
+    vars[nvars].name = (char *)n; vars[nvars].off = 0; vars[nvars].size = 8;
     vars[nvars].count = 1; vars[nvars].mut = 1; vars[nvars].declared = 0;
     vars[nvars].is_ptr = 0; vars[nvars].struct_idx = -1;
     vars[nvars].glabel[0] = 0;
@@ -501,7 +509,9 @@ static void primary(void) {
         is_kw("sr") || is_kw("fh") || is_kw("zd") || is_kw("zr") ||
         is_kw("zl") || is_kw("ft") || is_kw("fz") || is_kw("sz") ||
         is_kw("sd") || is_kw("fl") || is_kw("sl") || is_kw("rf") ||
-        is_kw("rd") || is_kw("rh") || is_kw("rl") || is_kw("rs")
+        is_kw("rd") || is_kw("rh") || is_kw("rl") || is_kw("rs") ||
+        is_kw("df") || is_kw("ds") || is_kw("ff") || is_kw("fs") || is_kw("ss") ||
+        is_kw("sf") || is_kw("sz") || is_kw("sh") || is_kw("sl") || is_kw("sr")
     )) { stmt(); return; }
 
     /* zt 函数调用前缀：跳过zt，后面跟函数名 */
@@ -572,7 +582,7 @@ static void primary(void) {
             adv(); adv(); raw_ops++;
             if (cur()->k != TK_ID) die("第 %d 行：地址() 里面必须是名字", cur()->line);
             char *vn = cur()->s; int vln = cur()->line; adv();
-            int elem = 4;
+            int elem = 8;
             if (lvalue_addr(vn, &elem) < 0) die("第 %d 行：名字不存在：%s", vln, vn);
             expect_p(")");
             return;
@@ -701,9 +711,9 @@ static void do_print(void) {
 }
 
 /* 类型：'*' 或 类型名；指针变量本身占 4 字节，解引用按字节 */
-static void parse_type_only(int *size) { *size = 4; }
+static void parse_type_only(int *size) { *size = 8; }
 static void parse_type_only_ex(int *size, int *isptr, int *struct_idx) {
-    *size = 4; *isptr = 0; *struct_idx = -1;
+    *size = 8; *isptr = 0; *struct_idx = -1;
     if (is_p("*")) {
         adv(); *isptr = 1; *size = 8;              /* ★ 64 位：指针 8 字节 */
         if (cur()->k != TK_TY) die("第 %d 行：'*' 后面必须是类型", cur()->line);
@@ -721,7 +731,7 @@ static void parse_type_only_ex(int *size, int *isptr, int *struct_idx) {
 /* 声明尾：名字 [ '[' N ']' ] [ ':' 类型 ] */
 static void parse_decl_tail(const char *name, int *size, int *count, int *sidx) {
     (void)name;
-    *size = 4; *count = 1; if (sidx) *sidx = -1;
+    *size = 8; *count = 1; if (sidx) *sidx = -1;
     if (is_p("[")) {
         adv();
         if (cur()->k != TK_NUM) die("第 %d 行：数组长度必须是常数", cur()->line);
@@ -736,9 +746,8 @@ static void parse_decl_tail(const char *name, int *size, int *count, int *sidx) 
 }
 
 static void stmt(void) {
-    fprintf(stderr, "STMT_CUR: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL");
-    /* ---- rd 内存拷贝(移到开头测试) ---- */
-    if (is_kw("rd")) { fprintf(stderr, "RD_OK\n");
+    /* ---- rd 内存拷贝 ---- */
+    if (is_kw("rd")) {
         adv(); expr(0); em("push rax"); expect_p(",");
         expr(0); em("push rax"); expect_p(",");
         expr(0); em("mov rcx, rax");
@@ -763,7 +772,7 @@ static void stmt(void) {
             if (cur()->k != TK_ID) die("第 %d 行：字段名缺失", cur()->line);
             char *fn = cur()->s; adv();
             expect_p(":");
-            int sz = 4, ip = 0, nsi = -1;
+            int sz = 8, ip = 0, nsi = -1;
             parse_type_only_ex(&sz, &ip, &nsi);
             if (structs[si].nf >= MAX_FIELDS) die("结构体字段太多");
             int fi = structs[si].nf++;
@@ -784,7 +793,7 @@ static void stmt(void) {
         if (in_function) die("第 %d 行：全局声明只能出现在顶层", ln);
         if (cur()->k != TK_ID) die("第 %d 行：qj 后面必须是名字", ln);
         char *name = cur()->s; adv();
-        int size = 4, count = 1, sidx = -1;
+        int size = 8, count = 1, sidx = -1;
         parse_decl_tail(name, &size, &count, &sidx);
         int g = global_find(name);
         if (g < 0) { g = nglobals++; globals[g].name = name; }
@@ -802,7 +811,7 @@ static void stmt(void) {
         int mut = is_kw("tz"); adv();
         if (cur()->k != TK_ID) die("第 %d 行：声明必须跟一个名字", cur()->line);
         char *name = cur()->s; int ln = cur()->line; adv();
-        int size = 4, count = 1, sidx = -1;
+        int size = 8, count = 1, sidx = -1;
         parse_decl_tail(name, &size, &count, &sidx);
         int exist = var_find_local(name);
         /* ★ 放开重复声明：第二次 tz 同名，就复用原来的槽（重新赋值）
@@ -828,7 +837,7 @@ static void stmt(void) {
         int i = var_new(name);
         if (vars[i].off == 0) {                 /* 没有被 prescan 覆盖（极少见）：兜底 */
             /* ★ 64 位：每个槽固定 8 字节（push/pop 就是 8 字节）*/
-            framesz += 8 * count;
+            framesz += 16 * count;
             vars[i].off = -framesz;
         }
         vars[i].size = size; vars[i].count = count; vars[i].mut = mut; vars[i].declared = 1;
@@ -1063,6 +1072,44 @@ static void stmt(void) {
     }
 
 
+    /* ---- df 数组字面量 ---- */
+    if (is_kw("df")) {
+        adv(); expect_p("[");
+        int cnt = 0;
+        while (!is_p("]")) {
+            expr(0); em("push rax"); cnt++;
+            if (is_p(",")) adv();
+        }
+        expect_p("]");
+        /* 逆序弹出到连续栈空间 */
+        em("sub rsp, %d", cnt * 8);
+        for (int i = 0; i < cnt; i++) {
+            em("pop rax"); em("mov [rsp+%d], rax", i * 8);
+        }
+        em("mov rax, rsp");
+        return;
+    }
+
+    /* ---- ds 结构体字面量(简化：按顺序初始化字段) ---- */
+    if (is_kw("ds")) {
+        adv(); expect_p("{");
+        int cnt = 0;
+        while (!is_p("}")) {
+            if (cur()->k == TK_ID && peek(1)->k == TK_P && !strcmp(peek(1)->s, "=")) {
+                adv(); adv(); /* 跳过 .field = */
+            }
+            expr(0); em("push rax"); cnt++;
+            if (is_p(",")) adv();
+        }
+        expect_p("}");
+        em("sub rsp, %d", cnt * 8);
+        for (int i = 0; i < cnt; i++) {
+            em("pop rax"); em("mov [rsp+%d], rax", i * 8);
+        }
+        em("mov rax, rsp");
+        return;
+    }
+
     /* ---- dh 左移 ---- */
     if (is_kw("dh")) {
         adv();
@@ -1272,7 +1319,7 @@ static void stmt(void) {
 
 static void block(void) {
     skip_nl();
-    while (!is_p("}") && cur()->k != TK_EOF) { fprintf(stderr, "BLOCK: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL"); stmt(); skip_nl(); }
+    while (!is_p("}") && cur()->k != TK_EOF) { stmt(); skip_nl(); }
 }
 
 /* 预扫描：为本函数所有局部绑定分配栈帧（序言必须在解析之前就知道 frame 大小） */
@@ -1285,11 +1332,11 @@ static void prescan_locals(int start) {
         else if (t->k == TK_KW && (!strcmp(t->s, "th") || !strcmp(t->s, "tz"))) {
             if (toks[i + 1].k != TK_ID) continue;
             const char *nm = toks[i + 1].s;
-            int size = 4, count = 1, j = i + 2;
+            int size = 8, count = 1, j = i + 2;
             if (toks[j].k == TK_P && !strcmp(toks[j].s, "[")) { count = (int)toks[j + 1].v; j += 3; }
             if (toks[j].k == TK_P && !strcmp(toks[j].s, ":")) {
                 j++;
-                if (toks[j].k == TK_P && !strcmp(toks[j].s, "*")) { size = 4; j += 2; }
+                if (toks[j].k == TK_P && !strcmp(toks[j].s, "*")) { size = 8; j += 2; }
                 else {
                     if (toks[j].k == TK_ID) { int si = struct_find(toks[j].s); size = (si >= 0) ? structs[si].size : 4; }
                     else size = elem_size_of_type(toks[j].s);
@@ -1299,7 +1346,7 @@ static void prescan_locals(int start) {
             int idx = var_new(nm);
             vars[idx].size = size; vars[idx].count = count; vars[idx].mut = 1;
             /* ★ 同上：槽至少 4 字节 */
-            framesz += 8 * count;
+            framesz += 16 * count;
             vars[idx].off = -framesz;
         }
     }
@@ -1320,7 +1367,7 @@ static void parse_fn(void) {
         for (;;) {
             if (cur()->k != TK_ID) die("第 %d 行：参数名缺失", cur()->line);
             pname[np] = cur()->s;
-            { char *qn = cur()->s; int qs = 4, qp = 0;   /* ★ 记下参数类型，符号表导出要用 */
+            { char *qn = cur()->s; int qs = 8, qp = 0;   /* ★ 记下参数类型，符号表导出要用 */
               strncpy(函记[函记数].参名[np], qn, 127);
               adv();
               if (is_p(":")) {
@@ -1339,7 +1386,7 @@ static void parse_fn(void) {
         }
     }
     expect_p(")");
-    { int rs = 4;                                  /* 返回类型 */
+    { int rs = 8;                                  /* 返回类型 */
       if (is_p("->")) { adv(); if (cur()->k != TK_TY) die("第 %d 行：返回类型缺失", cur()->line);
                         rs = elem_size_of_type(cur()->s); adv(); }
       if (函记数 < 256) {
@@ -1358,9 +1405,9 @@ static void parse_fn(void) {
 
     for (int i = 0; i < np; i++) {
         int idx = var_new(pname[i]);
-        vars[idx].off = 16 + 8 * (np - 1 - i);
+        vars[idx].off = 16 + 16 * (np - 1 - i);
         vars[idx].declared = 1; vars[idx].mut = 0;
-        vars[idx].size = 4; vars[idx].count = 1;
+        vars[idx].size = 8; vars[idx].count = 1;
     }
 
     nfunc++;
@@ -1375,7 +1422,6 @@ static void parse_fn(void) {
     em("push rbp"); em("mov rbp, rsp");
     if (framesz) em("sub rsp, %d", framesz);
     em("mov rax, 0");
-    fprintf(stderr, "BEFORE_BLOCK: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL");
     block();
     expect_p("}");
 
