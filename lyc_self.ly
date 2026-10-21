@@ -53,23 +53,31 @@ tt is_alpha(c) -> u32 {
 
 tt skip_ws() -> u32 {
     ll {
-        lz g_pos g_srclen { ls }
+        lr g_pos == g_srclen { ls }
         tz rawc = fr (g_src ht g_pos)
-    tz c = rawc hs 255
-        lr c == 32 { g_pos = g_pos ht 1 }
-        lr c == 9 { g_pos = g_pos ht 1 }
-        lr c == 13 { g_pos = g_pos ht 1 }
-        lr c == 10 { g_pos = g_pos ht 1; g_line = g_line ht 1 }
-        lh c 32 { lh c 9 { lh c 13 { lh c 10 { ls } } } }
+        tz c = rawc hs 255
+        tz is_ws = 0
+        lr c == 32 { is_ws = 1 }
+        lr c == 9 { is_ws = 1 }
+        lr c == 10 { is_ws = 1; g_line = g_line ht 1 }
+        lr c == 13 { is_ws = 1 }
+        st dt c
+        st dd " isws="
+        st dt is_ws
+        st dd "\n"
+        lr is_ws == 1 { g_pos = g_pos ht 1 }
+        lr is_ws == 0 { ls }
     }
     zz 0
 }
 
 tt next_tok() -> u32 {
     skip_ws()
+
     lz g_pos g_srclen { tok_type = 0; zz 0 }
     tz rawc = fr (g_src ht g_pos)
     tz c = rawc hs 255
+
 
     @ 数字
     lr is_digit(c) {
@@ -97,6 +105,9 @@ tt next_tok() -> u32 {
             lz g_pos g_srclen { ls }
             tz rawch = fr (g_src ht g_pos)
             tz ch = rawch hs 255
+            st dt is_alpha(ch)
+            st dt is_digit(ch)
+            st dd "\n"
             lr ch == 34 { ls }
             g_pos = g_pos ht 1
         }
@@ -124,6 +135,9 @@ tt next_tok() -> u32 {
         tok_type = 3
         tok_str = start
         tok_len = g_pos hz start_off
+        st dd " len="
+        st dt tok_len
+        st dd "\n"
         zz 1
     }
 
@@ -158,6 +172,7 @@ tt parse_expr() -> u32 {
         emit_num(tok_val)
         emit("\n")
         next_tok()
+
     }
     lr tok_type == 3 {
         tz vi = 0
@@ -178,14 +193,12 @@ tt parse_expr() -> u32 {
     }
     @ 加法
     ll {
-        lr tok_type == 5 { lr tok_val == 43 {
-            next_tok()
-            emit("push rax\n")
-            parse_expr()
-            emit("mov rcx, rax\npop rax\nadd rax, rcx\n")
-        } }
-        lr tok_type == 5 { lh tok_val 43 { ls } }
-        lr tok_type != 5 { ls }
+        lh tok_type 5 { ls }
+        lh tok_val 43 { ls }
+        next_tok()
+        emit("push rax\n")
+        parse_expr()
+        emit("mov rcx, rax\npop rax\nadd rax, rcx\n")
     }
     zz 0
 }
@@ -195,6 +208,9 @@ tt parse_expr() -> u32 {
 @ ============================================================
 
 tt parse_stmt() -> u32 {
+    st dt tok_type
+    st dt tok_len
+    st dd "\n"
     @ st dt 整数输出
     lr tok_type != 3 { next_tok(); zz 0 }
     lr tok_len != 2 { next_tok(); zz 0 }
@@ -202,6 +218,7 @@ tt parse_stmt() -> u32 {
     tz k0 = raw0 hs 255
     tz raw1 = fr (tok_str ht 1)
     tz k1 = raw1 hs 255
+
     @ st
     lr k0 == 115 { lr k1 == 116 {
         next_tok()
@@ -230,7 +247,12 @@ tt parse_stmt() -> u32 {
 
     @ tz
     lr k0 == 116 { lr k1 == 122 {
+        st dt k0
+        st dt k1
+        st dd "\n"
+
         next_tok()
+
         lr tok_type == 3 {
             tz vi = g_nvars
             g_vname[vi] = tok_str
@@ -238,15 +260,16 @@ tt parse_stmt() -> u32 {
             g_voff[vi] = g_framesz
             g_nvars = g_nvars ht 1
             next_tok()
-            lr tok_type == 5 { lr tok_val == 61 {
-                next_tok()
-                parse_expr()
-                emit("mov [rbp")
-                tz off = g_voff[vi]
-                lr off >= 0 { emit("+") }
-                emit_num(off)
-                emit("], rax\n")
-            } }
+
+            lh tok_type 5 { zz 0 }
+            lh tok_val 61 { zz 0 }
+            next_tok()
+            parse_expr()
+            emit("mov [rbp")
+            tz off = g_voff[vi]
+            lr off >= 0 { emit("+") }
+            emit_num(off)
+            emit("], rax\n")
         }
         zz 0
     } }
