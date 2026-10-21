@@ -12,6 +12,10 @@ qj g_func_names[512]
 qj g_func_start[32]
 qj g_ret_stack[64]
 qj g_ret_sp
+qj g_func_ret_val
+qj g_func_returning
+qj g_line_count
+qj g_src
 qj cmd_buf[4096]
 
 tt 主 01 path 02 -> u32 08
@@ -33,56 +37,56 @@ tt 主 01 path 02 -> u32 08
         zt _rt_puts 01 03用法: wx_run 脚本.wx04 02
         zz 1
     09
-    tz src zt fn_read_file 01 path 02
+    tz g_src zt fn_read_file 01 path 02
     tz slen 0
     ll 08
-        tz ch fn_get_byte 01 src ht slen 02
+        tz ch fn_get_byte 01 g_src ht slen 02
         lr ch == 0 08 ls 09
         tz slen slen ht 1
     09
-    tz lc 1
+    g_line_count = 1
     g_offsets[0] = 0
     tz pos 0
     ll 08
         lz pos slen 08 ls 09
-        tz ch fn_get_byte 01 src ht pos 02
+        tz ch fn_get_byte 01 g_src ht pos 02
         lr ch == 10 08
-            g_offsets[lc] = pos ht 1
-            tz lc lc ht 1
+            g_offsets[g_line_count] = pos ht 1
+            tz g_line_count g_line_count ht 1
         09
         tz pos pos ht 1
     09
-    g_offsets[lc] = slen
-    tz lc lc ht 1
-    tz g_var_count 0
-    tz g_arr_count 0
-    tz g_func_count 0
+    g_offsets[g_line_count] = slen
+    tz g_line_count g_line_count ht 1
+    g_var_count = 0
+    g_arr_count = 0
+    g_func_count = 0
     tz loop_start 0
     tz while_start 0
     tz cur_loop_type 0
     tz if_taken 0
-    tz g_ret_sp 0
+    g_ret_sp = 0
     tz fi 0
     ll 08
-        lz fi lc 08 ls 09
+        lz fi g_line_count 08 ls 09
         tz foff g_offsets[fi]
         tz fc1 0
-        lr fi < lc 08 tz fc1 fn_get_byte 01 src ht foff 02 09
+        lr fi < g_line_count 08 tz fc1 fn_get_byte 01 g_src ht foff 02 09
         lr fc1 == 104 08
-            tz fc2 fn_get_byte 01 src ht foff ht 1 02
+            tz fc2 fn_get_byte 01 g_src ht foff ht 1 02
             lr fc2 == 106 08
                 tz fci 3
                 ll 08
                     lz fci 64 08 ls 09
-                    tz fcc fn_get_byte 01 src ht foff ht fci 02
+                    tz fcc fn_get_byte 01 g_src ht foff ht fci 02
                     lr fcc == 32 08 tz fci fci ht 1 09
                     lr fcc != 32 08 ls 09
                 09
-                tz fname_idx g_func_count hh 4
+                tz fname_idx g_func_count hh 16
                 tz fni 0
                 ll 08
                     lz fni 15 08 ls 09
-                    tz fcc fn_get_byte 01 src ht foff ht fci ht fni 02
+                    tz fcc fn_get_byte 01 g_src ht foff ht fci ht fni 02
                     lr fcc == 32 08 ls 09
                     lr fcc == 10 08 ls 09
                     lr fcc == 0 08 ls 09
@@ -93,19 +97,19 @@ tt 主 01 path 02 -> u32 08
                 tz name_off fname_idx ht fni
                 g_func_names[name_off] = 0
                 g_func_start[g_func_count] = fi ht 1
-                tz g_func_count g_func_count ht 1
+                g_func_count = g_func_count ht 1
             09
         09
         tz fi fi ht 1
     09
     tz cur_ip 0
     ll 08
-        lz cur_ip lc 08 ls 09
+        lz cur_ip g_line_count 08 ls 09
         tz off g_offsets[cur_ip]
         tz noff g_offsets[cur_ip ht 1]
         ll 08
             lz off noff 08 ls 09
-            tz ch fn_get_byte 01 src ht off 02
+            tz ch fn_get_byte 01 g_src ht off 02
             lr ch == 32 08 tz off off ht 1 09
             lr ch == 9 08 tz off off ht 1 09
             lr ch != 32 08
@@ -117,20 +121,54 @@ tt 主 01 path 02 -> u32 08
             tz cur_ip cur_ip ht 1
             zz 0
         09
-        tz c1 fn_get_byte 01 src ht off 02
+        tz c1 fn_get_byte 01 g_src ht off 02
         tz c2 0
-        lr llen > 1 08 tz c2 fn_get_byte 01 src ht off ht 1 02 09
+        lr llen > 1 08 tz c2 fn_get_byte 01 g_src ht off ht 1 02 09
         tz jumped 0
+        tz cf_found 0
+        tz cf_idx 0
+        ll 08
+            lz cf_idx g_func_count 08 ls 09
+            lr cf_found == 1 08 ls 09
+            tz cfmatch 1
+            tz cfj 0
+            tz cfoff cf_idx hh 16
+            ll 08
+                lz cfj 16 08 ls 09
+                tz cfc1 fn_get_byte 01 g_src ht off ht cfj 02
+                tz cfc2 fn_get_byte 01 g_func_names ht cfoff ht cfj 02
+                lr cfc1 == 32 08
+                    lr cfc2 != 0 08 tz cfmatch 0 09
+                    ls
+                09
+                lr cfc1 == 10 08
+                    lr cfc2 != 0 08 tz cfmatch 0 09
+                    ls
+                09
+                lr cfc1 == 0 08
+                    lr cfc2 != 0 08 tz cfmatch 0 09
+                    ls
+                09
+                tz cfvd cfc1 hz cfc2
+                lr cfvd != 0 08 tz cfmatch 0 09
+                tz cfj cfj ht 1
+            09
+            lr cfmatch == 1 08 tz cf_found 1 09
+            lr cf_found == 0 08 tz cf_idx cf_idx ht 1 09
+        09
+        lr cf_found == 1 08
+            zt wx_call_func 01 g_src ht off, llen 02
+        09
         lr c1 == 104 08
             lr c2 == 106 08
                 tz skip_ip cur_ip ht 1
                 tz found 0
                 ll 08
-                    lz skip_ip lc 08 ls 09
+                    lz skip_ip g_line_count 08 ls 09
                     lr found == 1 08 ls 09
                     tz soff g_offsets[skip_ip]
-                    tz sc1 fn_get_byte 01 src ht soff 02
-                    tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                    tz sc1 fn_get_byte 01 g_src ht soff 02
+                    tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                     lr sc1 == 104 08
                         lr sc2 == 106 08
                             tz cur_ip skip_ip
@@ -143,7 +181,7 @@ tt 主 01 path 02 -> u32 08
             09
         09
         lr c1 == 67 08
-            lr c2 == 106 08 zt wx_do_tj 01 src ht off ht 2, llen hz 2 02 09
+            lr c2 == 106 08 zt wx_do_tj 01 g_src ht off ht 2, llen hz 2 02 09
         09
         lr c1 == 67 08
             lr c2 == 109 08
@@ -152,20 +190,20 @@ tt 主 01 path 02 -> u32 08
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
-                    tz cc fn_get_byte 01 src ht off ht ci 02
+                    tz cc fn_get_byte 01 g_src ht off ht ci 02
                     lr cc == 32 08 tz ci ci ht 1 09
                     lr cc != 32 08 ls 09
                 09
-                tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
                 lr cond == 0 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
+                        lz skip_ip g_line_count 08 ls 09
                         lr found == 1 08 ls 09
                         tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        tz sc1 fn_get_byte 01 g_src ht soff 02
+                        tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                         lr sc1 == 67 08
                             lr sc2 == 116 08
                                 tz cur_ip skip_ip ht 1
@@ -183,28 +221,28 @@ tt 主 01 path 02 -> u32 08
                 tz si 2
                 ll 08
                     lz si llen 08 ls 09
-                    tz sch fn_get_byte 01 src ht off ht si 02
+                    tz sch fn_get_byte 01 g_src ht off ht si 02
                     lr sch == 32 08 tz si si ht 1 09
                     lr sch != 32 08 ls 09
                 09
                 tz sname_start si
                 ll 08
                     lz si llen 08 ls 09
-                    tz sch fn_get_byte 01 src ht off ht si 02
+                    tz sch fn_get_byte 01 g_src ht off ht si 02
                     lr sch == 32 08 ls 09
                     tz si si ht 1
                 09
                 tz sname_len si hz sname_start
-                tz sval zt wx_find_var 01 src ht off ht sname_start, sname_len 02
+                tz sval zt wx_find_var 01 g_src ht off ht sname_start, sname_len 02
                 ll 08
                     lz si llen 08 ls 09
-                    tz sch fn_get_byte 01 src ht off ht si 02
+                    tz sch fn_get_byte 01 g_src ht off ht si 02
                     lr sch == 32 08 tz si si ht 1 09
                     lr sch != 32 08 ls 09
                 09
-                tz sinc zt wx_eval 01 src ht off ht si, llen hz si 02
+                tz sinc zt wx_eval 01 g_src ht off ht si, llen hz si 02
                 tz sval sval ht sinc
-                zt wx_set_var 01 src ht off ht sname_start, sname_len, sval 02
+                zt wx_set_var 01 g_src ht off ht sname_start, sname_len, sval 02
             09
         09
         lr c1 == 108 08
@@ -214,20 +252,20 @@ tt 主 01 path 02 -> u32 08
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
-                    tz cc fn_get_byte 01 src ht off ht ci 02
+                    tz cc fn_get_byte 01 g_src ht off ht ci 02
                     lr cc == 32 08 tz ci ci ht 1 09
                     lr cc != 32 08 ls 09
                 09
-                tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
                 lr cond == 0 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
+                        lz skip_ip g_line_count 08 ls 09
                         lr found == 1 08 ls 09
                         tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        tz sc1 fn_get_byte 01 g_src ht soff 02
+                        tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                         lr sc1 == 108 08
                             lr sc2 == 100 08
                                 tz cur_ip skip_ip ht 1
@@ -246,21 +284,21 @@ tt 主 01 path 02 -> u32 08
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
-                    tz cc fn_get_byte 01 src ht off ht ci 02
+                    tz cc fn_get_byte 01 g_src ht off ht ci 02
                     lr cc == 32 08 tz ci ci ht 1 09
                     lr cc != 32 08 ls 09
                 09
-                tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
                 lr cond != 0 08 tz if_taken 1 09
                 lr cond == 0 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
+                        lz skip_ip g_line_count 08 ls 09
                         lr found == 1 08 ls 09
                         tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        tz sc1 fn_get_byte 01 g_src ht soff 02
+                        tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                         lr sc1 == 88 08
                             lr sc2 == 109 08
                                 tz cur_ip skip_ip
@@ -289,11 +327,11 @@ tt 主 01 path 02 -> u32 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
+                        lz skip_ip g_line_count 08 ls 09
                         lr found == 1 08 ls 09
                         tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        tz sc1 fn_get_byte 01 g_src ht soff 02
+                        tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                         lr sc1 == 88 08
                             lr sc2 == 116 08
                                 tz cur_ip skip_ip ht 1
@@ -308,21 +346,21 @@ tt 主 01 path 02 -> u32 08
                     tz ci 0
                     ll 08
                         lz ci llen 08 ls 09
-                        tz cc fn_get_byte 01 src ht off ht ci 02
+                        tz cc fn_get_byte 01 g_src ht off ht ci 02
                         lr cc == 32 08 tz ci ci ht 1 09
                         lr cc != 32 08 ls 09
                     09
-                    tz cond zt wx_eval 01 src ht off ht ci, llen hz ci 02
+                    tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
                     lr cond != 0 08 tz if_taken 1 09
                     lr cond == 0 08
                         tz skip_ip cur_ip ht 1
                         tz found 0
                         ll 08
-                            lz skip_ip lc 08 ls 09
+                            lz skip_ip g_line_count 08 ls 09
                             lr found == 1 08 ls 09
                             tz soff g_offsets[skip_ip]
-                            tz sc1 fn_get_byte 01 src ht soff 02
-                            tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                            tz sc1 fn_get_byte 01 g_src ht soff 02
+                            tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                             lr sc1 == 88 08
                                 lr sc2 == 109 08
                                     tz cur_ip skip_ip
@@ -352,11 +390,11 @@ tt 主 01 path 02 -> u32 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
-                        lz skip_ip lc 08 ls 09
+                        lz skip_ip g_line_count 08 ls 09
                         lr found == 1 08 ls 09
                         tz soff g_offsets[skip_ip]
-                        tz sc1 fn_get_byte 01 src ht soff 02
-                        tz sc2 fn_get_byte 01 src ht soff ht 1 02
+                        tz sc1 fn_get_byte 01 g_src ht soff 02
+                        tz sc2 fn_get_byte 01 g_src ht soff ht 1 02
                         lr sc1 == 88 08
                             lr sc2 == 116 08
                                 tz cur_ip skip_ip ht 1
@@ -378,11 +416,11 @@ tt 主 01 path 02 -> u32 08
                 tz brk_ip cur_ip ht 1
                 tz brk_depth 1
                 ll 08
-                    lz brk_ip lc 08 ls 09
+                    lz brk_ip g_line_count 08 ls 09
                     lr brk_depth == 0 08 ls 09
                     tz brk_off g_offsets[brk_ip]
-                    tz bc1 fn_get_byte 01 src ht brk_off 02
-                    tz bc2 fn_get_byte 01 src ht brk_off ht 1 02
+                    tz bc1 fn_get_byte 01 g_src ht brk_off 02
+                    tz bc2 fn_get_byte 01 g_src ht brk_off ht 1 02
                     lr bc1 == 67 08
                         lr bc2 == 106 08 tz brk_depth brk_depth ht 1 09
                         lr bc2 == 109 08 tz brk_depth brk_depth ht 1 09
@@ -419,12 +457,12 @@ tt 主 01 path 02 -> u32 08
             lr c2 == 115 08 zt _rt_exit 01 0 02 09
         09
         lr c1 == 81 08
-            lr c2 == 106 08 zt wx_do_Qget 01 src ht off ht 2, llen hz 2 02 09
-            lr c2 == 109 08 zt wx_do_Qpost 01 src ht off ht 2, llen hz 2 02 09
-            lr c2 == 115 08 zt wx_do_Qdl 01 src ht off ht 2, llen hz 2 02 09
+            lr c2 == 106 08 zt wx_do_Qget 01 g_src ht off ht 2, llen hz 2 02 09
+            lr c2 == 109 08 zt wx_do_Qpost 01 g_src ht off ht 2, llen hz 2 02 09
+            lr c2 == 115 08 zt wx_do_Qdl 01 g_src ht off ht 2, llen hz 2 02 09
         09
         lr jumped == 0 08
-            lr llen > 0 08 zt wx_exec_line 01 src ht off, llen 02 09
+            lr llen > 0 08 zt wx_exec_line 01 g_src ht off, llen 02 09
         09
         lr jumped == 0 08
             lr c1 == 67 08
@@ -445,7 +483,82 @@ tt 主 01 path 02 -> u32 08
     zz 0
 09
 
+tt wx_call_func 01 line, len 02 -> u32 08
+    tz fidx 0
+    tz ffound 0
+    ll 08
+        lz fidx g_func_count 08 ls 09
+        lr ffound == 1 08 ls 09
+        tz fmatch 1
+        tz fj 0
+        tz foff fidx hh 16
+        ll 08
+            lz fj 16 08 ls 09
+            tz fc1 fn_get_byte 01 line ht fj 02
+            tz fc2 fn_get_byte 01 g_func_names ht foff ht fj 02
+            lr fc1 == 32 08
+                lr fc2 != 0 08 tz fmatch 0 09
+                ls
+            09
+            lr fc1 == 10 08
+                lr fc2 != 0 08 tz fmatch 0 09
+                ls
+            09
+            lr fc1 == 0 08
+                lr fc2 != 0 08 tz fmatch 0 09
+                ls
+            09
+            tz fvd fc1 hz fc2
+            lr fvd != 0 08 tz fmatch 0 09
+            tz fj fj ht 1
+        09
+        lr fmatch == 1 08 tz ffound 1 09
+        lr ffound == 0 08 tz fidx fidx ht 1 09
+    09
+    lr ffound == 0 08 zz 0 09
+    tz fstart g_func_start[fidx]
+    tz fip fstart
+    ll 08
+        lz fip g_line_count 08 ls 09
+        tz foff2 g_offsets[fip]
+        tz fnoff g_offsets[fip ht 1]
+        tz fllen fnoff hz foff2
+        tz fi2 0
+        ll 08
+            lz fi2 fllen 08 ls 09
+            tz fch fn_get_byte 01 g_src ht foff2 ht fi2 02
+            lr fch == 32 08 tz fi2 fi2 ht 1 09
+            lr fch == 9 08 tz fi2 fi2 ht 1 09
+            lr fch != 32 08
+                lr fch != 9 08 ls 09
+            09
+        09
+        lr fi2 >= fllen 08
+            tz fip fip ht 1
+            zz 0
+        09
+        tz fc1 fn_get_byte 01 g_src ht foff2 ht fi2 02
+        tz fc2 0
+        lr fllen > 1 08 tz fc2 fn_get_byte 01 g_src ht foff2 ht fi2 ht 1 02 09
+        lr fc1 == 104 08
+            lr fc2 == 106 08
+                zz g_func_ret_val
+            09
+        09
+        tz g_func_returning 0
+        zt wx_exec_line 01 g_src ht foff2 ht fi2, fllen hz fi2 02
+        zt _rt_puti 01 g_func_ret_val 02
+        zt _rt_putc 01 10 02
+        lr g_func_returning == 1 08
+            zz g_func_ret_val
+        09
+        tz fip fip ht 1
+    09
+    zz g_func_ret_val
+09
+
 tt wx_exec_line 01 line, len 02 -> u32 08
+    tz retval 0
     tz i 0
     ll 08
         lz i len 08 ls 09
@@ -460,56 +573,96 @@ tt wx_exec_line 01 line, len 02 -> u32 08
     tz c1 fn_get_byte 01 line ht i 02
     tz c2 0
     lr len > i ht 1 08 tz c2 fn_get_byte 01 line ht i ht 1 02 09
+    tz wf_found 0
+    tz wf_idx 0
+    ll 08
+        lz wf_idx g_func_count 08 ls 09
+        lr wf_found == 1 08 ls 09
+        tz wfmatch 1
+        tz wfj 0
+        tz wfoff wf_idx hh 16
+        ll 08
+            lz wfj 16 08 ls 09
+            tz wfc1 fn_get_byte 01 line ht i ht wfj 02
+            tz wfc2 fn_get_byte 01 g_func_names ht wfoff ht wfj 02
+            lr wfc1 == 32 08
+                lr wfc2 != 0 08 tz wfmatch 0 09
+                ls
+            09
+            lr wfc1 == 10 08
+                lr wfc2 != 0 08 tz wfmatch 0 09
+                ls
+            09
+            lr wfc1 == 0 08
+                lr wfc2 != 0 08 tz wfmatch 0 09
+                ls
+            09
+            zt _rt_putc 01 10 02
+            tz wfvd wfc1 hz wfc2
+            lr wfvd != 0 08 tz wfmatch 0 09
+            tz wfj wfj ht 1
+        09
+        lr wfmatch == 1 08 tz wf_found 1 09
+        lr wf_found == 0 08 tz wf_idx wf_idx ht 1 09
+    09
+    lr wf_found == 1 08
+        tz retval zt wx_call_func 01 line ht i, len hz i 02
+        zz retval
+    09
     lr c1 == 106 08
-        lr c2 == 106 08 zt wx_do_jj 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 109 08 zt wx_do_jm 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 115 08 zt wx_do_js 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 104 08 zt wx_do_jh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_jt 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 106 08 tz retval zt wx_do_jj 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 109 08 tz retval zt wx_do_jm 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 115 08 tz retval zt wx_do_js 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_jh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_jt 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 109 08
-        lr c2 == 106 08 zt wx_do_mj 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 109 08 zt wx_do_mm 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 115 08 zt wx_do_ms 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 104 08 zt wx_do_mh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_mt 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 106 08 tz retval zt wx_do_mj 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 109 08 tz retval zt wx_do_mm 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 115 08 tz retval zt wx_do_ms 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_mh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_mt 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 115 08
-        lr c2 == 106 08 zt wx_do_sj 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 109 08 zt wx_do_sm 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 115 08 zt wx_do_ss 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 104 08 zt wx_do_sh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_st 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 106 08 tz retval zt wx_do_sj 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 109 08 tz retval zt wx_do_sm 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 115 08 tz retval zt wx_do_ss 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_sh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_st 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 104 08
-        lr c2 == 106 08 zt wx_do_hj 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 109 08 zt wx_do_hm 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 115 08 zt wx_do_hs 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 104 08 zt wx_do_hh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_ht 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 106 08 tz retval zt wx_do_hj 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 109 08
+            tz retval zt wx_do_hm 01 line ht i ht 2, len hz i hz 2 02
+            tz g_func_ret_val retval
+            tz g_func_returning 1
+        09
+        lr c2 == 115 08 tz retval zt wx_do_hs 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_hh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_ht 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 116 08
-        lr c2 == 106 08 zt wx_do_tj 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 109 08 zt wx_do_tm 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 115 08 zt wx_do_ts 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 104 08 zt wx_do_th 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_tt 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 106 08 tz retval zt wx_do_tj 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 109 08 tz retval zt wx_do_tm 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 115 08 tz retval zt wx_do_ts 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_th 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_tt 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 67 08
-        lr c2 == 104 08 zt wx_do_Ch 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_Ch 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 88 08
-        lr c2 == 104 08 zt wx_do_Xh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_Xh 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 81 08
-        lr c2 == 104 08 zt wx_do_Qh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_Qt 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_Qh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_Qt 01 line ht i ht 2, len hz i hz 2 02 09
     09
     lr c1 == 68 08
-        lr c2 == 104 08 zt wx_do_Dh 01 line ht i ht 2, len hz i hz 2 02 09
-        lr c2 == 116 08 zt wx_do_Dt 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 104 08 tz retval zt wx_do_Dh 01 line ht i ht 2, len hz i hz 2 02 09
+        lr c2 == 116 08 tz retval zt wx_do_Dt 01 line ht i ht 2, len hz i hz 2 02 09
     09
-    zz 0
+    zz retval
 09
 
 tt wx_do_jj 01 arg, alen 02 -> u32 08
@@ -652,6 +805,7 @@ tt wx_do_mm 01 arg, alen 02 -> u32 08
         lz i alen 08 ls 09
         tz ch fn_get_byte 01 arg ht i 02
         lr ch == 32 08 ls 09
+        lr ch == 10 08 ls 09
         tz i i ht 1
     09
     tz name_len i hz name_start
@@ -792,6 +946,23 @@ tt wx_do_hm 01 arg, alen 02 -> u32 08
         lr ch != 32 08 ls 09
     09
     lr i < alen 08
+        tz fch fn_get_byte 01 arg ht i 02
+        lr fch >= 97 08
+            lr fch <= 122 08
+                tz vlen 0
+                tz vi i
+                ll 08
+                    lz vi alen 08 ls 09
+                    tz vch fn_get_byte 01 arg ht vi 02
+                    lr vch == 32 08 ls 09
+                    lr vch == 10 08 ls 09
+                    tz vlen vlen ht 1
+                    tz vi vi ht 1
+                09
+                tz val zt wx_find_var 01 arg ht i, vlen 02
+                zz val
+            09
+        09
         tz val zt wx_eval 01 arg ht i, alen hz i 02
         zz val
     09
@@ -834,11 +1005,23 @@ tt wx_do_tj 01 arg, alen 02 -> u32 08
         tz ch fn_get_byte 01 arg ht i 02
         lr ch == 61 08
             tz i i ht 1
-            tz val zt wx_eval 01 arg ht i, alen hz i 02
         09
         lr ch == 32 08
             tz i i ht 1
-            tz val zt wx_eval 01 arg ht i, alen hz i 02
+        09
+        lr i < alen 08
+            tz vch fn_get_byte 01 arg ht i 02
+            lr vch == 106 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 109 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 115 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 104 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 116 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 67 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 88 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 81 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch == 68 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
+            lr vch < 65 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
+            lr vch > 122 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
         09
     09
     zt wx_set_var 01 arg ht name_start, name_len, val 02
