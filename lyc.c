@@ -81,10 +81,7 @@ static char *还原数字标点(const char *src) {
     int 在串里 = 0;
     while (*p) {
         if (*p == '\n') { out[o++] = '\n'; 上个是码 = 0; p++; continue; }
-        if (!在串里 && p[0]=='r' && p[1]=='d' && (p[2]==0 || !(isalnum((unsigned char)p[2]) || p[2]=='_'))) {
-            while (*p && *p != '\n') out[o++] = *p++;
-            continue;
-        }
+
         if (*p == ' ') {
             if (上个是码) { p++; continue; }
             out[o++] = ' '; 上个是码 = 0; p++; continue;
@@ -130,6 +127,7 @@ static char *还原数字标点(const char *src) {
         out[o++] = *p++; 上个是码 = 0;
     }
     out[o] = 0;
+    fprintf(stderr, "PRE_OUT: [%s]\n", out);
     return out;
 }
 
@@ -174,10 +172,6 @@ static void lex(const char *src) {
             while (is_idc((unsigned char)*q) || (*q >= '0' && *q <= '9')) q++;
             int n = (int)(q - p);
             char *w = xmalloc(n + 1); memcpy(w, p, n); w[n] = 0;
-            if (!strcmp(w, "rd")) {           /* ★ rd 山地 注释：行内注释到行尾 */
-                while (*p && *p != '\n') p++;
-                continue;
-            }
             int k = TK_ID;
             if (in_list(KEYWORDS, w) || in_list(OPKW, w)) k = TK_KW;
             else if (in_list(TYPES, w)) k = TK_TY;
@@ -216,6 +210,7 @@ static void lex(const char *src) {
         die("第 %d 行：不认识的字符 '%c'", srcline, *p);
     }
     toks[ntoks++] = (Tok){TK_EOF, 0, NULL, srcline};
+    for (int i = 0; i < ntoks; i++) fprintf(stderr, "TOK[%d]: k=%d v=%ld s=%s\n", i, toks[i].k, toks[i].v, toks[i].s?toks[i].s:"NULL");
 }
 
 /* ================================================================ 输出 */
@@ -741,6 +736,19 @@ static void parse_decl_tail(const char *name, int *size, int *count, int *sidx) 
 }
 
 static void stmt(void) {
+    fprintf(stderr, "STMT_CUR: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL");
+    /* ---- rd 内存拷贝(移到开头测试) ---- */
+    if (is_kw("rd")) { fprintf(stderr, "RD_OK\n");
+        adv(); expr(0); em("push rax"); expect_p(",");
+        expr(0); em("push rax"); expect_p(",");
+        expr(0); em("mov rcx, rax");
+        em("pop rsi"); em("pop rdi");
+        char l1[32], l2[32]; newlab("rdl", l1); newlab("rde", l2);
+        lbl(l1); em("test rcx, rcx"); em("jz %s", l2);
+        em("mov al, byte ptr [rsi]"); em("mov byte ptr [rdi], al");
+        em("add rsi, 1"); em("add rdi, 1"); em("sub rcx, 1"); em("jmp %s", l1);
+        lbl(l2); return;
+    }
     /* ---- 结构体定义（仅顶层） ---- */
     if (is_kw("tl")) {
         adv();
@@ -1044,20 +1052,16 @@ static void stmt(void) {
         return;
     }
 
-    /* ---- rf 内存清零(简化版：清零首字节) ---- */
+    /* ---- rf 内存清零 ---- */
     if (is_kw("rf")) {
         adv(); expr(0); em("push rax"); expect_p(","); expr(0);
-        em("pop rdi"); em("mov byte ptr [rdi], 0");
-        return;
+        em("mov rcx, rax"); em("pop rdi");
+        char l1[32], l2[32]; newlab("rfl", l1); newlab("rfe", l2);
+        lbl(l1); em("test rcx, rcx"); em("jz %s", l2);
+        em("mov byte ptr [rdi], 0"); em("add rdi, 1"); em("sub rcx, 1"); em("jmp %s", l1);
+        lbl(l2); return;
     }
-    /* ---- rd 内存拷贝(简化版：拷贝单字节) ---- */
-    if (is_kw("rd")) {
-        adv(); expr(0); em("push rax"); expect_p(",");
-        expr(0); em("push rax"); expect_p(",");
-        expr(0); em("pop rsi"); em("pop rdi");
-        em("mov al, [rsi]"); em("mov [rdi], al");
-        return;
-    }
+
 
     /* ---- dh 左移 ---- */
     if (is_kw("dh")) {
@@ -1268,7 +1272,7 @@ static void stmt(void) {
 
 static void block(void) {
     skip_nl();
-    while (!is_p("}") && cur()->k != TK_EOF) { stmt(); skip_nl(); }
+    while (!is_p("}") && cur()->k != TK_EOF) { fprintf(stderr, "BLOCK: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL"); stmt(); skip_nl(); }
 }
 
 /* 预扫描：为本函数所有局部绑定分配栈帧（序言必须在解析之前就知道 frame 大小） */
@@ -1371,7 +1375,7 @@ static void parse_fn(void) {
     em("push rbp"); em("mov rbp, rsp");
     if (framesz) em("sub rsp, %d", framesz);
     em("mov rax, 0");
-
+    fprintf(stderr, "BEFORE_BLOCK: k=%d s=%s\n", cur()->k, cur()->s?cur()->s:"NULL");
     block();
     expect_p("}");
 
