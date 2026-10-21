@@ -41,13 +41,16 @@ typedef struct { int k; long v; char *s; int line; } Tok;
 
 static Tok *toks; static int ntoks, tpos, srcline;
 
-static const char *KEYWORDS[] = { "tt","zz","th","tz","tn","tf","ts","tr","td",
-                                  "zt","zh","zl","zf","zs","zr","zd",
-                                  "ll","lr","ld","ls","lf","lz","lh","lt",
+static const char *KEYWORDS[] = { "tt","th","tz","tl","tf","ts","tr","td",
+                                  "zt","zz","zh","zl","zf","zs","zr","zd",
+                                  "ht","hz","hh","hl","hf","hs","hr","hd",
+                                  "lt","lz","lh","ll","lf","ls","lr","ld",
+                                  "ft","fz","fh","fl","ff","fs","fr","fd",
+                                  "st","sz","sh","sl","sf","ss","sr","sd",
                                   "rt","rz","rh","rl","rf","rs","rr","rd",
-                                  "dz","dh","dl","df","ds","dr",
-                                  "qj","wx","st","dt","dd", NULL };
-static const char *OPKW[]     = { "hs","hr","hd","ht","hz","hh","hl","hf", NULL };
+                                  "dt","dz","dh","dl","df","ds","dr","dd",
+                                  "qj","wx", NULL };
+static const char *OPKW[]     = { "hs","hr","hd","ht","hz","hh","hl","hf","dh","dl", NULL };
 /* ★ 五行 = 5×5 = 25 个类型名（大写两字母，和六爻的小写正好分开）
      单字：金J 木M 水S 火H 土T           —— 五行本身
      双字：JJ JM JS JH JT MJ … TT        —— 5×5 相配，一共 25 格
@@ -269,6 +272,7 @@ typedef struct {
 static Var vars[1024];   static int nvars, framesz;    /* 局部，逐函数重置 */
 static Var globals[256]; static int nglobals;          /* 全局，全程有效 */
 static int in_function;
+static int scope_depth;
 static int in_wx;          /* 是否处于危险块内 */
 static int wx_blocks;      /* 危险块数量（统计） */
 static int raw_ops;        /* 原始指针操作数量（统计） */
@@ -364,7 +368,7 @@ static int prec_of(const char *op) {
     if (!strcmp(op, "hh") || !strcmp(op, "hl") || !strcmp(op, "hf")) return 10;
     if (!strcmp(op, "==") || !strcmp(op, "!=")) return 6;
     if (!strcmp(op, "<") || !strcmp(op, "<=") || !strcmp(op, ">") || !strcmp(op, ">=")) return 7;
-    if (!strcmp(op, "<<") || !strcmp(op, ">>")) return 8;
+    if (!strcmp(op, "<<") || !strcmp(op, ">>") || !strcmp(op, "dh") || !strcmp(op, "dl")) return 8;
     if (!strcmp(op, "+") || !strcmp(op, "-")) return 9;
     if (!strcmp(op, "*") || !strcmp(op, "/") || !strcmp(op, "%")) return 10;
     return 0;
@@ -496,6 +500,15 @@ static const struct { const char *name; const char *sym; int nargs; } GFX_BUILTI
 static void primary(void) {
     Tok *t = cur();
 
+    /* 指令作为表达式：rr/fr/zf/sh/sr/fh/zd/zr/zl/ft/fz/sz/sd/fl/sl/rf/rd/rh/rl/rs */
+    if (cur()->k == TK_KW && (
+        is_kw("rr") || is_kw("fr") || is_kw("zf") || is_kw("sh") ||
+        is_kw("sr") || is_kw("fh") || is_kw("zd") || is_kw("zr") ||
+        is_kw("zl") || is_kw("ft") || is_kw("fz") || is_kw("sz") ||
+        is_kw("sd") || is_kw("fl") || is_kw("sl") || is_kw("rf") ||
+        is_kw("rd") || is_kw("rh") || is_kw("rl") || is_kw("rs")
+    )) { stmt(); return; }
+
     /* zt 函数调用前缀：跳过zt，后面跟函数名 */
     if (is_kw("zt")) { adv(); t = cur(); }
 
@@ -621,6 +634,8 @@ static void primary(void) {
 static void unary(void) {
     if (is_p("-")) { adv(); unary(); em("neg rax"); return; }
     if (is_p("!")) { adv(); unary(); em("test rax, rax"); em("sete al"); em("movzx rax, al"); return; }
+    if (is_kw("dr")) { adv(); unary(); em("not rax"); return; }
+    if (is_kw("fd")) { adv(); unary(); em("test rax, rax"); em("sete al"); em("movzx rax, al"); return; }
     if (is_p("^")) {                                                             /* 解引用（字节） */
         if (!in_wx) die("第 %d 行：解引用原始指针是危险操作，必须写在 wx { } 危险块内", cur()->line);
         adv(); raw_ops++; unary(); em("movzx rax, byte ptr [rax]"); return;
@@ -638,8 +653,8 @@ static void binop_emit(const char *op) {
     if (!strcmp(op, "hs")) { em("and rax, rcx"); return; }
     if (!strcmp(op, "hr")) { em("or rax, rcx"); return; }
     if (!strcmp(op, "hd")) { em("xor rax, rcx"); return; }
-    if (!strcmp(op, "<<")) { em("shl rax, cl"); return; }
-    if (!strcmp(op, ">>")) { em("shr rax, cl"); return; }
+    if (!strcmp(op, "<<") || !strcmp(op, "dh")) { em("shl rax, cl"); return; }
+    if (!strcmp(op, ">>") || !strcmp(op, "dl")) { em("shr rax, cl"); return; }
     if (!strcmp(op, "==") || !strcmp(op, "!=") || !strcmp(op, "<") ||
         !strcmp(op, "<=") || !strcmp(op, ">") || !strcmp(op, ">=")) {
         em("cmp rax, rcx");
@@ -915,6 +930,275 @@ static void stmt(void) {
             return;
         }
         die("第 %d 行：st 后面只能是 dt（写整数）或 dd（写字符串）", cur()->line);
+    }
+
+    /* ---- zh 标签定义 ---- */
+    if (is_kw("zh")) {
+        adv();
+        if (cur()->k != TK_ID) die("第 %d 行：zh 后面必须是标签名", cur()->line);
+        lbl(cur()->s);
+        adv();
+        return;
+    }
+
+    /* ---- lt 无条件跳转 ---- */
+    if (is_kw("lt")) {
+        adv();
+        if (cur()->k != TK_ID) die("第 %d 行：lt 后面必须是标签名", cur()->line);
+        em("jmp %s", cur()->s);
+        adv();
+        return;
+    }
+
+    /* ---- zf 取地址 ---- */
+    if (is_kw("zf")) {
+        adv();
+        if (cur()->k != TK_ID) die("第 %d 行：zf 后面必须是变量名", cur()->line);
+        char *name = cur()->s; adv();
+        int li = var_find_local(name);
+        int gi = global_find(name);
+        if (li >= 0) em("lea rax, [rbp%+d]", vars[li].off);
+        else if (gi >= 0) em("mov rax, offset %s", globals[gi].glabel);
+        else die("第 %d 行：zf 取地址：变量不存在：%s", cur()->line, name);
+        return;
+    }
+
+    /* ---- zs 内联汇编 ---- */
+    if (is_kw("zs")) {
+        adv();
+        if (cur()->k != TK_STR) die("第 %d 行：zs 后面必须是汇编字符串", cur()->line);
+        em("%s", cur()->s);
+        adv();
+        return;
+    }
+
+    /* ---- zd 系统调用 ---- */
+    if (is_kw("zd")) {
+        adv();
+        em("mov rax, rdi");  /* 第一个参数=syscall号 */
+        em("syscall");
+        return;
+    }
+
+    /* ---- fd 逻辑非 ---- */
+    if (is_kw("fd")) {
+        adv();
+        expr(0);
+        em("test rax, rax"); em("sete al"); em("movzx rax, al");
+        return;
+    }
+
+    /* ---- fr 解引用读内存 ---- */
+    if (is_kw("fr")) {
+        adv();
+        expr(0);
+        em("mov rax, [rax]");
+        return;
+    }
+
+    /* ---- fh 读内存(指定宽度) ---- */
+    if (is_kw("fh")) {
+        adv();
+        expr(0);
+        em("mov rax, [rax]");
+        return;
+    }
+
+    /* ---- sh 写内存 ---- */
+    if (is_kw("sh")) {
+        adv();
+        expr(0); em("push rax");  /* 地址 */
+        expect_p(",");
+        expr(0); em("mov rcx, rax"); em("pop rax");
+        em("mov [rax], rcx");
+        return;
+    }
+
+    /* ---- sr 指针写入 ---- */
+    if (is_kw("sr")) {
+        adv();
+        expr(0); em("push rax");
+        expect_p(",");
+        expr(0); em("mov rcx, rax"); em("pop rax");
+        em("mov [rax], rcx");
+        return;
+    }
+
+    /* ---- rr 申请堆内存(brk) ---- */
+    if (is_kw("rr")) {
+        adv();
+        expr(0);
+        em("mov rsi, rax");        /* size */
+        em("xor rdi, rdi");        /* addr=0 → 取当前brk */
+        em("mov rax, 12"); em("syscall");  /* brk → rax=当前堆顶 */
+        em("mov rdi, rax"); em("add rdi, rsi");  /* 新堆顶 */
+        em("mov rax, 12"); em("syscall");  /* rax=旧堆顶=分配地址 */
+        return;
+    }
+
+    /* ---- rs 释放内存(空操作，brk不释放) ---- */
+    if (is_kw("rs")) {
+        adv();
+        expr(0);
+        em("xor rax, rax");
+        return;
+    }
+
+    /* ---- rf 内存清零(简化版：清零首字节) ---- */
+    if (is_kw("rf")) {
+        adv(); expr(0); em("push rax"); expect_p(","); expr(0);
+        em("pop rdi"); em("mov byte ptr [rdi], 0");
+        return;
+    }
+    /* ---- rd 内存拷贝(简化版：拷贝单字节) ---- */
+    if (is_kw("rd")) {
+        adv(); expr(0); em("push rax"); expect_p(",");
+        expr(0); em("push rax"); expect_p(",");
+        expr(0); em("pop rsi"); em("pop rdi");
+        em("mov al, [rsi]"); em("mov [rdi], al");
+        return;
+    }
+
+    /* ---- dh 左移 ---- */
+    if (is_kw("dh")) {
+        adv();
+        expr(0); em("push rax");
+        expect_p(",");
+        expr(0); em("mov rcx, rax"); em("pop rax");
+        em("shl rax, cl");
+        return;
+    }
+
+    /* ---- dl 右移 ---- */
+    if (is_kw("dl")) {
+        adv();
+        expr(0); em("push rax");
+        expect_p(",");
+        expr(0); em("mov rcx, rax"); em("pop rax");
+        em("shr rax, cl");
+        return;
+    }
+
+    /* ---- dr 按位取反 ---- */
+    if (is_kw("dr")) {
+        adv();
+        expr(0);
+        em("not rax");
+        return;
+    }
+
+    /* ---- rh 强制类型转换 ---- */
+    if (is_kw("rh")) {
+        adv();
+        expr(0);  /* 直接传递，六爻都是u32 */
+        return;
+    }
+
+    /* ---- rl 运行时类型检查 ---- */
+    if (is_kw("rl")) {
+        adv();
+        expr(0);  /* 基础实现：直接返回值 */
+        return;
+    }
+
+    /* ---- rt 进入作用域 ---- */
+    if (is_kw("rt")) {
+        adv();
+        scope_depth++;
+        return;
+    }
+
+    /* ---- rz 退出作用域 ---- */
+    if (is_kw("rz")) {
+        adv();
+        if (scope_depth > 0) scope_depth--;
+        return;
+    }
+
+    /* ---- sd 调试/日志输出 ---- */
+    if (is_kw("sd")) {
+        adv();
+        if (cur()->k == TK_STR) {
+            if (nstr >= 1024) die("字符串太多");
+            strtab[nstr++] = cur()->s; adv();
+            em("push offset .Lstr%d", nstr - 1);
+            em("call _rt_puts"); em("add rsp, 8");
+        } else {
+            expr(0); em("push rax"); em("call _rt_puti"); em("add rsp, 8");
+        }
+        return;
+    }
+
+    /* ---- sz 写文件 ---- */
+    if (is_kw("sz")) {
+        adv();
+        expr(0); em("push rax");  /* fd */
+        expect_p(",");
+        expr(0); em("push rax");  /* buf */
+        expect_p(",");
+        expr(0); em("mov rdx, rax");  /* count */
+        em("pop rsi"); em("pop rdi");
+        em("mov rax, 1"); em("syscall");  /* write */
+        return;
+    }
+
+    /* ---- fz 读文件 ---- */
+    if (is_kw("fz")) {
+        adv();
+        expr(0); em("push rax");  /* fd */
+        expect_p(",");
+        expr(0); em("push rax");  /* buf */
+        expect_p(",");
+        expr(0); em("mov rdx, rax");  /* count */
+        em("pop rsi"); em("pop rdi");
+        em("xor rax, rax"); em("syscall");  /* read */
+        return;
+    }
+
+    /* ---- ft 读键盘 ---- */
+    if (is_kw("ft")) {
+        adv();
+        em("call _rt_getc");
+        return;
+    }
+
+    /* ---- fl 读IO端口 ---- */
+    if (is_kw("fl")) {
+        adv();
+        expr(0);
+        em("mov rdx, rax"); em("xor rax, rax"); em("in al, dx");
+        return;
+    }
+
+    /* ---- sl 写IO端口 ---- */
+    if (is_kw("sl")) {
+        adv();
+        expr(0); em("push rax");  /* port */
+        expect_p(",");
+        expr(0); em("mov rcx, rax"); em("pop rdx");
+        em("mov rax, rcx"); em("out dx, al");
+        return;
+    }
+
+    /* ---- zr 断言 ---- */
+    if (is_kw("zr")) {
+        adv();
+        expr(0);
+        em("test rax, rax");
+        char lab[32];
+        em("jnz %s", newlab("assert_ok", lab));
+        em("mov rdi, 1"); em("call _rt_exit");
+        lbl(lab);
+        return;
+    }
+
+    /* ---- zl 函数指针(取函数地址) ---- */
+    if (is_kw("zl")) {
+        adv();
+        if (cur()->k != TK_ID) die("第 %d 行：zl 后面必须是函数名", cur()->line);
+        em("mov rax, offset fn_%s", cur()->s);
+        adv();
+        return;
     }
 
     if (cur()->k == TK_ID && !strcmp(cur()->s, "印")) { do_print(); return; }
