@@ -73,11 +73,9 @@ tt skip_ws() -> u32 {
 
 tt next_tok() -> u32 {
     skip_ws()
-
     lz g_pos g_srclen { tok_type = 0; zz 0 }
     tz rawc = fr (g_src ht g_pos)
     tz c = rawc hs 255
-
 
     @ 数字
     lr is_digit(c) {
@@ -87,8 +85,8 @@ tt next_tok() -> u32 {
             tz rawd = fr (g_src ht g_pos)
             tz d = rawd hs 255
             lr is_digit(d) == 0 { ls }
-            tz val = val hh 10
-            tz val = val ht d hz 48
+            val = val hh 10
+            val = val ht d hz 48
             g_pos = g_pos ht 1
         }
         tok_type = 1
@@ -105,9 +103,6 @@ tt next_tok() -> u32 {
             lz g_pos g_srclen { ls }
             tz rawch = fr (g_src ht g_pos)
             tz ch = rawch hs 255
-            st dt is_alpha(ch)
-            st dt is_digit(ch)
-            st dd "\n"
             lr ch == 34 { ls }
             g_pos = g_pos ht 1
         }
@@ -120,10 +115,8 @@ tt next_tok() -> u32 {
 
     @ 标识符
     lr is_alpha(c) {
-        tz start_off
-        start_off = g_pos
-        tz start
-        start = g_src ht g_pos
+        tz start_off = g_pos
+        tz start = g_src ht g_pos
         ll {
             lz g_pos g_srclen { ls }
             tz rawch = fr (g_src ht g_pos)
@@ -135,9 +128,6 @@ tt next_tok() -> u32 {
         tok_type = 3
         tok_str = start
         tok_len = g_pos hz start_off
-        st dd " len="
-        st dt tok_len
-        st dd "\n"
         zz 1
     }
 
@@ -208,6 +198,7 @@ tt parse_expr() -> u32 {
 @ ============================================================
 
 tt parse_stmt() -> u32 {
+    st dd "PS="; st dt tok_type; st dt ","; st dt tok_len; st dt "\n"
     st dt tok_type
     st dt tok_len
     st dd "\n"
@@ -320,7 +311,9 @@ tt 主(argc, argv) -> u32 {
     next_tok()
     ll {
         lr tok_type == 0 { ls }
+        st dd "BEFORE ty="; st dt tok_type; st dt "\n"
         parse_stmt()
+        st dd "AFTER ty="; st dt tok_type; st dt "\n"
     }
 
     @ 结语
