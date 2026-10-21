@@ -1306,10 +1306,13 @@ static void stmt(void) {
         if (li_chk >= 0) em("mov [rbp%+d], rax", vars[li_chk].off);   /* 局部槽固定 8 字节 */
         else {                       /* ★ 全局按【声明的大小】存，不然会踩到隔壁那个全局 */
             int 宽 = globals[gi_chk].size;
-            if (宽 == 1)      em("mov byte ptr [%s], al", globals[gi_chk].glabel);
-            else if (宽 == 2) em("mov word ptr [%s], ax", globals[gi_chk].glabel);
-            else if (宽 == 8) em("mov [%s], rax", globals[gi_chk].glabel);
-            else              em("mov dword ptr [%s], eax", globals[gi_chk].glabel);
+            em("push rax");
+            em("mov rax, offset %s", globals[gi_chk].glabel);
+            em("pop rcx");
+            if (宽 == 1)      em("mov byte ptr [rax], cl");
+            else if (宽 == 2) em("mov word ptr [rax], cx");
+            else if (宽 == 8) em("mov [rax], rcx");
+            else              em("mov dword ptr [rax], ecx");
         }
         return;
     }
@@ -1405,7 +1408,7 @@ static void parse_fn(void) {
 
     for (int i = 0; i < np; i++) {
         int idx = var_new(pname[i]);
-        vars[idx].off = 16 + 16 * (np - 1 - i);
+        vars[idx].off = 16 + 8 * (np - 1 - i);
         vars[idx].declared = 1; vars[idx].mut = 0;
         vars[idx].size = 8; vars[idx].count = 1;
     }

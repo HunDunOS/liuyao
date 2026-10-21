@@ -10,6 +10,7 @@ tz tok_type
 tz tok_val
 tz tok_str
 tz tok_len
+tz g_saved_tok
 tz g_out [65536]: u8
 tz g_outpos
 tz g_nvars
@@ -128,6 +129,8 @@ tt next_tok() -> u32 {
         tok_type = 3
         tok_str = start
         tok_len = g_pos hz start_off
+        g_saved_tok = tok_type
+        st dd "SET ty="; st dt tok_type; st dd " saved="; st dt g_saved_tok; st dd "\n"
         zz 1
     }
 
@@ -243,25 +246,27 @@ tt parse_stmt() -> u32 {
         st dd "\n"
 
         next_tok()
-
+        st dd "TZ1 ty="; st dt tok_type; st dd "\n"
         lr tok_type == 3 {
             tz vi = g_nvars
+            lr vi >= 64 { st dd "VAR OVERFLOW!\n"; zz 0 }
             g_vname[vi] = tok_str
             g_framesz = g_framesz ht 16
             g_voff[vi] = g_framesz
             g_nvars = g_nvars ht 1
             next_tok()
-
+            st dd "TZ2 ty="; st dt tok_type; st dd "\n"
             lh tok_type 5 { zz 0 }
             lh tok_val 61 { zz 0 }
             next_tok()
+            st dd "TZ3 ty="; st dt tok_type; st dd "\n"
             parse_expr()
-            emit("mov [rbp")
-            tz off = g_voff[vi]
-            lr off >= 0 { emit("+") }
-            emit_num(off)
+            st dd "TZ4 ty="; st dt tok_type; st dd "\n"
+            emit("mov [rbp+")
+            emit_num(g_voff[vi])
             emit("], rax\n")
         }
+        st dd "TZ_END ty="; st dt tok_type; st dd "\n"
         zz 0
     } }
 
@@ -303,6 +308,9 @@ tt 主(argc, argv) -> u32 {
     st dd "lyc_self v0.1: 编译 "
     st dt g_srclen
     st dd " 字节\n"
+    st dd "tok_type addr="
+    st dt zf tok_type
+    st dd "\n"
 
     @ 输出汇编头部
     emit(".intel_syntax noprefix\n.section .text\n.globl fn_main\nfn_main:\npush rbp\nmov rbp, rsp\n")
@@ -310,8 +318,8 @@ tt 主(argc, argv) -> u32 {
     @ 解析
     next_tok()
     ll {
-        lr tok_type == 0 { ls }
-        st dd "BEFORE ty="; st dt tok_type; st dt "\n"
+        lz tok_type 0 { ls }
+        st dd "BEFORE ty="; st dt tok_type; st dd " saved="; st dt g_saved_tok; st dd "\n"
         parse_stmt()
         st dd "AFTER ty="; st dt tok_type; st dt "\n"
     }
