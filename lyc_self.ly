@@ -20,7 +20,8 @@ tz dtend    @ 源码结束指针
 tz dtlab    @ 标签计数器
 tz dsn      @ 字符串表计数
 tz dnv      @ 变量数
-tz dfr      @ 栈帧大小
+tz dfr      @ 栈帧大小（预扫描用）
+tz dloc     @ 局部变量偏移计数器（实际解析用）
 tz dtcurfn  @ 当前函数名指针
 tz dtcurfnl @ 当前函数名长度
 tz dln      @ 循环嵌套深度
@@ -28,7 +29,8 @@ tz dln      @ 循环嵌套深度
 @ ---- 表 ----
 tf dsb[65536]: u8    @ 源码缓冲
 tf dtv[128]: u64     @ 变量名表
-tf dtw[128]: u64     @ 变量偏移表（正数，输出时用[rbp-N]）
+tf dtw[128]: u64     @ 变量偏移表
+tf dtisparam[128]: u64  @ 是否是参数（1=参数，0=局部）
 tf dtvl[128]: u64    @ 变量名长度表
 tf dsv[256]: u64     @ 字符串表
 tf dsl[256]: u64     @ 字符串长度表
@@ -38,6 +40,9 @@ tf gname[64]: u64    @ 全局变量名表
 tf gsize[64]: u64    @ 全局变量大小(字节)
 tf glen[64]: u64     @ 全局变量名长度
 tz gcount            @ 全局变量数
+tf pname[16]: u64    @ 参数名临时表
+tf plen[16]: u64     @ 参数名长度临时表
+tz pcount            @ 参数总数
 
 @ ============================================================
 @ 基础工具
@@ -91,7 +96,7 @@ tt ltm(a, b) -> u32 {
         tz cb = rb hs 255
         lr ca != cb { zz 0 }
         lz ca 0 { zz 1 }
-        tz i = i ht 1
+        i = i ht 1
     }
 }
 
@@ -232,11 +237,14 @@ tt llt() -> u32 {
 
 tt lfv(name) -> u32 {
     tz i = 0
+    tz j = 0
+    tz vlen = 0
+    tz match = 0
     ll {
         lz i dnv { zz dnv }
-        tz vlen = dtvl[i]
-        tz match = 1
-        tz j = 0
+        vlen = dtvl[i]
+        match = 1
+        j = 0
         ll {
             lz j vlen { ls }
             tz aa = dtv[i] ht j
@@ -246,11 +254,25 @@ tt lfv(name) -> u32 {
             tz rb = fr bb
             tz cb = rb hs 255
             lr ca != cb { match = 0; ls }
-            tz j = j ht 1
+            j = j ht 1
         }
         lr match == 1 { zz i }
-        tz i = i ht 1
+        i = i ht 1
     }
+}
+
+tt lfoutvar(vi) -> u32 {
+    @ 参数用[rbp+N]，局部变量用[rbp-N]
+    lr dtisparam[vi] == 1 {
+        st dd "[rbp+"
+        st dt dtw[vi]
+        st dd "]"
+        zz 0
+    }
+    st dd "[rbp-"
+    st dt dtw[vi]
+    st dd "]"
+    zz 0
 }
 
 @ ============================================================
@@ -385,9 +407,9 @@ tt zzp() -> u32 {
             llt()
             tz vi = lfv(name)
             lr vi < dnv {
-                st dd "lea rax, [rbp-"
-                st dt dtw[vi]
-                st dd "]\n"
+                st dd "lea rax, "
+                zt lfoutvar(vi)
+                st dd "\n"
                 zz 0
             }
         }
@@ -409,9 +431,9 @@ tt zzp() -> u32 {
             st dd "push rax\n"
             tz vi = lfv(name)
             lr vi < dnv {
-                st dd "lea rax, [rbp-"
-                st dt dtw[vi]
-                st dd "]\n"
+                st dd "lea rax, "
+                zt lfoutvar(vi)
+                st dd "\n"
             } ld {
                 st dd "mov rax, offset g_"
                 tz sf0 = dtcurfn
@@ -460,9 +482,9 @@ tt zzp() -> u32 {
         @ 普通变量
         tz vi = lfv(name)
         lr vi < dnv {
-            st dd "mov rax, [rbp-"
-            st dt dtw[vi]
-            st dd "]\n"
+            st dd "mov rax, "
+            zt lfoutvar(vi)
+            st dd "\n"
             zz 0
         }
         st dd "mov rax, 0\n"
@@ -549,18 +571,18 @@ tt lzc() -> u32 {
     tz vi = dnv
     dtv[vi] = name
     dtvl[vi] = namelen
-    tz off = vi ht 1
-    off = off hh 8
-    dtw[vi] = off
+    dloc = dloc ht 8
+    dtw[vi] = dloc
+    dtisparam[vi] = 0
     dnv = dnv ht 1
     llt()
     @ = 赋值
     lr dtt == 4 { lr dth == 61 {
         llt()
         zzd()
-        st dd "mov [rbp-"
-        st dt dtw[vi]
-        st dd "], rax\n"
+        st dd "mov "
+        zt lfoutvar(vi)
+        st dd ", rax\n"
     } }
     zz 0
 }
@@ -623,9 +645,9 @@ tt lzassign() -> u32 {
         st dd "push rax\n"
         tz vi = lfv(name)
         lr vi < dnv {
-            st dd "lea rax, [rbp-"
-            st dt dtw[vi]
-            st dd "]\n"
+            st dd "lea rax, "
+            zt lfoutvar(vi)
+            st dd "\n"
         } ld {
             st dd "mov rax, offset g_"
             tz sf0 = dtcurfn
@@ -651,9 +673,9 @@ tt lzassign() -> u32 {
     zzd()
     tz vi = lfv(name)
     lr vi < dnv {
-        st dd "mov [rbp-"
-        st dt dtw[vi]
-        st dd "], rax\n"
+        st dd "mov "
+        zt lfoutvar(vi)
+        st dd ", rax\n"
     }
     zz 0
 }
@@ -895,8 +917,32 @@ tt zzh() -> u32 {
         st dt dfr
         st dd "\n"
         dnv = 0
-        @ 跳过参数列表
-        ll { llt(); lr dtt == 4 { lr dth == 41 { ls } } }
+        @ 解析参数列表
+        pcount = 0
+        llt()  @ 跳过 (
+        ll {
+            lr dtt == 4 { lr dth == 41 { ls } }
+            lr dtt == 3 {
+                pname[pcount] = dtz
+                plen[pcount] = dtu
+                pcount = pcount ht 1
+                llt()
+            }
+            lr dtt == 4 { lr dth == 44 { llt() } }
+        }
+        llt()  @ 跳过 )
+        @ 参数加入变量表: 第i个参数偏移=16+8*(pcount-1-i)
+        tz pi2 = 0
+        ll {
+            lz pi2 pcount { ls }
+            dtv[dnv] = pname[pi2]
+            dtvl[dnv] = plen[pi2]
+            dtw[dnv] = 16 ht (8 hh (pcount hz 1 hz pi2))
+            dtisparam[dnv] = 1
+            dnv = dnv ht 1
+            pi2 = pi2 ht 1
+        }
+        dloc = 0
         @ 跳过返回类型
         ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
         llt()
