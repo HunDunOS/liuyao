@@ -1,6 +1,47 @@
+# 编译产物
 *.o
 *.o.*
-构建/
+*.s
+*.bin
+*.elf
+*.img
+
+# 可执行文件
 lyc
 wuxing
-*.wx
+lyc_self
+t_*
+
+# 测试文件
+t_*.ly
+t_*.wx
+test_*.wx
+final_test.wx
+
+# 临时文件
+*.tmp
+*.bak
+w.txt
+fetch_*.wx
+
+# 旧版备份
+*_old.*
+*_old
+
+# 构建目录
+构建/
+bin/
+Dao/
+自举/
+
+# 克隆的外部仓库
+HunDunOS-main/
+liuyao-main/
+
+# 压缩包
+*.zip
+*.7z
+*.tar.gz
+
+# 预编译二进制
+宿主/预造/
