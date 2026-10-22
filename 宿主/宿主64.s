@@ -89,13 +89,13 @@ _rt_puti:
 	push rbx
 	push rsi
 	push rdx
-	mov eax, [rbp+16]
-	mov ebx, 10
+	mov rax, [rbp+16]
+	mov rbx, 10
 	lea rsi, [rip+_宿_数尾]
 	mov byte ptr [rsi], 0
-	test eax, eax
+	test rax, rax
 	jns 2f
-	neg eax
+	neg rax
 	push rax
 	mov rax, 45
 	mov byte ptr [rip+_宿_字节], al
@@ -104,12 +104,12 @@ _rt_puti:
 	call _宿_写
 	pop rax
 	lea rsi, [rip+_宿_数尾]
-2:	xor edx, edx
-	div ebx
+2:	xor rdx, rdx
+	div rbx
 	add dl, 48
 	dec rsi
 	mov [rsi], dl
-	test eax, eax
+	test rax, rax
 	jnz 2b
 	lea rdx, [rip+_宿_数尾]
 	sub rdx, rsi

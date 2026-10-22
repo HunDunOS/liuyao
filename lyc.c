@@ -300,9 +300,11 @@ static int var_new(const char *n) {
     return nvars++;
 }
 static int elem_size_of_type(const char *t) {
-    if (!t) return 4;
+    if (!t) return 8;
     if (!strcmp(t, "u8") || !strcmp(t, "i8") || !strcmp(t, "z")) return 1;
     if (!strcmp(t, "u16") || !strcmp(t, "i16")) return 2;
+    if (!strcmp(t, "u32") || !strcmp(t, "i32")) return 4;
+    if (!strcmp(t, "u64") || !strcmp(t, "i64")) return 8;
     {   /* ★ 五行：尺寸看第一个字（J 金=4  M 木=8  S 水=1  H 火=4  T 土=4） */
         if (t[0] == 'J' || t[0] == 'M' || t[0] == 'S' || t[0] == 'H' || t[0] == 'T') {
             if (t[0] == 'M') return 8;
@@ -310,7 +312,7 @@ static int elem_size_of_type(const char *t) {
             return 4;
         }
     }
-    return 4;
+    return 8;
 }
 
 /* ---------------- 结构体表 ---------------- */
@@ -622,14 +624,14 @@ static void primary(void) {
 
         /* 变量（可能带下标与字段） */
         adv();
-        int width = 4, had = 0;
+        int width = 8, had = 0;
         int isg = lvalue_full(name, &width, &had, t->line);
         if (isg < 0) die("第 %d 行：名字不存在：%s", t->line, name);
         if (had == 0 && lvalue_count(name) > 1) return;     /* 纯数组名 → 地址 */
         if (width == 1) em("movzx rax, byte ptr [rax]");
         else if (width == 2) em("movzx rax, word ptr [rax]");
         else if (width == 8) em("mov rax, [rax]");
-        else em("mov eax, [rax]");            /* ★ 4 字节槽：只读 32 位，零扩展到 rax */
+        else em("mov rax, [rax]");            /* ★ 全64位 */
         return;
     }
 
@@ -839,7 +841,7 @@ static void stmt(void) {
         int i = var_new(name);
         if (vars[i].off == 0) {                 /* 没有被 prescan 覆盖（极少见）：兜底 */
             /* ★ 64 位：每个槽固定 8 字节（push/pop 就是 8 字节）*/
-            framesz += 16 * count;
+            framesz += 8 * count;
             vars[i].off = -framesz;
         }
         vars[i].size = size; vars[i].count = count; vars[i].mut = mut; vars[i].declared = 1;
@@ -1289,7 +1291,7 @@ static void stmt(void) {
             die("第 %d 行：不可变绑定不可赋值：%s（要可变请用 kb 声明）", ln, name);
 
         if (is_p("[") || is_p(".")) {
-            int width = 4, had = 0;
+            int width = 8, had = 0;
             (void)lvalue_full(name, &width, &had, ln);
             if (!is_p("=")) die("第 %d 行：这里只能赋值", ln);
             adv();
@@ -1351,7 +1353,7 @@ static void prescan_locals(int start) {
             int idx = var_new(nm);
             vars[idx].size = size; vars[idx].count = count; vars[idx].mut = 1;
             /* ★ 同上：槽至少 4 字节 */
-            framesz += 16 * count;
+            framesz += 8 * count;
             vars[idx].off = -framesz;
         }
     }

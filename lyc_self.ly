@@ -411,7 +411,7 @@ tt lzc() -> u32 {
     tz vi = dnv
     dtv[vi] = name
     dtvl[vi] = namelen
-    dfr = dfr ht 16
+    dfr = dfr ht 8
     dtw[vi] = dfr
     dnv = dnv ht 1
     llt()
