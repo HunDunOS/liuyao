@@ -25,6 +25,8 @@ tz dnv      @ 变量数
 tz dfr      @ 栈帧大小
 tz dtmp     @ 临时长度
 tz dtend    @ 源码结束指针
+tz dtcurfn  @ 当前函数名指针
+tz dtcurfnl @ 当前函数名长度
 
 @ ---- 表 ----
 tf dsb[65536]: u8    @ 源码缓冲
@@ -33,6 +35,7 @@ tf dtw[128]: u64
 tf dtvl[128]: u64          @ 变量偏移表
 tf dsv[256]: u64          @ 字符串表
 tf dsl[256]: u64          @ 字符串长度表
+tf dtfnbuf[256]: u8    @ 函数名mangle缓冲区
 
 @ ============================================================
 @ 基础工具
@@ -368,6 +371,37 @@ tt zzd() -> u32 {
 @ 语句处理
 @ ============================================================
 
+tt lfoutname() -> u32 {
+    @ 输出mangle后的函数名：ASCII字母数字下划线直接输出，其他输出_xx
+    tz i = 0
+    ll {
+        lr i >= dtcurfnl { ls }
+        tz addr = dtcurfn ht i
+        tz c = fr addr
+        tz cb = c hs 255
+        @ 判断是否为ASCII字母数字下划线
+        tz isasc = 0
+        lr cb >= 97 { lr cb <= 122 { tz isasc = 1 } }
+        lr cb >= 65 { lr cb <= 90 { tz isasc = 1 } }
+        lr cb >= 48 { lr cb <= 57 { tz isasc = 1 } }
+        lr cb == 95 { tz isasc = 1 }
+        lr isasc == 1 {
+            zt 出(cb)
+        } ld {
+            @ 非ASCII：输出下划线+两位十六进制
+            zt 出(95)
+            tz hi = cb dl 4
+            tz lo = cb hs 15
+            lr hi < 10 { zt 出(hi ht 48) }
+            lr hi >= 10 { zt 出(hi ht 87) }
+            lr lo < 10 { zt 出(lo ht 48) }
+            lr lo >= 10 { zt 出(lo ht 87) }
+        }
+        i = i ht 1
+    }
+    zz i
+}
+
 tt lzc() -> u32 {
     @ tz 变量声明
     llt()
@@ -424,7 +458,9 @@ tt lzr() -> u32 {
         st dd "\n"
         llt()
     }
-    st dd "jmp .Lret_主\n"
+    st dd "jmp .Lret_"
+    zt lfoutname()
+    st dd "\n"
     zz 0
 }
 
@@ -444,15 +480,46 @@ tt zzh() -> u32 {
     @ zz 返回
     lr dtt == 5 { lr dtf == 122 { lr dts == 122 { lzr(); zz 0 } } }
 
-    @ tt 函数定义：找到{后递归解析直到}
+    @ tt 函数定义：生成标签+序言，解析体，生成结语
     lr dtt == 5 { lr dtf == 116 { lr dts == 116 {
+        llt()
+        @ 函数名
+        lr dtt == 3 {
+            dtcurfn = dtz
+            dtcurfnl = dtu
+            @ 生成函数标签 fn_<name>
+            st dd ".globl fn_"
+            zt lfoutname()
+            st dd "\nfn_"
+            zt lfoutname()
+            st dd ":\n"
+            st dd "push rbp\nmov rbp, rsp\n"
+            dfr = 0
+            dnv = 0
+        }
+        @ 跳过参数列表
+        ll {
+            llt()
+            lr dtt == 4 { lr dth == 41 { ls } }
+        }
+        @ 跳过返回类型 -> u32
         ll {
             llt()
             lr dtt == 4 { lr dth == 123 { ls } }
         }
         llt()
+        @ 解析函数体
         ll {
-            lr dtt == 4 { lr dth == 125 { llt(); zz 0 } }
+            lr dtt == 4 { lr dth == 125 {
+                @ 结语
+                st dd "sub rsp, "
+                st dt dfr
+                st dd "\n.Lret_"
+                zt lfoutname()
+                st dd ":\nmov rsp, rbp\npop rbp\nret\n"
+                llt()
+                zz 0
+            } }
             zzh()
         }
         zz 0
@@ -467,14 +534,15 @@ tt zzh() -> u32 {
 @ 主函数
 @ ============================================================
 
-tt 主() -> u32 {
-    @ 测试源码
-    tz test = "tt 主() -> u32 {\n  tz a = 10\n  tz b = 20\n  st dt a ht b\n  zz 0\n}\n"
-    tz slen = lds(test)
+tt 主(fname) -> u32 {
+    @ 从命令行参数读取源码文件
+    tz slen = 0
+    tz src = zt _rt_slurp(fname, zf slen)
+    lz src 0 { zz 1 }
 
-    dtb = test
+    dtb = src
     dtn = slen
-    dtend = test ht slen
+    dtend = src ht slen
     dtl = 1
     dtlab = 0
     dsn = 0
@@ -491,10 +559,6 @@ tt 主() -> u32 {
         zzh()
     }
 
-    @ 结语
-    st dd "sub rsp, "
-    st dt dfr
-    st dd "\n.Lret_主:\nmov rsp, rbp\npop rbp\nret\n"
-
     zz 0
 }
+

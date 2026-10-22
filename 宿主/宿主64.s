@@ -392,6 +392,10 @@ fn_read_file:
 	.align 8
 _rf_buf:	.space 4096
 _input_buf:	.space 1024
+	.align 8
+_rt_statbuf:	.space 144
+	.align 16
+_rt_slurp_buf:	.space 1048576
 	.section .text
 
 # ── 小链接别名（fn_前缀）──────────────────────────────────────
@@ -569,7 +573,7 @@ fn_fn_set_byte:
 _rt_exit:
 	push rbp
 	mov rbp, rsp
-	mov rdi, [rbp+16]
+	mov rdi, [rbp+24]
 	mov rax, 60
 	syscall
 	pop rbp
@@ -596,3 +600,58 @@ _rt_sleep:
 	syscall
 	leave
 	ret
+
+# ── _rt_slurp(filename, len_ptr) —— 一次性读入整个文件 ──────────────────
+# 返回内容指针，长度写入 *len_ptr，失败返回 0
+# 用静态缓冲区 _rt_slurp_buf（1MB），避免 brk 问题
+	.globl _rt_slurp
+	.globl fn__rt_slurp
+_rt_slurp:
+fn__rt_slurp:
+	push rbp
+	mov rbp, rsp
+	sub rsp, 16
+	# open(filename, O_RDONLY=0)
+	mov rax, 2
+	mov rdi, [rbp+24]
+	xor rsi, rsi
+	xor rdx, rdx
+	syscall
+	test rax, rax
+	js .slurp_fail
+	mov [rbp-8], rax          # fd
+	# fstat(fd, statbuf)
+	mov rax, 5
+	mov rdi, [rbp-8]
+	lea rsi, [rip+_rt_statbuf]
+	syscall
+	test rax, rax
+	js .slurp_close
+	# st_size 在 offset 48
+	mov r8, [rip+_rt_statbuf+48]
+	test r8, r8
+	jz .slurp_close
+	# 用静态缓冲区
+	lea r9, [rip+_rt_slurp_buf]
+	# read(fd, buf, size)
+	mov rax, 0
+	mov rdi, [rbp-8]
+	mov rsi, r9
+	mov rdx, r8
+	syscall
+	# 写长度到 *len_ptr
+	mov rax, [rbp+16]
+	mov [rax], r8
+.slurp_close:
+	# close(fd)
+	mov rax, 3
+	mov rdi, [rbp-8]
+	syscall
+	mov rax, r9               # 返回buf
+	leave
+	ret
+.slurp_fail:
+	xor rax, rax
+	leave
+	ret
+
