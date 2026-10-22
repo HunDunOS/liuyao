@@ -1,277 +1,465 @@
-@ 六爻自举编译器 v0.1 - 最小完整版
-@ 语法：C风格函数调用 func(args)，中缀运算 a ht b
+@ ============================================================
+@ 六爻自举编译器 lyc_self.ly - 纯血六爻版
+@ 架构：dt全局 + tf表 + tt函数
+@ ============================================================
 
 @ ---- 全局状态 ----
-tz g_src
-tz g_srclen
-tz g_pos
-tz g_line
-tz tok_type
-tz tok_val
-tz tok_str
-tz tok_len
-tz g_out [65536]: u8
-tz g_outpos
-tz g_nvars
-tz g_framesz
-tz g_vname [64]
-tz g_voff [64]
+tz dtd      @ 当前字符
+tz dtt      @ token类型: 0=EOF 1=数字 2=字符串 3=标识符 4=标点 5=卦指令
+tz dth      @ token数值
+tz dtz      @ token串指针
+tz dtu      @ token长度
+tz dtf      @ 关键字首字节
+tz dts      @ 关键字次字节
+tz dtu1     @ 关键字比较临时1
+tz dtu2     @ 关键字比较临时2
+tz dtq      @ 串比较临时1
+tz dtr      @ 串比较临时2
+tz dtn      @ 源码长度
+tz dtl      @ 行号
+tz dtb      @ 源码指针
+tz dtlab    @ 标签计数器
+tz dtlend   @ 循环结束标签
+tz dsn      @ 字符串表计数
+tz dnv      @ 变量数
+tz dfr      @ 栈帧大小
+tz dtmp     @ 临时长度
+tz dtend    @ 源码结束指针
+
+@ ---- 表 ----
+tf dsb[65536]: u8    @ 源码缓冲
+tf dtv[128]: u64          @ 变量名表
+tf dtw[128]: u64
+tf dtvl[128]: u64          @ 变量偏移表
+tf dsv[256]: u64          @ 字符串表
+tf dsl[256]: u64          @ 字符串长度表
 
 @ ============================================================
-@ 工具函数
+@ 基础工具
 @ ============================================================
 
-tt 串长(s) -> u32 {
+tt lds(s) -> u32 {
     tz i = 0
     ll {
-        lz i 65536 { ls }
-        tz addr = s ht i
-        tz rawc3 = fr addr
-        tz c = rawc3 hs 255
-        lz c 0 { ls }
+        tz a = s ht i
+        tz r = fr a
+        tz c = r hs 255
+        lz c 0 { zz i }
         tz i = i ht 1
     }
-    zz i
 }
 
-tt is_digit(c) -> u32 {
+tt ldh(c) -> u32 {
     lr c >= 48 { lr c <= 57 { zz 1 } }
     zz 0
 }
 
-tt is_alpha(c) -> u32 {
+tt lsl(c) -> u32 {
     lr c >= 97 { lr c <= 122 { zz 1 } }
     lr c >= 65 { lr c <= 90 { zz 1 } }
+    lr c >= 48 { lr c <= 57 { zz 1 } }
     lr c == 95 { zz 1 }
     lr c >= 128 { zz 1 }
     zz 0
+}
+
+tt lsg(c) -> u32 {
+    lr c == 116 { zz 1 }
+    lr c == 122 { zz 1 }
+    lr c == 104 { zz 1 }
+    lr c == 108 { zz 1 }
+    lr c == 102 { zz 1 }
+    lr c == 115 { zz 1 }
+    lr c == 114 { zz 1 }
+    lr c == 100 { zz 1 }
+    zz 0
+}
+
+tt ltm(a, b) -> u32 {
+    tz i = 0
+    ll {
+        tz aa = a ht i
+        tz ra = fr aa
+        tz ca = ra hs 255
+        tz bb = b ht i
+        tz rb = fr bb
+        tz cb = rb hs 255
+        lr ca != cb { zz 0 }
+        lz ca 0 { zz 1 }
+        tz i = i ht 1
+    }
+}
+
+tt ltk(a, b) -> u32 {
+    tz ra = fr a
+    tz ca = ra hs 255
+    lr ca != dtf { zz 0 }
+    tz a1 = a ht 1
+    tz rb = fr a1
+    tz cb = rb hs 255
+    lr cb != dts { zz 0 }
+    zz 1
 }
 
 @ ============================================================
 @ 词法分析
 @ ============================================================
 
-tt skip_ws() -> u32 {
+tt lft() -> u32 {
     ll {
-        lr g_pos == g_srclen { ls }
-        tz addr = g_src ht g_pos
-        tz rawc = fr addr
-        tz c = rawc hs 255
-        tz is_ws = 0
-        lr c == 32 { is_ws = 1 }
-        lr c == 9 { is_ws = 1 }
-        lr c == 10 { is_ws = 1; g_line = g_line ht 1 }
-        lr c == 13 { is_ws = 1 }
-        lr is_ws == 1 { g_pos = g_pos ht 1 }
-        lr is_ws == 0 { ls }
+        lr dtb >= dtend { zz 0 }
+        tz a = dtb
+        tz r = fr a
+        tz c = r hs 255
+        lr c == 32 { dtb = dtb ht 1 }
+        lr c == 9 { dtb = dtb ht 1 }
+        lr c == 10 { dtb = dtb ht 1; dtl = dtl ht 1 }
+        lr c == 13 { dtb = dtb ht 1 }
+        lr c != 32 { lr c != 9 { lr c != 10 { lr c != 13 { ls } } } }
     }
     zz 0
 }
 
-tt next_tok() -> u32 {
-    skip_ws()
-    lz g_pos g_srclen { tok_type = 0; zz 0 }
-    tz addr = g_src ht g_pos
-    tz rawc = fr addr
-    tz c = rawc hs 255
+tt lln(c) -> u32 {
+    lr c == 48 { zz 35 }
+    lr c == 49 { zz 40 }
+    lr c == 50 { zz 41 }
+    lr c == 51 { zz 34 }
+    lr c == 52 { zz 34 }
+    lr c == 53 { zz 59 }
+    lr c == 54 { zz 47 }
+    lr c == 55 { zz 92 }
+    lr c == 56 { zz 123 }
+    lr c == 57 { zz 125 }
+    zz c
+}
+
+tt ldn() -> u32 {
+    tz val = 0
+    ll {
+        lr dtb >= dtend { ls }
+        tz a = dtb
+        tz r = fr a
+        tz c = r hs 255
+        lr ldh(c) == 0 { ls }
+        tz val = val hh 10
+        tz digit = c hz 48
+        tz val = val ht digit
+        dtb = dtb ht 1
+    }
+    dtt = 1
+    dth = val
+    dtz = 0
+    dtu = 0
+    zz 1
+}
+
+tt lst() -> u32 {
+    tz start = dtb
+    dtb = dtb ht 1
+    ll {
+        lr dtb >= dtend { ls }
+        tz a = dtb
+        tz r = fr a
+        tz c = r hs 255
+        lr c == 34 { ls }
+        lr c == 92 { dtb = dtb ht 1 }
+        dtb = dtb ht 1
+    }
+    dtb = dtb ht 1
+    dtt = 2
+    dtz = start
+    dtu = dtb hz start
+    dth = 0
+    zz 1
+}
+
+tt llt() -> u32 {
+    lft()
+    lr dtb >= dtend { dtt = 0; zz 0 }
+    tz a = dtb
+    tz r = fr a
+    tz c = r hs 255
+    dtd = c
 
     @ 数字
-    lr is_digit(c) {
-        tz val = 0
+    lr ldh(c) == 1 { ldn(); zz 1 }
+
+    @ 字符串
+    lr c == 34 { lst(); zz 1 }
+
+    @ 注释
+    lr c == 35 {
         ll {
-            lz g_pos g_srclen { ls }
-            tz addrd = g_src ht g_pos
-            tz rawd = fr addrd
-            tz d = rawd hs 255
-            lr is_digit(d) == 0 { ls }
-            val = val hh 10
-            val = val ht d hz 48
-            g_pos = g_pos ht 1
+            lr dtb >= dtend { ls }
+            tz a2 = dtb
+            tz r2 = fr a2
+            tz c2 = r2 hs 255
+            lr c2 == 10 { ls }
+            dtb = dtb ht 1
         }
-        tok_type = 1
-        tok_val = val
+        llt()
         zz 1
     }
 
-    @ 字符串
-    lr c == 34 {
-        g_pos = g_pos ht 1
-        tz start_off = g_pos
-        tz start = g_src ht g_pos
-        ll {
-            lz g_pos g_srclen { ls }
-            tz addrch = g_src ht g_pos
-            tz rawch = fr addrch
-            tz ch = rawch hs 255
-            lr ch == 34 { ls }
-            g_pos = g_pos ht 1
+    @ 两字节卦指令
+    lr lsg(c) == 1 {
+        tz a3 = dtb ht 1
+        tz r3 = fr a3
+        tz c3 = r3 hs 255
+        lr lsg(c3) == 1 {
+            dtf = c
+            dts = c3
+            dtz = dtb
+            dtu = 2
+            dtt = 5
+            dtb = dtb ht 2
+            zz 1
         }
-        tok_type = 2
-        tok_str = start
-        tok_len = g_pos hz start_off
-        lr g_pos < g_srclen { g_pos = g_pos ht 1 }
-        zz 1
     }
 
     @ 标识符
-    lr is_alpha(c) {
-        tz start_off = g_pos
-        tz start = g_src ht g_pos
+    lr lsl(c) == 1 {
+        tz start = dtb
         ll {
-            lz g_pos g_srclen { ls }
-            tz addrch = g_src ht g_pos
-            tz rawch = fr addrch
-            tz ch = rawch hs 255
-            lr is_alpha(ch) { g_pos = g_pos ht 1 }
-            lr is_digit(ch) { g_pos = g_pos ht 1 }
-            lz is_alpha(ch) 0 { lz is_digit(ch) 0 { ls } }
+            lr dtb >= dtend { ls }
+            tz a4 = dtb
+            tz r4 = fr a4
+            tz c4 = r4 hs 255
+            lr lsl(c4) == 0 { ls }
+            dtb = dtb ht 1
         }
-        tok_type = 3
-        tok_str = start
-        tok_len = g_pos hz start_off
+        dtz = start
+        dtu = dtb hz start
+        dtt = 3
+        dth = 0
         zz 1
     }
 
-    @ 标点
-    tok_type = 5
-    tok_val = c
-    g_pos = g_pos ht 1
+    @ 标点（单字符）
+    dtt = 4
+    dth = c
+    dtz = 0
+    dtu = 1
+    dtb = dtb ht 1
     zz 1
 }
 
 @ ============================================================
-@ 代码生成
+@ 变量表
 @ ============================================================
 
-tt emit(s) -> u32 {
-    st dd s
-    zz 0
-}
-
-tt emit_num(n) -> u32 {
-    st dt n
-    zz 0
-}
-
-@ ============================================================
-@ 表达式解析（最小：数字/变量/加法）
-@ ============================================================
-
-tt parse_expr() -> u32 {
-    lr tok_type == 1 {
-        emit("mov rax, ")
-        emit_num(tok_val)
-        emit("\n")
-        next_tok()
-
-    }
-    lr tok_type == 3 {
-        tz vi = 0
-        found = 0
-        ll {
-            lz vi g_nvars { ls }
-            lr g_vname[vi] == tok_str { tz found = 1; ls }
-            tz vi = vi ht 1
-        }
-        lr found == 1 {
-            tz off = g_voff[vi]
-            emit("mov rax, [rbp")
-            lr off >= 0 { emit("+") }
-            emit_num(off)
-            emit("]\n")
-        }
-        next_tok()
-    }
-    @ 加法
+tt lfv(name) -> u32 {
+    tz i = 0
     ll {
-        lr tok_type != 5 { ls }
-        lr tok_val != 43 { ls }
-        next_tok()
-        emit("push rax\n")
-        parse_expr()
-        emit("mov rcx, rax\npop rax\nadd rax, rcx\n")
+        lz i dnv { zz -1 }
+        tz vlen = dtvl[i]
+        tz match = 1
+        tz j = 0
+        ll {
+            lz j vlen { ls }
+            tz aa = dtv[i] ht j
+            tz ra = fr aa
+            tz ca = ra hs 255
+            tz bb = name ht j
+            tz rb = fr bb
+            tz cb = rb hs 255
+            lr ca != cb { match = 0; ls }
+            tz j = j ht 1
+        }
+        lr match == 1 { zz i }
+        tz i = i ht 1
+    }
+}
+
+@ ============================================================
+@ 表达式解析（最小版：数字/变量/加法/函数调用/fr解引用）
+@ ============================================================
+
+tt zzp() -> u32 {
+    @ 数字
+    lr dtt == 1 {
+        st dd "mov rax, "
+        st dt dth
+        st dd "\n"
+        llt()
+        zz 0
+    }
+    @ 字符串
+    lr dtt == 2 {
+        tz idx = dsn
+        dsv[idx] = dtz
+        dsl[idx] = dtu
+        dsn = dsn ht 1
+        st dd "lea rax, [rip + .Lstr"
+        st dt idx
+        st dd "]\n"
+        llt()
+        zz 0
+    }
+    @ 标识符/函数调用
+    lr dtt == 3 {
+        tz name = dtz
+        llt()
+        lr dtt == 4 { lr dth == 40 {
+            llt()
+            lr dtt == 4 { lr dth == 41 {
+                llt()
+                st dd "call fn_"
+                tz i = 0
+                ll {
+                    tz a = name ht i
+                    tz r = fr a
+                    tz cc = r hs 255
+                    lz cc 0 { ls }
+                    zd 1 cc
+                    tz i = i ht 1
+                }
+                st dd "\n"
+                zz 0
+            } }
+            zz 0
+        } }
+        tz vi = lfv(name)
+        lr vi >= 0 {
+            st dd "mov rax, [rbp+"
+            st dt dtw[vi]
+            st dd "]\n"
+            zz 0
+        }
+        st dd "mov rax, 0\n"
+        zz 0
+    }
+    @ fr解引用
+    lr dtt == 5 {
+        lr dtf == 102 { lr dts == 114 {
+            llt()
+            zzd()
+            st dd "mov rax, [rax]\n"
+            zz 0
+        } }
+    }
+    zz 0
+}
+
+tt zzd() -> u32 {
+    zzp()
+    ll {
+        lr dtt != 5 { ls }
+        lr dtf != 104 { ls }
+        tz op = dts
+        llt()
+        st dd "push rax\n"
+        zzd()
+        st dd "mov rcx, rax\npop rax\n"
+        lr op == 116 { st dd "add rax, rcx\n" }
+        lr op == 122 { st dd "sub rax, rcx\n" }
+        lr op == 104 { st dd "imul rax, rcx\n" }
+        lr op == 108 { st dd "xor rdx, rdx\ndiv rcx\n" }
+        lr op == 102 { st dd "xor rdx, rdx\ndiv rcx\nmov rax, rdx\n" }
+        lr op == 115 { st dd "and rax, rcx\n" }
+        lr op == 114 { st dd "or rax, rcx\n" }
+        lr op == 100 { st dd "xor rax, rcx\n" }
     }
     zz 0
 }
 
 @ ============================================================
-@ 语句解析
+@ 语句处理
 @ ============================================================
 
-tt parse_stmt() -> u32 {
-    @ st dt 整数输出
-    lr tok_type != 3 { next_tok(); zz 0 }
-    lr tok_len != 2 { next_tok(); zz 0 }
-    tz raw0 = fr tok_str
-    tz k0 = raw0 hs 255
-    tz raw1 = fr (tok_str ht 1)
-    tz k1 = raw1 hs 255
-
-    @ st
-    lr k0 == 115 { lr k1 == 116 {
-        next_tok()
-        lr tok_type == 3 { lr tok_len == 2 {
-            tz raws0 = fr tok_str
-            tz s0 = raws0 hs 255
-            tz raws1 = fr (tok_str ht 1)
-            tz s1 = raws1 hs 255
-            lr s0 == 100 { lr s1 == 116 {
-                next_tok()
-                parse_expr()
-                emit("push rax\ncall _rt_puti\nadd rsp, 8\n")
-                zz 0
-            } }
-            lr s0 == 100 { lr s1 == 100 {
-                next_tok()
-                lr tok_type == 2 {
-                    emit("push offset .Lstr0\ncall _rt_puts\nadd rsp, 8\n")
-                    next_tok()
-                }
-                zz 0
-            } }
-        } }
-        zz 0
+tt lzc() -> u32 {
+    @ tz 变量声明
+    llt()
+    lr dtt != 3 { zz 0 }
+    tz name = dtz
+    tz namelen = dtu
+    tz vi = dnv
+    dtv[vi] = name
+    dtvl[vi] = namelen
+    dfr = dfr ht 16
+    dtw[vi] = dfr
+    dnv = dnv ht 1
+    llt()
+    @ = 赋值
+    lr dtt == 4 { lr dth == 61 {
+        llt()
+        zzd()
+        st dd "mov [rbp+"
+        st dt dtw[vi]
+        st dd "], rax\n"
     } }
+    zz 0
+}
 
-    @ tz
-    lr k0 == 116 { lr k1 == 122 {
-
-        st dd "TZ_ENTRY ty="; st dt tok_type; st dd " pos="; st dt g_pos; st dd "\n"
-        next_tok()
-        lr tok_type == 3 {
-            tz vi = g_nvars
-            g_vname[vi] = tok_str
-            g_framesz = g_framesz ht 16
-            g_voff[vi] = g_framesz
-            g_nvars = g_nvars ht 1
-            st dd "TZ vi="; st dt vi; st dd " voff="; st dt g_voff[vi]; st dd " framesz="; st dt g_framesz; st dd "\n"
-            next_tok()
-            lh tok_type 5 { zz 0 }
-            lh tok_val 61 { zz 0 }
-            next_tok()
-            parse_expr()
-            st dd "mov [rbp+"
-            st dt g_voff[vi]
-            st dd "], rax\n"
+tt lzs() -> u32 {
+    @ st 输出
+    llt()
+    lr dtt != 5 { zz 0 }
+    lr dtf == 100 { lr dts == 100 {
+        @ st dd 字符串
+        llt()
+        lr dtt == 2 {
+            zzd()
+            st dd "mov rdi, rax\ncall _rt_puts\n"
         }
         zz 0
     } }
-
-    @ zz
-    lr k0 == 122 { lr k1 == 122 {
-        next_tok()
-        lr tok_type == 1 {
-            emit("mov rax, ")
-            emit_num(tok_val)
-            emit("\n")
-            next_tok()
-        }
-        emit("jmp .Lret_main\n")
+    lr dtf == 100 { lr dts == 116 {
+        @ st dt 整数
+        llt()
+        zzd()
+        st dd "mov rdi, rax\ncall _rt_puti\n"
         zz 0
     } }
+    zz 0
+}
+
+tt lzr() -> u32 {
+    @ zz 返回
+    llt()
+    lr dtt == 1 {
+        st dd "mov rax, "
+        st dt dth
+        st dd "\n"
+        llt()
+    }
+    st dd "jmp .Lret_主\n"
+    zz 0
+}
+
+@ ============================================================
+@ 语句分派
+@ ============================================================
+
+tt zzh() -> u32 {
+    lr dtt == 0 { zz 0 }
+
+    @ tz 声明
+    lr dtt == 5 { lr dtf == 116 { lr dts == 122 { lzc(); zz 0 } } }
+
+    @ st 输出
+    lr dtt == 5 { lr dtf == 115 { lr dts == 116 { lzs(); zz 0 } } }
+
+    @ zz 返回
+    lr dtt == 5 { lr dtf == 122 { lr dts == 122 { lzr(); zz 0 } } }
+
+    @ tt 函数定义：找到{后递归解析直到}
+    lr dtt == 5 { lr dtf == 116 { lr dts == 116 {
+        ll {
+            llt()
+            lr dtt == 4 { lr dth == 123 { ls } }
+        }
+        llt()
+        ll {
+            lr dtt == 4 { lr dth == 125 { llt(); zz 0 } }
+            zzh()
+        }
+        zz 0
+    } } }
 
     @ 未知，跳过
-    next_tok()
+    llt()
     zz 0
 }
 
@@ -279,41 +467,34 @@ tt parse_stmt() -> u32 {
 @ 主函数
 @ ============================================================
 
-tt 主(argc, argv) -> u32 {
-    @ 初始化
-    g_pos = 0
-    g_line = 1
-    g_nvars = 0
-    g_framesz = 0
-    g_outpos = 0
-
+tt 主() -> u32 {
     @ 测试源码
-    tz test_src = "tt 主() -> u32 {\n  tz a = 10\n  tz b = 20\n  st dt a ht b\n  zz 0\n}\n"
-    g_src = test_src
-    tz dbg_addr = g_src
-    tz dbg_raw = fr dbg_addr
-    tz dbg_c = dbg_raw hs 255
-    g_srclen = 串长(test_src)
-    tz dbi = 0
-    ll { lz dbi 40 { ls } tz dba = g_src ht dbi tz dbr = fr dba tz dbc = dbr hs 255 st dt dbc tz dbi = dbi ht 1 }
-    st dd "\n"
+    tz test = "tt 主() -> u32 {\n  tz a = 10\n  tz b = 20\n  st dt a ht b\n  zz 0\n}\n"
+    tz slen = lds(test)
 
+    dtb = test
+    dtn = slen
+    dtend = test ht slen
+    dtl = 1
+    dtlab = 0
+    dsn = 0
+    dnv = 0
+    dfr = 0
 
-    @ 输出汇编头部
-    emit(".intel_syntax noprefix\n.section .text\n.globl fn_main\nfn_main:\npush rbp\nmov rbp, rsp\n")
+    @ 吐汇编头部
+    st dd ".intel_syntax noprefix\n.section .text\n"
 
     @ 解析
-    next_tok()
+    llt()
     ll {
-        lz tok_type 0 { ls }
-        parse_stmt()
+        lz dtt 0 { ls }
+        zzh()
     }
 
     @ 结语
-    emit("sub rsp, ")
-    emit_num(g_framesz)
-    emit("\n.Lret_main:\nmov rsp, rbp\npop rbp\nret\n")
-
+    st dd "sub rsp, "
+    st dt dfr
+    st dd "\n.Lret_主:\nmov rsp, rbp\npop rbp\nret\n"
 
     zz 0
 }
