@@ -1,10 +1,9 @@
-@ ============================================================
-@ 五行(WuXing) 脚本解释器 wuxing.ly
-@ 版本: v0.2.x (旧版骨架, 约42指令)
-@ 规范版本: 旧版五行规范 (非 V12 满编矩阵)
-@ 状态: 能编译能运行, 但 jj 输出有bug, 四季控制流半成品
-@ 待办: 按 规范_五行指令集_SPEC_v12.txt 重写, 对齐45指令
-@ ============================================================
+00 ============================================================
+00 五行(WuXing) 脚本解释器 wuxing.ly
+00 版本: v0.9.0 (V12满编进行中)
+00 规范版本: V12 终极满编矩阵 45指令
+00 状态: 旧版骨架编译通过, 正在按V12补全指令
+00 ============================================================
 qj g_var_count
 qj g_var_names[2048]
 qj g_var_vals[128]
@@ -27,12 +26,12 @@ qj cmd_buf[4096]
 
 tt 主 01 path 02 -> u32 08
     tz plat zt _rt_platform 01 02
-    zt wx_set_var 01 03lin04, 3, 0 02
-    zt wx_set_var 01 03win04, 3, 0 02
-    zt wx_set_var 01 03hun04, 3, 0 02
-    lr plat == 1 08 zt wx_set_var 01 03lin04, 3, 1 02 09
-    lr plat == 2 08 zt wx_set_var 01 03win04, 3, 1 02 09
-    lr plat == 3 08 zt wx_set_var 01 03hun04, 3, 1 02 09
+    zt wx_set_var 01 03lin04 , 3, 0 02
+    zt wx_set_var 01 03win04 , 3, 0 02
+    zt wx_set_var 01 03hun04 , 3, 0 02
+    lr plat == 1 08 zt wx_set_var 01 03lin04 , 3, 1 02 09
+    lr plat == 2 08 zt wx_set_var 01 03win04 , 3, 1 02 09
+    lr plat == 3 08 zt wx_set_var 01 03hun04 , 3, 1 02 09
     tz plen 0
     ll 08
         tz ch fn_get_byte 01 path ht plen 02
