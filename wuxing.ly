@@ -294,7 +294,7 @@ g_if_taken = 0
         lr c1 == 88 08
             lr c2 == 106 08
                 g_if_taken = 0
-                tz ci 0
+                tz ci 2
                 ll 08
                     lz ci llen 08 ls 09
                     tz cc fn_get_byte 01 g_src ht off ht ci 02
