@@ -96,10 +96,6 @@ static char *还原数字标点(const char *src) {
         else if (code != 4 && code != 7 && !末是标识符) 允许 = 1;
         if (code && 允许) {
             p += 2;
-            while (*p == ' ' || *p == '\t') p++;
-            if (code == 7 && *p >= '0' && *p <= '9') {
-                die("07后面不能跟数字，07 10/07 34均为非法写法");
-            }
             if (code == 3 || code == 4) {
                 out[o++] = '"';
                 在串里 = !在串里;
