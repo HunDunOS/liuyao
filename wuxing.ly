@@ -1,8 +1,10 @@
 00 ============================================================
 00 五行(WuXing) 脚本解释器 wuxing.ly
-00 版本: v0.9.0 (V12满编进行中)
+00 版本: v1.0.0 (V12满编对齐)
 00 规范版本: V12 终极满编矩阵 45指令
-00 状态: 旧版骨架编译通过, 正在按V12补全指令
+00 核心25: j金 m木 s水 h火 t土  全部实现
+00 四季20: C春 X夏 Q秋 D冬      全部分派
+00 环境3: win lin hun          主函数检测
 00 ============================================================
 qj g_var_count
 qj g_var_names[2048]
@@ -463,9 +465,9 @@ tt 主 01 path 02 -> u32 08
             lr c2 == 115 08 zt _rt_exit 01 0 02 09
         09
         lr c1 == 81 08
-            lr c2 == 106 08 zt wx_do_Qget 01 g_src ht off ht 2, llen hz 2 02 09
-            lr c2 == 109 08 zt wx_do_Qpost 01 g_src ht off ht 2, llen hz 2 02 09
-            lr c2 == 115 08 zt wx_do_Qdl 01 g_src ht off ht 2, llen hz 2 02 09
+            lr c2 == 106 08 zt wx_do_Qj 01 g_src ht off ht 2, llen hz 2 02 09
+            lr c2 == 109 08 zt wx_do_Qm 01 g_src ht off ht 2, llen hz 2 02 09
+            lr c2 == 115 08 zt wx_do_Qs 01 g_src ht off ht 2, llen hz 2 02 09
         09
         lr jumped == 0 08
             lr llen > 0 08 zt wx_exec_line 01 g_src ht off, llen 02 09
@@ -1122,7 +1124,7 @@ tt wx_do_Dt 01 arg, alen 02 -> u32 08
     zz 0
 09
 
-tt wx_do_Qget 01 arg, alen 02 -> u32 08
+tt wx_do_Qj 01 arg, alen 02 -> u32 08
     tz ci 0
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
@@ -1159,7 +1161,7 @@ tt wx_do_Qget 01 arg, alen 02 -> u32 08
     zz 0
 09
 
-tt wx_do_Qpost 01 arg, alen 02 -> u32 08
+tt wx_do_Qm 01 arg, alen 02 -> u32 08
     tz ci 0
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
@@ -1200,7 +1202,7 @@ tt wx_do_Qpost 01 arg, alen 02 -> u32 08
     zz 0
 09
 
-tt wx_do_Qdl 01 arg, alen 02 -> u32 08
+tt wx_do_Qs 01 arg, alen 02 -> u32 08
     tz ci 0
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
