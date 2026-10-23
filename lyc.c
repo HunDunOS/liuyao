@@ -51,7 +51,7 @@ static const char *KEYWORDS[] = { "tt","th","tz","tl","tf","ts","tr","td",
                                   "st","sz","sh","sl","sf","ss","sr","sd",
                                   "rt","rz","rh","rl","rf","rs","rr","rd",
                                   "dt","dz","dh","dl","df","ds","dr","dd",
-                                  "qj","wx", NULL };
+                                  "qj","wx","true","false", NULL };
 static const char *OPKW[]     = { "hs","hr","hd","ht","hz","hh","hl","hf","dh","dl", NULL };
 /* ★ 五行 = 5×5 = 25 个类型名（大写两字母，和六爻的小写正好分开）
      单字：金J 木M 水S 火H 土T           —— 五行本身
@@ -556,6 +556,13 @@ static void primary(void) {
 
     if (t->k == TK_NUM) { em("mov rax, %ld", t->v); adv(); return; }
 
+    /* dz 空值/null → 就是0 */
+    if (is_kw("dz")) { em("mov rax, 0"); adv(); return; }
+
+    /* 布尔字面量 true=1 false=0 */
+    if (is_kw("true")) { em("mov rax, 1"); adv(); return; }
+    if (is_kw("false")) { em("mov rax, 0"); adv(); return; }
+
     if (t->k == TK_STR) {
         if (nstr >= 1024) die("字符串太多");
         strtab[nstr++] = t->s; adv();
@@ -824,7 +831,7 @@ static void stmt(void) {
     }
 
     /* ---- 全局声明（仅顶层） ---- */
-    if (is_kw("qj") || (is_kw("tz") && !in_function) || (is_kw("tf") && !in_function)) {
+    if (is_kw("qj") || (is_kw("tz") && !in_function) || (is_kw("ts") && !in_function) || (is_kw("tf") && !in_function)) {
         adv();
         int ln = cur()->line;
         if (in_function) die("第 %d 行：全局声明只能出现在顶层", ln);
@@ -844,7 +851,7 @@ static void stmt(void) {
     }
 
     /* ---- 局部绑定 ---- */
-    if (is_kw("th") || is_kw("tz")) {
+    if (is_kw("th") || is_kw("td") || is_kw("tz")) {
         int mut = is_kw("tz"); adv();
         if (cur()->k != TK_ID) die("第 %d 行：声明必须跟一个名字", cur()->line);
         char *name = cur()->s; int ln = cur()->line; adv();
@@ -1395,7 +1402,34 @@ static void prescan_locals(int start) {
 static int nfunc;
 
 static void parse_fn(void) {
-    if (!is_kw("tt") && !is_kw("qj") && !is_kw("tz") && !is_kw("tf")) die("第 %d 行：顶层只能是 tt 函数定义或 qj/tz/tf 全局声明", cur()->line);
+    /* tr 枚举：批量定义全局常量 */
+    if (is_kw("tr")) {
+        adv();
+        if (cur()->k != TK_ID) die("第 %d 行：tr 后面必须是枚举名", cur()->line);
+        adv(); /* 跳过枚举名 */
+        expect_p("{");
+        skip_nl();
+        int val = 0; /* 默认从0开始 */
+        while (!is_p("}")) {
+            if (cur()->k != TK_ID) die("第 %d 行：枚举成员必须是名字", cur()->line);
+            char *ename = cur()->s; adv();
+            if (is_p("=")) { adv(); expr(0); em("mov rcx, rax"); val++; }
+            else { em("mov rax, %d", val); val++; }
+            /* 定义为全局常量 */
+            int g = global_find(ename);
+            if (g < 0) { g = nglobals++; globals[g].name = ename; }
+            globals[g].size = 8; globals[g].count = 1; globals[g].mut = 0;
+            globals[g].declared = 1;
+            snprintf(globals[g].glabel, sizeof globals[g].glabel, "g_%s", mangle(ename));
+            skip_nl();
+            if (is_p(",")) adv();
+        }
+        expect_p("}");
+        skip_nl();
+        return;
+    }
+
+    if (!is_kw("tt") && !is_kw("qj") && !is_kw("tz") && !is_kw("ts") && !is_kw("tf")) die("第 %d 行：顶层只能是 tt 函数定义或 qj/tz/tf/tr 全局声明", cur()->line);
     adv();
     if (cur()->k != TK_ID) die("第 %d 行：hs 后面必须是函数名", cur()->line);
     char *name = cur()->s; adv();
@@ -1888,7 +1922,7 @@ int main(int argc, char **argv) {
     if (!rt_mode) {
         tpos = 0; skip_nl();
         while (cur()->k != TK_EOF) {
-            if (is_kw("qj") || is_kw("tz") || is_kw("tf") || is_kw("tl")) { stmt(); skip_nl(); continue; }
+            if (is_kw("qj") || is_kw("tz") || is_kw("ts") || is_kw("tf") || is_kw("tl")) { stmt(); skip_nl(); continue; }
             parse_fn(); skip_nl();
         }
         if (!nfunc) die("源文件里没有任何函数");
