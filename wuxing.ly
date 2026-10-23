@@ -200,7 +200,7 @@ g_if_taken = 0
             lr c2 == 109 08
                 tz loop_start cur_ip
                 tz cur_loop_type 1
-                tz ci 0
+                tz ci 2
                 ll 08
                     lz ci llen 08 ls 09
                     tz cc fn_get_byte 01 g_src ht off ht ci 02
@@ -356,7 +356,7 @@ g_if_taken = 0
                     09
                 09
                 lr g_if_taken == 0 08
-                    tz ci 0
+                    tz ci 2
                     ll 08
                         lz ci llen 08 ls 09
                         tz cc fn_get_byte 01 g_src ht off ht ci 02
@@ -782,7 +782,7 @@ tt wx_do_jt 01 arg, alen 02 -> u32 08
         tz i i ht 1
     09
     tz flen i hz fstart
-    tz ci 0
+    tz ci 2
     ll 08
         lz ci flen 08 ls 09
         tz ch fn_get_byte 01 arg ht fstart ht ci 02
@@ -927,7 +927,7 @@ tt wx_do_sj 01 arg, alen 02 -> u32 08
     09
     tz fch fn_get_byte 01 arg ht i 02
     lr fch == 34 08 tz i i ht 1 09
-    tz ci 0
+    tz ci 2
     ll 08
         lz i alen 08 ls 09
         tz ch fn_get_byte 01 arg ht i 02
@@ -1118,7 +1118,7 @@ tt wx_do_Dt 01 arg, alen 02 -> u32 08
     09
     tz fch fn_get_byte 01 arg ht i 02
     lr fch == 34 08 tz i i ht 1 09
-    tz ci 0
+    tz ci 2
     ll 08
         lz i alen 08 ls 09
         tz ch fn_get_byte 01 arg ht i 02
@@ -1135,7 +1135,7 @@ tt wx_do_Dt 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qj 01 arg, alen 02 -> u32 08
-    tz ci 0
+    tz ci 2
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
     fn_set_byte 01 cmd_buf ht ci, 117 02
@@ -1172,7 +1172,7 @@ tt wx_do_Qj 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qm 01 arg, alen 02 -> u32 08
-    tz ci 0
+    tz ci 2
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
     fn_set_byte 01 cmd_buf ht ci, 117 02
@@ -1213,7 +1213,7 @@ tt wx_do_Qm 01 arg, alen 02 -> u32 08
 09
 
 tt wx_do_Qs 01 arg, alen 02 -> u32 08
-    tz ci 0
+    tz ci 2
     fn_set_byte 01 cmd_buf ht ci, 99 02
     tz ci ci ht 1
     fn_set_byte 01 cmd_buf ht ci, 117 02
