@@ -684,21 +684,22 @@ tt wx_do_jj 01 arg, alen 02 -> u32 08
         lr ch == 32 08 tz i i ht 1 09
         lr ch != 32 08 ls 09
     09
-    ll 08
-        lz i alen 08 ls 09
-        tz ch fn_get_byte 01 arg ht i 02
-        lr ch == 34 08
-            tz i i ht 1
-            ll 08
-                lz i alen 08 ls 09
-                tz ch fn_get_byte 01 arg ht i 02
-                lr ch == 34 08 ls 09
-                zt _rt_putc 01 ch 02
-                tz i i ht 1
-            09
-        09
+    tz c0 fn_get_byte 01 arg ht i 02
+    lr c0 == 34 08
         tz i i ht 1
+        ll 08
+            lz i alen 08 ls 09
+            tz ch fn_get_byte 01 arg ht i 02
+            lr ch == 34 08 ls 09
+            zt _rt_putc 01 ch 02
+            tz i i ht 1
+        09
+        zt _rt_putc 01 10 02
+        zz 0
     09
+    tz val zt wx_eval 01 arg ht i, alen hz i 02
+    zt _rt_puti 01 val 02
+    zt _rt_putc 01 10 02
     zz 0
 09
 
@@ -1306,7 +1307,7 @@ tt wx_skip_ws 01 02 -> u32 08
         lz g_epos g_elen 08 zz 0 09
         tz ch fn_get_byte 01 g_eexpr ht g_epos 02
         lr ch != 32 08 ls 09
-        tz g_epos g_epos ht 1
+        g_epos = g_epos ht 1
     09
     zz 0
 09
@@ -1314,15 +1315,27 @@ tt wx_skip_ws 01 02 -> u32 08
 tt wx_eval_factor 01 02 -> u32 08
     zt wx_skip_ws 01 02
     tz ch fn_get_byte 01 g_eexpr ht g_epos 02
-    lr ch == 1 08
-        tz g_epos g_epos ht 1
-        tz result zt wx_eval_expr 01 02
-        zt wx_skip_ws 01 02
-        tz ch2 fn_get_byte 01 g_eexpr ht g_epos 02
-        lr ch2 == 2 08
-            tz g_epos g_epos ht 1
+    lr ch == 48 08
+        tz nc g_epos ht 1
+        lr nc < g_elen 08
+            tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+            lr nc2 == 49 08
+                g_epos = g_epos ht 2
+                tz result zt wx_eval_expr 01 02
+                zt wx_skip_ws 01 02
+                tz c3 fn_get_byte 01 g_eexpr ht g_epos 02
+                lr c3 == 48 08
+                    tz nc3 g_epos ht 1
+                    lr nc3 < g_elen 08
+                        tz nc4 fn_get_byte 01 g_eexpr ht nc3 02
+                        lr nc4 == 50 08
+                            g_epos = g_epos ht 2
+                        09
+                    09
+                09
+                zz result
+            09
         09
-        zz result
     09
     tz num 0
     ll 08
@@ -1334,7 +1347,7 @@ tt wx_eval_factor 01 02 -> u32 08
         09
         lr nd == 0 08 ls 09
         tz num num hh 10 ht c hz 48
-        tz g_epos g_epos ht 1
+        g_epos = g_epos ht 1
     09
     zz num
 09
@@ -1350,11 +1363,12 @@ tt wx_eval_term 01 02 -> u32 08
             tz nc g_epos ht 1
             lr nc < g_elen 08
                 tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 104 08 tz op 3 09
                 lr nc2 == 108 08 tz op 4 09
             09
         09
         lr op == 0 08 ls 09
-        tz g_epos g_epos ht 2
+        g_epos = g_epos ht 2
         tz rhs zt wx_eval_factor 01 02
         lr op == 3 08 tz result result hh rhs 09
         lr op == 4 08
@@ -1380,7 +1394,7 @@ tt wx_eval_expr 01 02 -> u32 08
             09
         09
         lr op == 0 08 ls 09
-        tz g_epos g_epos ht 2
+        g_epos = g_epos ht 2
         tz rhs zt wx_eval_term 01 02
         lr op == 1 08 tz result result ht rhs 09
         lr op == 2 08 tz result result hz rhs 09
@@ -1389,9 +1403,9 @@ tt wx_eval_expr 01 02 -> u32 08
 09
 
 tt wx_eval 01 expr, elen 02 -> u32 08
-    tz g_eexpr expr
-    tz g_elen elen
-    tz g_epos 0
+    g_eexpr = expr
+    g_elen = elen
+    g_epos = 0
     tz result zt wx_eval_expr 01 02
     zz result
 09
