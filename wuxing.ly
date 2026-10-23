@@ -262,7 +262,7 @@ g_if_taken = 0
             lr c2 == 108 08
                 tz while_start cur_ip
                 tz cur_loop_type 2
-                tz ci 0
+                tz ci 2
                 ll 08
                     lz ci llen 08 ls 09
                     tz cc fn_get_byte 01 g_src ht off ht ci 02
@@ -1454,10 +1454,84 @@ tt wx_eval_expr 01 02 -> u32 08
     zz result
 09
 
+tt wx_eval_cmp 01 02 -> u32 08
+    tz result zt wx_eval_expr 01 02
+    ll 08
+        zt wx_skip_ws 01 02
+        lz g_epos g_elen 08 ls 09
+        tz c fn_get_byte 01 g_eexpr ht g_epos 02
+        tz op 0
+        lr c == 108 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 116 08 tz op 3 09
+            09
+        09
+        lr c == 103 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 116 08 tz op 4 09
+            09
+        09
+        lr c == 101 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 113 08 tz op 5 09
+            09
+        09
+        lr c == 110 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 101 08 tz op 6 09
+            09
+        09
+        lr op == 0 08 ls 09
+        g_epos = g_epos ht 2
+        tz rhs zt wx_eval_expr 01 02
+        lr op == 3 08
+            tz diff result hz rhs
+            tz sign diff dl 63
+            tz result sign
+        09
+        lr op == 4 08
+            tz diff rhs hz result
+            tz sign diff dl 63
+            tz result sign
+        09
+        lr op == 5 08
+            tz diff result hz rhs
+            tz abs diff
+            lr diff < 0 08 tz abs 0 hz diff 09
+            lr abs == 0 08
+                tz result 1
+            09
+            lr abs != 0 08
+                tz result 0
+            09
+        09
+        lr op == 6 08
+            tz diff result hz rhs
+            tz abs diff
+            lr diff < 0 08 tz abs 0 hz diff 09
+            lr abs == 0 08
+                tz result 0
+            09
+            lr abs != 0 08
+                tz result 1
+            09
+        09
+    09
+    zz result
+09
+
 tt wx_eval 01 expr, elen 02 -> u32 08
     g_eexpr = expr
     g_elen = elen
     g_epos = 0
-    tz result zt wx_eval_expr 01 02
+    tz result zt wx_eval_cmp 01 02
     zz result
 09
