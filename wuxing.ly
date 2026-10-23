@@ -16,6 +16,7 @@ qj g_arr_size[32]
 qj g_arr_data[4096]
 qj g_offsets[4096]
 qj g_func_count
+qj g_if_taken
 qj g_func_names[512]
 qj g_func_start[32]
 qj g_ret_stack[64]
@@ -72,10 +73,11 @@ tt 主 01 path 02 -> u32 08
     g_var_count = 0
     g_arr_count = 0
     g_func_count = 0
+g_if_taken = 0
     tz loop_start 0
     tz while_start 0
     tz cur_loop_type 0
-    tz if_taken 0
+    g_if_taken = 0
     g_ret_sp = 0
     tz fi 0
     ll 08
@@ -291,7 +293,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 88 08
             lr c2 == 106 08
-                tz if_taken 0
+                g_if_taken = 0
                 tz ci 0
                 ll 08
                     lz ci llen 08 ls 09
@@ -300,7 +302,7 @@ tt 主 01 path 02 -> u32 08
                     lr cc != 32 08 ls 09
                 09
                 tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
-                lr cond != 0 08 tz if_taken 1 09
+                lr cond != 0 08 g_if_taken = 1 09
                 lr cond == 0 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
@@ -334,7 +336,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 88 08
             lr c2 == 109 08
-                lr if_taken == 1 08
+                lr g_if_taken == 1 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
@@ -353,7 +355,7 @@ tt 主 01 path 02 -> u32 08
                         tz skip_ip skip_ip ht 1
                     09
                 09
-                lr if_taken == 0 08
+                lr g_if_taken == 0 08
                     tz ci 0
                     ll 08
                         lz ci llen 08 ls 09
@@ -362,7 +364,7 @@ tt 主 01 path 02 -> u32 08
                         lr cc != 32 08 ls 09
                     09
                     tz cond zt wx_eval 01 g_src ht off ht ci, llen hz ci 02
-                    lr cond != 0 08 tz if_taken 1 09
+                    lr cond != 0 08 g_if_taken = 1 09
                     lr cond == 0 08
                         tz skip_ip cur_ip ht 1
                         tz found 0
@@ -397,7 +399,7 @@ tt 主 01 path 02 -> u32 08
         09
         lr c1 == 88 08
             lr c2 == 115 08
-                lr if_taken == 1 08
+                lr g_if_taken == 1 08
                     tz skip_ip cur_ip ht 1
                     tz found 0
                     ll 08
@@ -416,11 +418,11 @@ tt 主 01 path 02 -> u32 08
                         tz skip_ip skip_ip ht 1
                     09
                 09
-                lr if_taken == 0 08 tz if_taken 1 09
+                lr g_if_taken == 0 08 g_if_taken = 1 09
             09
         09
         lr c1 == 88 08
-            lr c2 == 116 08 tz if_taken 0 09
+            lr c2 == 116 08 g_if_taken = 0 09
         09
         lr c1 == 68 08
             lr c2 == 106 08
@@ -685,17 +687,32 @@ tt wx_do_jj 01 arg, alen 02 -> u32 08
         lr ch != 32 08 ls 09
     09
     tz c0 fn_get_byte 01 arg ht i 02
-    lr c0 == 34 08
-        tz i i ht 1
-        ll 08
-            lz i alen 08 ls 09
-            tz ch fn_get_byte 01 arg ht i 02
-            lr ch == 34 08 ls 09
-            zt _rt_putc 01 ch 02
-            tz i i ht 1
+    lr c0 == 48 08
+        tz nc i ht 1
+        lr nc < alen 08
+            tz nc2 fn_get_byte 01 arg ht nc 02
+            lr nc2 == 51 08
+                tz i i ht 2
+                ll 08
+                    lz i alen 08 ls 09
+                    tz c1 fn_get_byte 01 arg ht i 02
+                    lr c1 == 48 08
+                        tz nci i ht 1
+                        lr nci < alen 08
+                            tz c2 fn_get_byte 01 arg ht nci 02
+                            lr c2 == 52 08
+                                zt _rt_putc 01 10 02
+                                zz 0
+                            09
+                        09
+                    09
+                    zt _rt_putc 01 c1 02
+                    tz i i ht 1
+                09
+                zt _rt_putc 01 10 02
+                zz 0
+            09
         09
-        zt _rt_putc 01 10 02
-        zz 0
     09
     tz val zt wx_eval 01 arg ht i, alen hz i 02
     zt _rt_puti 01 val 02
@@ -1032,8 +1049,23 @@ tt wx_do_tj 01 arg, alen 02 -> u32 08
             lr vch == 88 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
             lr vch == 81 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
             lr vch == 68 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch < 65 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
-            lr vch > 122 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
+            lr vch != 106 08
+                lr vch != 109 08
+                    lr vch != 115 08
+                        lr vch != 104 08
+                            lr vch != 116 08
+                                lr vch != 67 08
+                                    lr vch != 88 08
+                                        lr vch != 81 08
+                                            lr vch != 68 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
+                                        09
+                                    09
+                                09
+                            09
+                        09
+                    09
+                09
+            09
         09
     09
     zt wx_set_var 01 arg ht name_start, name_len, val 02
@@ -1338,6 +1370,7 @@ tt wx_eval_factor 01 02 -> u32 08
         09
     09
     tz num 0
+    tz start g_epos
     ll 08
         lz g_epos g_elen 08 ls 09
         tz c fn_get_byte 01 g_eexpr ht g_epos 02
@@ -1349,7 +1382,22 @@ tt wx_eval_factor 01 02 -> u32 08
         tz num num hh 10 ht c hz 48
         g_epos = g_epos ht 1
     09
-    zz num
+    lr g_epos > start 08 zz num 09
+    tz var_start g_epos
+    ll 08
+        lz g_epos g_elen 08 ls 09
+        tz c fn_get_byte 01 g_eexpr ht g_epos 02
+        lr c == 32 08 ls 09
+        lr c == 10 08 ls 09
+        lr c == 48 08 ls 09
+        g_epos = g_epos ht 1
+    09
+    tz vlen g_epos hz var_start
+    lr vlen > 0 08
+        tz v zt wx_find_var 01 g_eexpr ht var_start, vlen 02
+        zz v
+    09
+    zz 0
 09
 
 tt wx_eval_term 01 02 -> u32 08
