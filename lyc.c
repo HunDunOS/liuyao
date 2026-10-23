@@ -99,28 +99,15 @@ static char *还原数字标点(const char *src) {
                 continue;
             }
             if (code == 7 && 在串里) {
-                /* 07 转义：跳过空格，读两位数字作为ASCII码 */
-                while (*p == ' ' || *p == '\t') p++;
+                /* 07 转义：纯血保持原样输出 07+数字，由lex识别 */
+                out[o++] = '0';
+                out[o++] = '7';
+                while (*p == ' ' || *p == '\t') { out[o++] = *p++; }
                 if (!(p[0] >= '0' && p[0] <= '9'))
                     die("07转义符后必须跟数字，禁止英文字母");
-                int asc = p[0] - '0';
-                p++;
-                if (p[0] >= '0' && p[0] <= '9') {
-                    asc = asc * 10 + (p[0] - '0');
-                    p++;
-                }
-                out[o++] = '\\';
-                switch (asc) {
-                    case 10: out[o++] = 'n'; break;
-                    case 9:  out[o++] = 't'; break;
-                    case 13: out[o++] = 'r'; break;
-                    case 0:  out[o++] = '0'; break;
-                    case 92: out[o++] = '\\'; break;
-                    case 34: out[o++] = '"'; break;
-                    case 39: out[o++] = "'"; break;
-                    default: out[o++] = (char)asc; break;
-                }
-                末是数字 = 0;
+                out[o++] = *p++;
+                if (p[0] >= '0' && p[0] <= '9') out[o++] = *p++;
+                末是数字 = 1;  /* 07后面是数字，避免下一个0x被误判 */
                 continue;
             }
             switch (code) {
@@ -168,6 +155,18 @@ static char *还原数字标点(const char *src) {
             while (*p && *p != '"') {
                 if (n >= (int)sizeof(buf) - 8)
                     die("第 %d 行：字符串字面量太长（上限 %d 字节）", srcline, (int)sizeof(buf) - 8);
+                /* 纯血07转义：07+两位数字=ASCII码 */
+                if (*p == '0' && p[1] == '7') {
+                    p += 2;
+                    while (*p == ' ' || *p == '\t') p++;
+                    if (!(*p >= '0' && *p <= '9'))
+                        die("第 %d 行：07转义符后必须跟数字，禁止英文字母", srcline);
+                    int asc = *p - '0'; p++;
+                    if (*p >= '0' && *p <= '9') { asc = asc * 10 + (*p - '0'); p++; }
+                    buf[n++] = (char)asc;
+                    continue;
+                }
+                /* C风格转义兼容 */
                 if (*p == '\\' && p[1]) {
                     p++; char c = *p;
                     buf[n++] = (c == 'n') ? '\n' : (c == 't') ? '\t' : (c == '0') ? '\0'
@@ -180,49 +179,6 @@ static char *还原数字标点(const char *src) {
             char *s = xmalloc(n + 1); memcpy(s, buf, n + 1);
             toks[ntoks++] = (Tok){TK_STR, 0, s, srcline};
             continue;
-        }
-        /* 01-09 标点编码（纯血六爻宪法） */
-        if (*p == '0' && p[1] >= '1' && p[1] <= '9') {
-            int code = p[1] - '0';
-            /* 03=字符串开始，04=字符串结束 */
-            if (code == 3) {
-                fprintf(stderr, "DBG: 03 string start, p=%.10s\n", p);
-                p += 2;
-                char buf[8192]; int n = 0;
-                while (*p) {
-                    if (n >= (int)sizeof(buf) - 8)
-                        die("第 %d 行：字符串字面量太长", srcline);
-                    /* 07 转义符：必须跟两位数字 */
-                    if (*p == '0' && p[1] == '7') {
-                        fprintf(stderr, "DBG: found 07 escape at p=%.4s\n", p);
-                        p += 2;
-                        fprintf(stderr, "DBG: after 07, p=%.4s *p=%d p[1]=%d\n", p, *p, p[1]);
-                        if (!(*p >= '0' && *p <= '9') || !(p[1] >= '0' && p[1] <= '9'))
-                            die("第 %d 行：07转义符后必须跟两位数字，禁止英文字母", srcline);
-                        int asc = (p[0]-'0')*10 + (p[1]-'0');
-                        fprintf(stderr, "DBG: escape asc=%d\n", asc);
-                        buf[n++] = (char)asc;
-                        p += 2;
-                        continue;
-                    }
-                    /* 04=字符串结束 */
-                    if (*p == '0' && p[1] == '4') { p += 2; break; }
-                    if (*p == '\n') { srcline++; }
-                    buf[n++] = *p++;
-                }
-                buf[n] = 0;
-                char *s = xmalloc(n + 1); memcpy(s, buf, n + 1);
-                toks[ntoks++] = (Tok){TK_STR, 0, s, srcline};
-                continue;
-            }
-            /* 01=( 02=) 05=; 06=/ 07=\ 08={ 09=} */
-            static const char punct_map[] = {0, '(', ')', 0, 0, ';', '/', '\\', '{', '}'};
-            char ch = punct_map[code];
-            if (ch) {
-                char *s = xmalloc(2); s[0] = ch; s[1] = 0;
-                toks[ntoks++] = (Tok){TK_P, 0, s, srcline};
-            }
-            p += 2; continue;
         }
         if (*p >= '0' && *p <= '9') {
             const char *start = p;
