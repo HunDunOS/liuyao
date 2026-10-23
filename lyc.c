@@ -141,7 +141,8 @@ static void lex(const char *src) {
             if (ntoks + 2 >= cap) { cap *= 2; toks = xrealloc(toks, cap * sizeof(Tok)); }
             toks[ntoks++] = (Tok){TK_NL, 0, "\n", srcline}; srcline++; p++; continue;
         }
-        if (*p == '@') { while (*p && *p != '\n') p++; continue; }   /* @ 是注释 */
+        if (*p == '0' && *(p+1) == '0') { while (*p && *p != '\n') p++; continue; }   /* 00 是注释（纯血六爻） */
+        if (*p == '@') { while (*p && *p != '\n') p++; continue; }   /* @ 是注释（旧兼容） */
         if (*p == '#') { while (*p && *p != '\n') p++; continue; }   /* # 兼容保留 */
         if (ntoks + 2 >= cap) { cap *= 2; toks = xrealloc(toks, cap * sizeof(Tok)); }
 
