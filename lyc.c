@@ -96,9 +96,9 @@ static char *还原数字标点(const char *src) {
         else if (code != 4 && code != 7 && !末是标识符) 允许 = 1;
         if (code && 允许) {
             p += 2;
-            if (code != 3 && code != 7 && *p && *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r') {
-                fprintf(stderr, "DBG: 0%d后=%d '%c' ctx=%.30s\n", code, *p, *p, p-5);
-                die("0%d编码后必须跟空格", code);
+            while (*p == ' ' || *p == '\t') p++;
+            if (code == 7 && *p >= '0' && *p <= '9') {
+                die("07后面不能跟数字，07 10/07 34均为非法写法");
             }
             if (code == 3 || code == 4) {
                 out[o++] = '"';
