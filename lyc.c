@@ -106,20 +106,6 @@ static char *还原数字标点(const char *src) {
                 末是标识符 = 0;
                 continue;
             }
-            if (code == 7 && 在串里) {
-                /* 07 转义：原样保留07和后面的数字，等字符串生成阶段再转成实际字节 */
-                out[o++] = '0';
-                out[o++] = '7';
-                if (*p != ' ' && *p != '\t')
-                    die("07转义符后必须跟空格，禁止数字粘连（如0710应写07 10）");
-                while (*p == ' ' || *p == '\t') { out[o++] = *p++; }
-                if (!(p[0] >= '0' && p[0] <= '9'))
-                    die("07转义符后必须跟数字，禁止英文字母");
-                out[o++] = *p++;
-                if (p[0] >= '0' && p[0] <= '9') out[o++] = *p++;
-                末是标识符 = 0;
-                continue;
-            }
             switch (code) {
                 case 1: out[o++] = '('; break;
                 case 2: out[o++] = ')'; break;
@@ -169,26 +155,7 @@ static char *还原数字标点(const char *src) {
             while (*p && *p != '"') {
                 if (n >= (int)sizeof(buf) - 8)
                     die("第 %d 行：字符串字面量太长（上限 %d 字节）", srcline, (int)sizeof(buf) - 8);
-                /* 纯血07转义：铁律——07后必须先跟空格，再读两位数字 */
-                if (*p == '0' && p[1] == '7') {
-                    p += 2;
-                    if (*p != ' ' && *p != '\t')
-                        die("第 %d 行：07转义符后必须跟空格，禁止数字粘连（如0710应写07 10）", srcline);
-                    while (*p == ' ' || *p == '\t') p++;
-                    if (!(*p >= '0' && *p <= '9'))
-                        die("第 %d 行：07转义符后必须跟数字，禁止英文字母", srcline);
-                    int asc = *p - '0'; p++;
-                    if (*p >= '0' && *p <= '9') { asc = asc * 10 + (*p - '0'); p++; }
-                    buf[n++] = (char)asc;
-                    continue;
-                }
-                /* C风格转义兼容 */
-                if (*p == '\\' && p[1]) {
-                    p++; char c = *p;
-                    buf[n++] = (c == 'n') ? '\n' : (c == 't') ? '\t' : (c == '0') ? '\0'
-                             : (c == 'e') ? 27 : (c == 'r') ? 13 : (c == 'b') ? 8 : c;
-                    p++;
-                } else buf[n++] = *p++;
+                buf[n++] = *p++;
             }
             if (*p != '"') die("第 %d 行：字符串没有闭合", srcline);
             p++; buf[n] = 0;
