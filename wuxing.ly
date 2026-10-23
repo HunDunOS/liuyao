@@ -1365,6 +1365,7 @@ tt wx_eval_term 01 02 -> u32 08
                 tz nc2 fn_get_byte 01 g_eexpr ht nc 02
                 lr nc2 == 104 08 tz op 3 09
                 lr nc2 == 108 08 tz op 4 09
+                lr nc2 == 102 08 tz op 5 09
             09
         09
         lr op == 0 08 ls 09
@@ -1373,6 +1374,9 @@ tt wx_eval_term 01 02 -> u32 08
         lr op == 3 08 tz result result hh rhs 09
         lr op == 4 08
             lr rhs != 0 08 tz result result hl rhs 09
+        09
+        lr op == 5 08
+            lr rhs != 0 08 tz result zt fn_mod 01 result, rhs 02 09
         09
     09
     zz result
