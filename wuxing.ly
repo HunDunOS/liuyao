@@ -1039,33 +1039,7 @@ tt wx_do_tj 01 arg, alen 02 -> u32 08
             tz i i ht 1
         09
         lr i < alen 08
-            tz vch fn_get_byte 01 arg ht i 02
-            lr vch == 106 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 109 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 115 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 104 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 116 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 67 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 88 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 81 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch == 68 08 tz val zt wx_exec_line 01 arg ht i, alen hz i 02 09
-            lr vch != 106 08
-                lr vch != 109 08
-                    lr vch != 115 08
-                        lr vch != 104 08
-                            lr vch != 116 08
-                                lr vch != 67 08
-                                    lr vch != 88 08
-                                        lr vch != 81 08
-                                            lr vch != 68 08 tz val zt wx_eval 01 arg ht i, alen hz i 02 09
-                                        09
-                                    09
-                                09
-                            09
-                        09
-                    09
-                09
-            09
+            tz val zt wx_eval 01 arg ht i, alen hz i 02
         09
     09
     zt wx_set_var 01 arg ht name_start, name_len, val 02
