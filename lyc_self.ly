@@ -1,52 +1,52 @@
-@ ============================================================
-@ 六爻自举编译器 lyc_self.ly - 纯血六爻版 v0.3.0
-@ 规范版本: 六爻指令集 SPEC_v1.0 (64指令)
-@ 架构：dt全局 + tf表 + tt函数 | 目标: x86-64 裸奔无libc
-@ 状态: 完整自举版 - 支持tt/tz/st/zz/运算/赋值/循环/条件/函数调用/数组/指针
-@ ============================================================
+# ============================================================
+# 六爻自举编译器 lyc_self.ly - 纯血六爻版 v0.3.0
+# 规范版本: 六爻指令集 SPEC_v1.0 (64指令)
+# 架构：dt全局 + tf表 + tt函数 | 目标: x86-64 裸奔无libc
+# 状态: 完整自举版 - 支持tt/tz/st/zz/运算/赋值/循环/条件/函数调用/数组/指针
+# ============================================================
 
-@ ---- 全局状态 ----
-tz dtd      @ 当前字符
-tz dtt      @ token类型: 0=EOF 1=数字 2=字符串 3=标识符 4=标点 5=卦指令
-tz dth      @ token数值
-tz dtz      @ token串指针
-tz dtu      @ token长度
-tz dtf      @ 关键字首字节
-tz dts      @ 关键字次字节
-tz dtn      @ 源码长度
-tz dtl      @ 行号
-tz dtb      @ 源码指针
-tz dtend    @ 源码结束指针
-tz dtlab    @ 标签计数器
-tz dsn      @ 字符串表计数
-tz dnv      @ 变量数
-tz dfr      @ 栈帧大小（预扫描用）
-tz dloc     @ 局部变量偏移计数器（实际解析用）
-tz dtcurfn  @ 当前函数名指针
-tz dtcurfnl @ 当前函数名长度
-tz dln      @ 循环嵌套深度
+# ---- 全局状态 ----
+tz dtd      # 当前字符
+tz dtt      # token类型: 0=EOF 1=数字 2=字符串 3=标识符 4=标点 5=卦指令
+tz dth      # token数值
+tz dtz      # token串指针
+tz dtu      # token长度
+tz dtf      # 关键字首字节
+tz dts      # 关键字次字节
+tz dtn      # 源码长度
+tz dtl      # 行号
+tz dtb      # 源码指针
+tz dtend    # 源码结束指针
+tz dtlab    # 标签计数器
+tz dsn      # 字符串表计数
+tz dnv      # 变量数
+tz dfr      # 栈帧大小（预扫描用）
+tz dloc     # 局部变量偏移计数器（实际解析用）
+tz dtcurfn  # 当前函数名指针
+tz dtcurfnl # 当前函数名长度
+tz dln      # 循环嵌套深度
 
-@ ---- 表 ----
-tf dsb[65536]: u8    @ 源码缓冲
-tf dtv[128]: u64     @ 变量名表
-tf dtw[128]: u64     @ 变量偏移表
-tf dtisparam[128]: u64  @ 是否是参数（1=参数，0=局部）
-tf dtvl[128]: u64    @ 变量名长度表
-tf dsv[256]: u64     @ 字符串表
-tf dsl[256]: u64     @ 字符串长度表
-tf dltop[16]: u64    @ 循环开始标签栈
-tf dlend[16]: u64    @ 循环结束标签栈
-tf gname[64]: u64    @ 全局变量名表
-tf gsize[64]: u64    @ 全局变量大小(字节)
-tf glen[64]: u64     @ 全局变量名长度
-tz gcount            @ 全局变量数
-tf pname[16]: u64    @ 参数名临时表
-tf plen[16]: u64     @ 参数名长度临时表
-tz pcount            @ 参数总数
+# ---- 表 ----
+tf dsb[65536]: u8    # 源码缓冲
+tf dtv[128]: u64     # 变量名表
+tf dtw[128]: u64     # 变量偏移表
+tf dtisparam[128]: u64  # 是否是参数（1=参数，0=局部）
+tf dtvl[128]: u64    # 变量名长度表
+tf dsv[256]: u64     # 字符串表
+tf dsl[256]: u64     # 字符串长度表
+tf dltop[16]: u64    # 循环开始标签栈
+tf dlend[16]: u64    # 循环结束标签栈
+tf gname[64]: u64    # 全局变量名表
+tf gsize[64]: u64    # 全局变量大小(字节)
+tf glen[64]: u64     # 全局变量名长度
+tz gcount            # 全局变量数
+tf pname[16]: u64    # 参数名临时表
+tf plen[16]: u64     # 参数名长度临时表
+tz pcount            # 参数总数
 
-@ ============================================================
-@ 基础工具
-@ ============================================================
+# ============================================================
+# 基础工具
+# ============================================================
 
 tt lds(s) -> u32 {
     tz i = 0
@@ -100,9 +100,9 @@ tt ltm(a, b) -> u32 {
     }
 }
 
-@ ============================================================
-@ 词法分析
-@ ============================================================
+# ============================================================
+# 词法分析
+# ============================================================
 
 tt lft() -> u32 {
     ll {
@@ -168,13 +168,13 @@ tt llt() -> u32 {
     tz c = r hs 255
     dtd = c
 
-    @ 数字
+    # 数字
     lr ldh(c) == 1 { ldn(); zz 1 }
 
-    @ 字符串
+    # 字符串
     lr c == 34 { lst(); zz 1 }
 
-    @ 注释 (# 或 @)
+    # 注释 (# 或 #)
     lr c == 35 { lr c == 64 {
         ll {
             lr dtb >= dtend { ls }
@@ -188,7 +188,7 @@ tt llt() -> u32 {
         zz 1
     } }
 
-    @ 两字节卦指令
+    # 两字节卦指令
     lr lsg(c) == 1 {
         tz a3 = dtb ht 1
         tz r3 = fr a3
@@ -204,7 +204,7 @@ tt llt() -> u32 {
         }
     }
 
-    @ 标识符
+    # 标识符
     lr lsl(c) == 1 {
         tz start = dtb
         ll {
@@ -222,7 +222,7 @@ tt llt() -> u32 {
         zz 1
     }
 
-    @ 标点（单字符）
+    # 标点（单字符）
     dtt = 4
     dth = c
     dtz = 0
@@ -231,9 +231,9 @@ tt llt() -> u32 {
     zz 1
 }
 
-@ ============================================================
-@ 变量表
-@ ============================================================
+# ============================================================
+# 变量表
+# ============================================================
 
 tt lfv(name) -> u32 {
     tz i = 0
@@ -262,7 +262,7 @@ tt lfv(name) -> u32 {
 }
 
 tt lfoutvar(vi) -> u32 {
-    @ 参数用[rbp+N]，局部变量用[rbp-N]
+    # 参数用[rbp+N]，局部变量用[rbp-N]
     lr dtisparam[vi] == 1 {
         st dd "[rbp+"
         st dt dtw[vi]
@@ -275,12 +275,12 @@ tt lfoutvar(vi) -> u32 {
     zz 0
 }
 
-@ ============================================================
-@ 预扫描：计算函数栈帧大小
-@ ============================================================
+# ============================================================
+# 预扫描：计算函数栈帧大小
+# ============================================================
 
 tt lprescan() -> u32 {
-    @ 进入时当前token是{后面的第一个token
+    # 进入时当前token是{后面的第一个token
     tz depth = 1
     ll {
         lz dtt 0 { zz 0 }
@@ -290,26 +290,26 @@ tt lprescan() -> u32 {
             lz depth 0 { zz 0 }
         } }
         lr dtt == 5 { lr dtf == 116 { lr dts == 122 {
-            @ tz 声明，每个占8字节
+            # tz 声明，每个占8字节
             dfr = dfr ht 8
         } } }
         llt()
     }
 }
 
-@ ============================================================
-@ 基础输出
-@ ============================================================
+# ============================================================
+# 基础输出
+# ============================================================
 
 tt 出(c) -> u32 {
-    @ 输出一个字符到 stdout（用运行时 _rt_putc）
+    # 输出一个字符到 stdout（用运行时 _rt_putc）
     zt _rt_putc(c)
     zz 0
 }
 
-@ ============================================================
-@ 函数名mangle输出
-@ ============================================================
+# ============================================================
+# 函数名mangle输出
+# ============================================================
 
 tt lfoutname() -> u32 {
     tz i = 0
@@ -339,12 +339,12 @@ tt lfoutname() -> u32 {
     zz i
 }
 
-@ ============================================================
-@ 表达式解析
-@ ============================================================
+# ============================================================
+# 表达式解析
+# ============================================================
 
 tt zzp() -> u32 {
-    @ zt 函数调用前缀
+    # zt 函数调用前缀
     lr dtt == 5 { lr dtf == 122 { lr dts == 116 {
         llt()
         lr dtt == 3 {
@@ -382,7 +382,7 @@ tt zzp() -> u32 {
         }
         zz 0
     } } }
-    @ 数字
+    # 数字
     lr dtt == 1 {
         st dd "mov rax, "
         st dt dth
@@ -390,7 +390,7 @@ tt zzp() -> u32 {
         llt()
         zz 0
     }
-    @ 字符串
+    # 字符串
     lr dtt == 2 {
         tz idx = dsn
         dsv[idx] = dtz
@@ -402,14 +402,14 @@ tt zzp() -> u32 {
         llt()
         zz 0
     }
-    @ fr 解引用
+    # fr 解引用
     lr dtt == 5 { lr dtf == 102 { lr dts == 114 {
         llt()
         zzd()
         st dd "mov rax, [rax]\n"
         zz 0
     } } }
-    @ zf 取地址
+    # zf 取地址
     lr dtt == 5 { lr dtf == 122 { lr dts == 102 {
         llt()
         lr dtt == 3 {
@@ -426,16 +426,16 @@ tt zzp() -> u32 {
         st dd "mov rax, 0\n"
         zz 0
     } } }
-    @ 标识符/数组下标/函数调用
+    # 标识符/数组下标/函数调用
     lr dtt == 3 {
         tz name = dtz
         tz namelen = dtu
         llt()
-        @ 数组下标 arr[i]
+        # 数组下标 arr[i]
         lr dtt == 4 { lr dth == 91 {
             llt()
             zzd()
-            @ 跳过 ]
+            # 跳过 ]
             ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
             st dd "imul rax, 8\n"
             st dd "push rax\n"
@@ -459,7 +459,7 @@ tt zzp() -> u32 {
             st dd "mov rax, [rax]\n"
             zz 0
         } }
-        @ 函数调用 name(args)
+        # 函数调用 name(args)
         lr dtt == 4 { lr dth == 40 {
             llt()
             tz nargs = 0
@@ -471,7 +471,7 @@ tt zzp() -> u32 {
                 lr dtt == 4 { lr dth == 44 { llt() } }
             }
             llt()
-            @ 临时设置函数名用于mangle
+            # 临时设置函数名用于mangle
             tz savefn = dtcurfn
             tz savefnl = dtcurfnl
             dtcurfn = name
@@ -489,7 +489,7 @@ tt zzp() -> u32 {
             }
             zz 0
         } }
-        @ 普通变量
+        # 普通变量
         tz vi = lfv(name)
         lr vi < dnv {
             st dd "mov rax, "
@@ -500,7 +500,7 @@ tt zzp() -> u32 {
         st dd "mov rax, 0\n"
         zz 0
     }
-    @ 未知，返回0
+    # 未知，返回0
     llt()
     st dd "mov rax, 0\n"
     zz 0
@@ -509,14 +509,14 @@ tt zzp() -> u32 {
 tt zzd() -> u32 {
     zzp()
     ll {
-        @ 卦指令运算符（h_系, dh/dl）
+        # 卦指令运算符（h_系, dh/dl）
         tz isop = 0
         lr dtt == 5 {
             lr dtf == 104 { tz isop = 1 }
             lr dtf == 100 { lr dts == 104 { tz isop = 1 } }
             lr dtf == 100 { lr dts == 108 { tz isop = 1 } }
         }
-        @ 比较运算符（标点）
+        # 比较运算符（标点）
         lr dtt == 4 {
             lr dth == 60 { tz isop = 1 }
             lr dth == 62 { tz isop = 1 }
@@ -525,11 +525,11 @@ tt zzd() -> u32 {
         }
         lr isop == 0 { ls }
 
-        @ 比较运算符
+        # 比较运算符
         lr dtt == 4 {
             tz cmpop = dth
             llt()
-            @ >= <= == !=
+            # >= <= == !=
             lr cmpop == 62 { lr dtt == 4 { lr dth == 61 { tz cmpop = 262; llt() } } }
             lr cmpop == 60 { lr dtt == 4 { lr dth == 61 { tz cmpop = 260; llt() } } }
             lr cmpop == 61 { lr dtt == 4 { lr dth == 61 { tz cmpop = 261; llt() } } }
@@ -547,7 +547,7 @@ tt zzd() -> u32 {
             zz 0
         }
 
-        @ 卦指令运算符
+        # 卦指令运算符
         tz opf = dtf
         tz ops = dts
         llt()
@@ -568,12 +568,12 @@ tt zzd() -> u32 {
     zz 0
 }
 
-@ ============================================================
-@ 语句处理
-@ ============================================================
+# ============================================================
+# 语句处理
+# ============================================================
 
 tt lzc() -> u32 {
-    @ tz 变量声明
+    # tz 变量声明
     llt()
     lr dtt != 3 { zz 0 }
     tz name = dtz
@@ -586,7 +586,7 @@ tt lzc() -> u32 {
     dtisparam[vi] = 0
     dnv = dnv ht 1
     llt()
-    @ = 赋值
+    # = 赋值
     lr dtt == 4 { lr dth == 61 {
         llt()
         zzd()
@@ -598,11 +598,11 @@ tt lzc() -> u32 {
 }
 
 tt lzs() -> u32 {
-    @ st 输出
+    # st 输出
     llt()
     lr dtt != 5 { zz 0 }
     lr dtf == 100 { lr dts == 100 {
-        @ st dd 字符串
+        # st dd 字符串
         llt()
         lr dtt == 2 {
             zzd()
@@ -611,7 +611,7 @@ tt lzs() -> u32 {
         zz 0
     } }
     lr dtf == 100 { lr dts == 116 {
-        @ st dt 整数
+        # st dt 整数
         llt()
         zzd()
         st dd "push rax\ncall _rt_puti\nadd rsp, 8\n"
@@ -621,7 +621,7 @@ tt lzs() -> u32 {
 }
 
 tt lzr() -> u32 {
-    @ zz 返回
+    # zz 返回
     llt()
     lr dtt == 1 {
         st dd "mov rax, "
@@ -630,7 +630,7 @@ tt lzr() -> u32 {
         llt()
     }
     lr dtt != 4 { lr dth != 125 {
-        @ 返回表达式
+        # 返回表达式
         zzd()
     } }
     st dd "jmp .Lret_"
@@ -640,16 +640,16 @@ tt lzr() -> u32 {
 }
 
 tt lzassign() -> u32 {
-    @ 赋值语句：变量=表达式 或 数组[i]=表达式
-    @ 进入时当前token是标识符
+    # 赋值语句：变量=表达式 或 数组[i]=表达式
+    # 进入时当前token是标识符
     tz name = dtz
     tz namelen = dtu
     llt()
-    @ 数组下标 arr[i] = expr
+    # 数组下标 arr[i] = expr
     lr dtt == 4 { lr dth == 91 {
         llt()
         zzd()
-        @ 跳过 ]
+        # 跳过 ]
         ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
         st dd "imul rax, 8\n"
         st dd "push rax\n"
@@ -671,14 +671,14 @@ tt lzassign() -> u32 {
         }
         st dd "mov rcx, rax\npop rax\nadd rax, rcx\n"
         st dd "push rax\n"
-        @ 跳过 =
+        # 跳过 =
         ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 61 { llt(); ls } }; llt() }
         zzd()
         st dd "mov rcx, rax\npop rax\nmov [rax], rcx\n"
         zz 0
     } }
-    @ 普通变量赋值
-    @ 跳过 =
+    # 普通变量赋值
+    # 跳过 =
     ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 61 { llt(); ls } }; llt() }
     zzd()
     tz vi = lfv(name)
@@ -691,7 +691,7 @@ tt lzassign() -> u32 {
 }
 
 tt lzlr() -> u32 {
-    @ lr 条件 { ... } [ld { ... }]
+    # lr 条件 { ... } [ld { ... }]
     llt()
     zzd()
     tz lab = dtlab
@@ -699,15 +699,15 @@ tt lzlr() -> u32 {
     st dd "test rax, rax\njz .Lelse"
     st dt lab
     st dd "\n"
-    @ 跳过 {
+    # 跳过 {
     ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
-    @ then 块
+    # then 块
     ll {
         lr dtt == 4 { lr dth == 125 { ls } }
         zzh()
     }
     llt()
-    @ ld else
+    # ld else
     lr dtt == 5 { lr dtf == 108 { lr dts == 100 {
         llt()
         tz lab2 = dtlab
@@ -717,9 +717,9 @@ tt lzlr() -> u32 {
         st dd "\n.Lelse"
         st dt lab
         st dd ":\n"
-        @ 跳过 {
+        # 跳过 {
         ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
-        @ else 块
+        # else 块
         ll {
             lr dtt == 4 { lr dth == 125 { ls } }
             zzh()
@@ -737,7 +737,7 @@ tt lzlr() -> u32 {
 }
 
 tt lzlz(unequal) -> u32 {
-    @ lz 相等跳转 / lh 不等跳转
+    # lz 相等跳转 / lh 不等跳转
     llt()
     zzd()
     st dd "push rax\n"
@@ -752,9 +752,9 @@ tt lzlz(unequal) -> u32 {
     }
     st dt lab
     st dd "\n"
-    @ 跳过 {
+    # 跳过 {
     ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
-    @ 块
+    # 块
     ll {
         lr dtt == 4 { lr dth == 125 { ls } }
         zzh()
@@ -767,7 +767,7 @@ tt lzlz(unequal) -> u32 {
 }
 
 tt lzll() -> u32 {
-    @ ll [条件] { ... }
+    # ll [条件] { ... }
     llt()
     tz top = dtlab
     tz end = dtlab ht 1
@@ -778,16 +778,16 @@ tt lzll() -> u32 {
     st dd ".Ltop"
     st dt top
     st dd ":\n"
-    @ 条件循环（不是 {）
+    # 条件循环（不是 {）
     lr dtt != 4 {
         zzd()
         st dd "test rax, rax\njz .Lend"
         st dt end
         st dd "\n"
     }
-    @ 跳过 {
+    # 跳过 {
     ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
-    @ 循环体
+    # 循环体
     ll {
         lr dtt == 4 { lr dth == 125 { ls } }
         zzh()
@@ -802,14 +802,14 @@ tt lzll() -> u32 {
     zz 0
 }
 
-@ ============================================================
-@ 语句分派
-@ ============================================================
+# ============================================================
+# 语句分派
+# ============================================================
 
 tt zzh() -> u32 {
     lr dtt == 0 { zz 0 }
 
-    @ tf 全局数组声明
+    # tf 全局数组声明
     lr dtt == 5 { lr dtf == 116 { lr dts == 102 {
         llt()
         lr dtt == 3 {
@@ -817,42 +817,42 @@ tt zzh() -> u32 {
             gname[gi] = dtz
             glen[gi] = dtu
             llt()
-            @ 跳过 [
+            # 跳过 [
             ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 91 { llt(); ls } }; llt() }
             tz arrn = dth
             llt()
-            @ 跳过 ]
+            # 跳过 ]
             ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
-            @ 跳过 : type
+            # 跳过 : type
             ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 58 { llt(); ls } }; llt() }
-            llt()  @ 跳过类型名
+            llt()  # 跳过类型名
             gsize[gi] = arrn hh 8
             gcount = gcount ht 1
         }
         zz 0
     } } }
-    @ tz 声明
+    # tz 声明
     lr dtt == 5 { lr dtf == 116 { lr dts == 122 { lzc(); zz 0 } } }
 
-    @ st 输出
+    # st 输出
     lr dtt == 5 { lr dtf == 115 { lr dts == 116 { lzs(); zz 0 } } }
 
-    @ zz 返回
+    # zz 返回
     lr dtt == 5 { lr dtf == 122 { lr dts == 122 { lzr(); zz 0 } } }
 
-    @ lr 条件
+    # lr 条件
     lr dtt == 5 { lr dtf == 108 { lr dts == 114 { lzlr(); zz 0 } } }
 
-    @ lz 相等跳转
+    # lz 相等跳转
     lr dtt == 5 { lr dtf == 108 { lr dts == 122 { zt lzlz(0); zz 0 } } }
 
-    @ lh 不等跳转
+    # lh 不等跳转
     lr dtt == 5 { lr dtf == 108 { lr dts == 104 { zt lzlz(1); zz 0 } } }
 
-    @ ll 循环
+    # ll 循环
     lr dtt == 5 { lr dtf == 108 { lr dts == 108 { lzll(); zz 0 } } }
 
-    @ ls 跳出
+    # ls 跳出
     lr dtt == 5 { lr dtf == 108 { lr dts == 115 {
         llt()
         lr dln > 0 {
@@ -864,7 +864,7 @@ tt zzh() -> u32 {
         zz 0
     } } }
 
-    @ lf 继续
+    # lf 继续
     lr dtt == 5 { lr dtf == 108 { lr dts == 102 {
         llt()
         lr dln > 0 {
@@ -876,14 +876,14 @@ tt zzh() -> u32 {
         zz 0
     } } }
 
-    @ zt 函数调用语句
+    # zt 函数调用语句
     lr dtt == 5 { lr dtf == 122 { lr dts == 116 {
         llt()
         zzd()
         zz 0
     } } }
 
-    @ zd 系统调用（简化：zd 1 cc = 输出字符）
+    # zd 系统调用（简化：zd 1 cc = 输出字符）
     lr dtt == 5 { lr dtf == 122 { lr dts == 100 {
         llt()
         lr dtt == 1 { lr dth == 1 {
@@ -897,7 +897,7 @@ tt zzh() -> u32 {
         zz 0
     } } }
 
-    @ tt 函数定义
+    # tt 函数定义
     lr dtt == 5 { lr dtf == 116 { lr dts == 116 {
         llt()
         tz save_dtb = dtb
@@ -905,19 +905,19 @@ tt zzh() -> u32 {
             dtcurfn = dtz
             dtcurfnl = dtu
         }
-        @ 跳过参数列表
+        # 跳过参数列表
         ll { llt(); lr dtt == 4 { lr dth == 41 { ls } } }
-        @ 跳过返回类型 -> u32 {
+        # 跳过返回类型 -> u32 {
         ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
         llt()
-        @ 预扫描
+        # 预扫描
         dfr = 0
         dnv = 0
         zt lprescan()
-        @ 恢复重新解析
+        # 恢复重新解析
         dtb = save_dtb
         llt()
-        @ 生成函数标签和序言
+        # 生成函数标签和序言
         st dd ".globl fn_"
         zt lfoutname()
         st dd "\nfn_"
@@ -927,9 +927,9 @@ tt zzh() -> u32 {
         st dt dfr
         st dd "\n"
         dnv = 0
-        @ 解析参数列表
+        # 解析参数列表
         pcount = 0
-        llt()  @ 跳过 (
+        llt()  # 跳过 (
         ll {
             lr dtt == 4 { lr dth == 41 { ls } }
             lr dtt == 3 {
@@ -940,8 +940,8 @@ tt zzh() -> u32 {
             }
             lr dtt == 4 { lr dth == 44 { llt() } }
         }
-        llt()  @ 跳过 )
-        @ 参数加入变量表: 第i个参数偏移=16+8*(pcount-1-i)
+        llt()  # 跳过 )
+        # 参数加入变量表: 第i个参数偏移=16+8*(pcount-1-i)
         tz pi2 = 0
         ll {
             lz pi2 pcount { ls }
@@ -953,10 +953,10 @@ tt zzh() -> u32 {
             pi2 = pi2 ht 1
         }
         dloc = 0
-        @ 跳过返回类型
+        # 跳过返回类型
         ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
         llt()
-        @ 解析函数体
+        # 解析函数体
         ll {
             lr dtt == 4 { lr dth == 125 {
                 st dd ".Lret_"
@@ -970,20 +970,20 @@ tt zzh() -> u32 {
         zz 0
     } } }
 
-    @ 赋值语句（标识符开头）
+    # 赋值语句（标识符开头）
     lr dtt == 3 { lzassign(); zz 0 }
 
-    @ 未知，跳过
+    # 未知，跳过
     llt()
     zz 0
 }
 
-@ ============================================================
-@ 主函数
-@ ============================================================
+# ============================================================
+# 主函数
+# ============================================================
 
 tt 主(fname) -> u32 {
-    @ 从命令行参数读取源码文件
+    # 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp(fname, zf slen)
     lz src 0 { zz 1 }
@@ -999,17 +999,17 @@ tt 主(fname) -> u32 {
     dln = 0
     gcount = 0
 
-    @ 吐汇编头部
+    # 吐汇编头部
     st dd ".intel_syntax noprefix\n.section .text\n"
 
-    @ 解析
+    # 解析
     llt()
     ll {
         lz dtt 0 { ls }
         zzh()
     }
 
-    @ 输出 .bss 全局变量
+    # 输出 .bss 全局变量
     st dd ".section .bss\n.align 8\n"
     tz gi = 0
     ll {
@@ -1027,7 +1027,7 @@ tt 主(fname) -> u32 {
         st dd "\n"
         gi = gi ht 1
     }
-    @ 输出字符串表
+    # 输出字符串表
     tz si = 0
     st dd ".section .rodata\n"
     ll {
@@ -1035,7 +1035,7 @@ tt 主(fname) -> u32 {
         st dd ".Lstr"
         st dt si
         st dd ": .ascii \""
-        @ 输出字符串内容
+        # 输出字符串内容
         tz sptr = dsv[si]
         tz slen2 = dsl[si]
         tz j = 0
