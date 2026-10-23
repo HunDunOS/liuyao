@@ -197,19 +197,30 @@ tt llt() -> u32 {
     00 字符串
     lr c == 34 { lst(); zz 1 }
 
-    00 两字节卦指令
+    00 两字节卦指令（第三字符若是标识符字符则是变量名，不是指令）
     lr lsg(c) == 1 {
-        tz a3 = dtb ht 1
-        tz r3 = fr a3
-        tz c3 = r3 hs 255
-        lr lsg(c3) == 1 {
-            dtf = c
-            dts = c3
-            dtz = dtb
-            dtu = 2
-            dtt = 5
-            dtb = dtb ht 2
-            zz 1
+        lr dtb ht 1 < dtend {
+            tz a3 = dtb ht 1
+            tz r3 = fr a3
+            tz c3 = r3 hs 255
+            lr lsg(c3) == 1 {
+                tz is_kw = 1
+                lr dtb ht 2 < dtend {
+                    tz a4 = dtb ht 2
+                    tz r4 = fr a4
+                    tz c4 = r4 hs 255
+                    lr lsl(c4) == 1 { tz is_kw = 0 }
+                }
+                lr is_kw == 1 {
+                    dtf = c
+                    dts = c3
+                    dtz = dtb
+                    dtu = 2
+                    dtt = 5
+                    dtb = dtb ht 2
+                    zz 1
+                }
+            }
         }
     }
 
@@ -858,6 +869,7 @@ tt lzll() -> u32 {
 tt zzh() -> u32 {
     lr dtt == 0 { zz 0 }
 
+
     00 tf 全局数组声明
     lr dtt == 5 { lr dtf == 116 { lr dts == 102 {
         llt()
@@ -882,16 +894,21 @@ tt zzh() -> u32 {
     } } }
     00 tz 声明
     lr dtt == 5 { lr dtf == 116 { lr dts == 122 {
+
         lr infunc == 0 {
             00 全局tz变量：记录到全局表，.bss分配8字节
             llt()
+
             lr dtt == 3 {
                 tz gi = gcount
                 gname[gi] = dtz
                 glen[gi] = dtu
                 gsize[gi] = 8
                 gcount = gcount ht 1
+
+
                 llt()
+
                 00 跳过 = 初始化（全局变量暂不支持初始化，跳过）
                 lr dtt == 4 { lr dth == 61 {
                     ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 10 { llt(); ls } }; llt() }
