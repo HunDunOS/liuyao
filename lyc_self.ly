@@ -40,6 +40,7 @@ tf gname[64]: u64    00 全局变量名表
 tf gsize[64]: u64    00 全局变量大小(字节)
 tf glen[64]: u64     00 全局变量名长度
 tz gcount            00 全局变量数
+tz infunc             00 是否在函数体内（1=是，0=否，用于区分全局/局部tz声明）
 tf pname[16]: u64    00 参数名临时表
 tf plen[16]: u64     00 参数名长度临时表
 tz pcount            00 参数总数
@@ -248,8 +249,9 @@ tt lfv(name) -> u32 {
     tz j = 0
     tz vlen = 0
     tz match = 0
+    00 先查局部变量表
     ll {
-        lz i dnv { zz dnv }
+        lz i dnv { ls }
         vlen = dtvl[i]
         match = 1
         j = 0
@@ -267,9 +269,48 @@ tt lfv(name) -> u32 {
         lr match == 1 { zz i }
         i = i ht 1
     }
+    00 局部没找到，查全局变量表
+    tz gi = 0
+    ll {
+        lz gi gcount { zz dnv }  00 全局也没找到，返回dnv
+
+        vlen = glen[gi]
+        match = 1
+        j = 0
+        ll {
+            lz j vlen { ls }
+            tz aa = gname[gi] ht j
+            tz ra = fr aa
+            tz ca = ra hs 255
+            tz bb = name ht j
+            tz rb = fr bb
+            tz cb = rb hs 255
+
+            lr ca != cb { match = 0; ls }
+            j = j ht 1
+        }
+
+        lr match == 1 { zz dnv ht gi ht 1 }  00 全局变量返回dnv+gi+1
+        gi = gi ht 1
+    }
+    zz dnv
 }
 
 tt lfoutvar(vi) -> u32 {
+    00 全局变量（vi > dnv）
+    lr vi > dnv {
+        tz gi = vi hz dnv hz 1
+        st dd "[g_"
+        tz sf0 = dtcurfn
+        tz sf1 = dtcurfnl
+        dtcurfn = gname[gi]
+        dtcurfnl = glen[gi]
+        zt lfoutname()
+        dtcurfn = sf0
+        dtcurfnl = sf1
+        st dd "]"
+        zz 0
+    }
     00 参数用[rbp+N]，局部变量用[rbp-N]
     lr dtisparam[vi] == 1 {
         st dd "[rbp+"
@@ -499,7 +540,7 @@ tt zzp() -> u32 {
         } }
         00 普通变量
         tz vi = lfv(name)
-        lr vi < dnv {
+        lr vi != dnv {
             st dd "mov rax, "
             zt lfoutvar(vi)
             st dd "\n"
@@ -690,7 +731,7 @@ tt lzassign() -> u32 {
     ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 61 { llt(); ls } }; llt() }
     zzd()
     tz vi = lfv(name)
-    lr vi < dnv {
+    lr vi != dnv {
         st dd "mov "
         zt lfoutvar(vi)
         st dd ", rax\n"
@@ -840,7 +881,27 @@ tt zzh() -> u32 {
         zz 0
     } } }
     00 tz 声明
-    lr dtt == 5 { lr dtf == 116 { lr dts == 122 { lzc(); zz 0 } } }
+    lr dtt == 5 { lr dtf == 116 { lr dts == 122 {
+        lr infunc == 0 {
+            00 全局tz变量：记录到全局表，.bss分配8字节
+            llt()
+            lr dtt == 3 {
+                tz gi = gcount
+                gname[gi] = dtz
+                glen[gi] = dtu
+                gsize[gi] = 8
+                gcount = gcount ht 1
+                llt()
+                00 跳过 = 初始化（全局变量暂不支持初始化，跳过）
+                lr dtt == 4 { lr dth == 61 {
+                    ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 10 { llt(); ls } }; llt() }
+                } }
+            }
+            zz 0
+        }
+        lzc()
+        zz 0
+    } } }
 
     00 st 输出
     lr dtt == 5 { lr dtf == 115 { lr dts == 116 { lzs(); zz 0 } } }
@@ -965,8 +1026,10 @@ tt zzh() -> u32 {
         ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
         llt()
         00 解析函数体
+        infunc = 1
         ll {
             lr dtt == 4 { lr dth == 125 {
+                infunc = 0
                 st dd ".Lret_"
                 zt lfoutname()
                 st dd ":\nmov rsp, rbp\npop rbp\nret\n"
@@ -975,6 +1038,7 @@ tt zzh() -> u32 {
             } }
             zzh()
         }
+        infunc = 0
         zz 0
     } } }
 
