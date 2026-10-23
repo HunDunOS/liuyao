@@ -22,6 +22,9 @@ qj g_ret_stack[64]
 qj g_ret_sp
 qj g_func_ret_val
 qj g_func_returning
+qj g_epos
+qj g_eexpr
+qj g_elen
 qj g_line_count
 qj g_src
 qj cmd_buf[4096]
@@ -1298,160 +1301,97 @@ tt wx_find_var 01 name, nlen 02 -> u32 08
     zz 0
 09
 
-tt wx_eval 01 expr, elen 02 -> u32 08
-    tz i 0
-    tz result 0
-    tz cur_num 0
-    tz op 43
+tt wx_skip_ws 01 02 -> u32 08
     ll 08
-        lz i elen 08 ls 09
-        tz ch fn_get_byte 01 expr ht i 02
-        tz done 0
-        lr ch == 32 08 tz done 1 09
-        tz is_d 0
-        lr ch > 47 08
-            lr ch < 58 08 tz is_d 1 09
-        09
-        lr is_d == 1 08
-            tz cur_num cur_num hh 10 ht ch hz 48
-            tz done 1
-        09
-        lr done == 0 08
-            lr ch == 104 08
-                tz ni i ht 1
-                lr ni < elen 08
-                    tz nc fn_get_byte 01 expr ht ni 02
-                    tz is_wx 0
-                    lr nc == 116 08 tz is_wx 1 09
-                    lr nc == 122 08 tz is_wx 1 09
-                    lr nc == 104 08 tz is_wx 1 09
-                    lr nc == 108 08 tz is_wx 1 09
-                    lr nc == 102 08 tz is_wx 1 09
-                    lr nc == 115 08 tz is_wx 1 09
-                    lr nc == 114 08 tz is_wx 1 09
-                    lr nc == 100 08 tz is_wx 1 09
-                    lr is_wx == 1 08
-                        lr op == 43 08 tz result result ht cur_num 09
-                        lr op == 45 08 tz result result hz cur_num 09
-                        lr op == 42 08 tz result result hh cur_num 09
-                        lr op == 47 08
-                            lr cur_num != 0 08 tz result result hl cur_num 09
-                        09
-                        lr op == 37 08
-                            lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
-                        09
-                        lr op == 38 08 tz result zt fn_and 01 result, cur_num 02 09
-                        lr op == 39 08 tz result zt fn_or 01 result, cur_num 02 09
-                        lr op == 40 08 tz result zt fn_xor 01 result, cur_num 02 09
-                        lr nc == 116 08 tz op 43 09
-                        lr nc == 122 08 tz op 45 09
-                        lr nc == 104 08 tz op 42 09
-                        lr nc == 108 08 tz op 47 09
-                        lr nc == 102 08 tz op 37 09
-                        lr nc == 115 08 tz op 38 09
-                        lr nc == 114 08 tz op 39 09
-                        lr nc == 100 08 tz op 40 09
-                        tz cur_num 0
-                        tz i i ht 1
-                        tz done 1
-                    09
-                09
-            09
-        09
-        lr done == 0 08
-            tz is_var 0
-            lr ch > 96 08
-                lr ch < 123 08 tz is_var 1 09
-            09
-            lr ch > 64 08
-                lr ch < 91 08 tz is_var 1 09
-            09
-            lr is_var == 1 08
-                tz vs i
-                ll 08
-                    lz i elen 08 ls 09
-                    tz vc fn_get_byte 01 expr ht i 02
-                    tz va 0
-                    lr vc > 47 08
-                        lr vc < 58 08 tz va 1 09
-                    09
-                    lr vc > 96 08
-                        lr vc < 123 08 tz va 1 09
-                    09
-                    lr vc > 64 08
-                        lr vc < 91 08 tz va 1 09
-                    09
-                    lr va == 0 08 ls 09
-                    tz i i ht 1
-                09
-                tz vl i hz vs
-                tz cur_num zt wx_find_var 01 expr ht vs, vl 02
-                tz i i hz 1
-                tz done 1
-            09
-        09
-        lr done == 0 08
-            lr op == 43 08 tz result result ht cur_num 09
-            lr op == 45 08 tz result result hz cur_num 09
-            lr op == 42 08 tz result result hh cur_num 09
-            lr op == 47 08
-                lr cur_num != 0 08 tz result result hl cur_num 09
-            09
-            lr op == 37 08
-                lr cur_num != 0 08 tz result zt fn_mod 01 result, cur_num 02 09
-            09
-            lr op == 38 08 tz result zt fn_and 01 result, cur_num 02 09
-            lr op == 39 08 tz result zt fn_or 01 result, cur_num 02 09
-            lr op == 40 08 tz result zt fn_xor 01 result, cur_num 02 09
-            lr op == 60 08
-                tz left result
-                tz result 0
-                lr left < cur_num 08 tz result 1 09
-            09
-            lr op == 62 08
-                tz left result
-                tz result 0
-                lr left > cur_num 08 tz result 1 09
-            09
-            lr op == 61 08
-                tz left result
-                tz result 0
-                lr left == cur_num 08 tz result 1 09
-            09
-            lr op == 44 08
-                tz left result
-                tz result 0
-                lr left <= cur_num 08 tz result 1 09
-            09
-            lr op == 46 08
-                tz left result
-                tz result 0
-                lr left >= cur_num 08 tz result 1 09
-            09
-            lr ch == 60 08
-                tz ni i ht 1
-                tz nc 32
-                lr ni < elen 08 tz nc fn_get_byte 01 expr ht ni 02 09
-                lr nc == 61 08
-                    tz op 44
-                    tz i i ht 1
-                09
-                lr nc != 61 08 tz op 60 09
-            09
-            lr ch == 62 08
-                tz ni i ht 1
-                tz nc 32
-                lr ni < elen 08 tz nc fn_get_byte 01 expr ht ni 02 09
-                lr nc == 61 08
-                    tz op 46
-                    tz i i ht 1
-                09
-                lr nc != 61 08 tz op 62 09
-            09
-            lr ch == 61 08 tz op 61 09
-            tz cur_num 0
-        09
-        tz i i ht 1
+        lz g_epos g_elen 08 zz 0 09
+        tz ch fn_get_byte 01 g_eexpr ht g_epos 02
+        lr ch != 32 08 ls 09
+        tz g_epos g_epos ht 1
     09
+    zz 0
+09
+
+tt wx_eval_factor 01 02 -> u32 08
+    zt wx_skip_ws 01 02
+    tz ch fn_get_byte 01 g_eexpr ht g_epos 02
+    lr ch == 1 08
+        tz g_epos g_epos ht 1
+        tz result zt wx_eval_expr 01 02
+        zt wx_skip_ws 01 02
+        tz ch2 fn_get_byte 01 g_eexpr ht g_epos 02
+        lr ch2 == 2 08
+            tz g_epos g_epos ht 1
+        09
+        zz result
+    09
+    tz num 0
+    ll 08
+        lz g_epos g_elen 08 ls 09
+        tz c fn_get_byte 01 g_eexpr ht g_epos 02
+        tz nd 0
+        lr c > 47 08
+            lr c < 58 08 tz nd 1 09
+        09
+        lr nd == 0 08 ls 09
+        tz num num hh 10 ht c hz 48
+        tz g_epos g_epos ht 1
+    09
+    zz num
+09
+
+tt wx_eval_term 01 02 -> u32 08
+    tz result zt wx_eval_factor 01 02
+    ll 08
+        zt wx_skip_ws 01 02
+        lz g_epos g_elen 08 ls 09
+        tz c fn_get_byte 01 g_eexpr ht g_epos 02
+        tz op 0
+        lr c == 104 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 108 08 tz op 4 09
+            09
+        09
+        lr op == 0 08 ls 09
+        tz g_epos g_epos ht 2
+        tz rhs zt wx_eval_factor 01 02
+        lr op == 3 08 tz result result hh rhs 09
+        lr op == 4 08
+            lr rhs != 0 08 tz result result hl rhs 09
+        09
+    09
+    zz result
+09
+
+tt wx_eval_expr 01 02 -> u32 08
+    tz result zt wx_eval_term 01 02
+    ll 08
+        zt wx_skip_ws 01 02
+        lz g_epos g_elen 08 ls 09
+        tz c fn_get_byte 01 g_eexpr ht g_epos 02
+        tz op 0
+        lr c == 104 08
+            tz nc g_epos ht 1
+            lr nc < g_elen 08
+                tz nc2 fn_get_byte 01 g_eexpr ht nc 02
+                lr nc2 == 116 08 tz op 1 09
+                lr nc2 == 122 08 tz op 2 09
+            09
+        09
+        lr op == 0 08 ls 09
+        tz g_epos g_epos ht 2
+        tz rhs zt wx_eval_term 01 02
+        lr op == 1 08 tz result result ht rhs 09
+        lr op == 2 08 tz result result hz rhs 09
+    09
+    zz result
+09
+
+tt wx_eval 01 expr, elen 02 -> u32 08
+    tz g_eexpr expr
+    tz g_elen elen
+    tz g_epos 0
+    tz result zt wx_eval_expr 01 02
     zz result
 09
