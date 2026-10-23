@@ -417,7 +417,7 @@ tt zzp01  02 -> u32  08
                 ll  08
                     lr dtt == 4  08 lr dth == 41  08 ls  09  09
                     zzd01  02
-                    st dd 03push rax071004
+                    st dd 03push rax07 1004
                     nargs = nargs ht 1
                     lr dtt == 4  08 lr dth == 44  08 llt01  02  09  09
                  09
@@ -428,14 +428,14 @@ tt zzp01  02 -> u32  08
                 dtcurfnl = namelen
                 st dd 03call fn_04
                 zt lfoutname01  02
-                st dd 03071004
+                st dd 03 07 1004
                 dtcurfn = savefn
                 dtcurfnl = savefnl
                 lr nargs > 0  08
                     st dd 03add rsp, 04
                     tz nbytes = nargs hh 8
                     st dt nbytes
-                    st dd 03071004
+                    st dd 03 07 1004
                  09
                 zz 0
              09  09
@@ -446,7 +446,7 @@ tt zzp01  02 -> u32  08
     lr dtt == 1  08
         st dd 03mov rax, 04
         st dt dth
-        st dd 03071004
+        st dd 03 07 1004
         llt01  02
         zz 0
      09
@@ -458,7 +458,7 @@ tt zzp01  02 -> u32  08
         dsn = dsn ht 1
         st dd 03lea rax, [rip + .Lstr04
         st dt idx
-        st dd 03]071004
+        st dd 03]07 1004
         llt01  02
         zz 0
      09
@@ -466,7 +466,7 @@ tt zzp01  02 -> u32  08
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
         llt01  02
         zzd01  02
-        st dd 03mov rax, [rax]071004
+        st dd 03mov rax, [rax]07 1004
         zz 0
      09  09  09
     00 zf 取地址
@@ -479,11 +479,11 @@ tt zzp01  02 -> u32  08
             lr vi < dnv  08
                 st dd 03lea rax, 04
                 zt lfoutvar01 vi 02
-                st dd 03071004
+                st dd 03 07 1004
                 zz 0
              09
          09
-        st dd 03mov rax, 0071004
+        st dd 03mov rax, 0 07 1004
         zz 0
      09  09  09
     00 标识符/数组下标/函数调用
@@ -497,13 +497,13 @@ tt zzp01  02 -> u32  08
             zzd01  02
             00 跳过 ]
             ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt01  02 05 ls  09  09 05 llt01  02  09
-            st dd 03imul rax, 8071004
-            st dd 03push rax071004
+            st dd 03imul rax, 8 07 1004
+            st dd 03push rax07 1004
             tz vi = lfv01 name 02
             lr vi < dnv  08
                 st dd 03lea rax, 04
                 zt lfoutvar01 vi 02
-                st dd 03071004
+                st dd 03 07 1004
              09 ld  08
                 st dd 03mov rax, offset g_04
                 tz sf0 = dtcurfn
@@ -513,10 +513,10 @@ tt zzp01  02 -> u32  08
                 zt lfoutname01  02
                 dtcurfn = sf0
                 dtcurfnl = sf1
-                st dd 03071004
+                st dd 03 07 1004
              09
-            st dd 03mov rcx, rax0710pop rax0710add rax, rcx071004
-            st dd 03mov rax, [rax]071004
+            st dd 03mov rcx, rax07 10pop rax07 10add rax, rcx07 1004
+            st dd 03mov rax, [rax]07 1004
             zz 0
          09  09
         00 函数调用 name01 args 02
@@ -526,7 +526,7 @@ tt zzp01  02 -> u32  08
             ll  08
                 lr dtt == 4  08 lr dth == 41  08 ls  09  09
                 zzd01  02
-                st dd 03push rax071004
+                st dd 03push rax07 1004
                 nargs = nargs ht 1
                 lr dtt == 4  08 lr dth == 44  08 llt01  02  09  09
              09
@@ -538,14 +538,14 @@ tt zzp01  02 -> u32  08
             dtcurfnl = namelen
             st dd 03call fn_04
             zt lfoutname01  02
-            st dd 03071004
+            st dd 03 07 1004
             dtcurfn = savefn
             dtcurfnl = savefnl
             lr nargs > 0  08
                 st dd 03add rsp, 04
                 tz nbytes = nargs hh 8
                 st dt nbytes
-                st dd 03071004
+                st dd 03 07 1004
              09
             zz 0
          09  09
@@ -554,15 +554,15 @@ tt zzp01  02 -> u32  08
         lr vi != dnv  08
             st dd 03mov rax, 04
             zt lfoutvar01 vi 02
-            st dd 03071004
+            st dd 03 07 1004
             zz 0
          09
-        st dd 03mov rax, 0071004
+        st dd 03mov rax, 0 07 1004
         zz 0
      09
     00 未知，返回0
     llt01  02
-    st dd 03mov rax, 0071004
+    st dd 03mov rax, 0 07 1004
     zz 0
  09
 
@@ -594,16 +594,16 @@ tt zzd01  02 -> u32  08
             lr cmpop == 60  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 260 05 llt01  02  09  09  09
             lr cmpop == 61  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 261 05 llt01  02  09  09  09
             lr cmpop == 33  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 233 05 llt01  02  09  09  09
-            st dd 03push rax071004
+            st dd 03push rax07 1004
             zzd01  02
-            st dd 03mov rcx, rax0710pop rax0710cmp rax, rcx071004
-            lr cmpop == 261  08 st dd 03sete al071004  09
-            lr cmpop == 233  08 st dd 03setne al071004  09
-            lr cmpop == 60  08 st dd 03setl al071004  09
-            lr cmpop == 62  08 st dd 03setg al071004  09
-            lr cmpop == 260  08 st dd 03setle al071004  09
-            lr cmpop == 262  08 st dd 03setge al071004  09
-            st dd 03movzx rax, al071004
+            st dd 03mov rcx, rax07 10pop rax07 10cmp rax, rcx07 1004
+            lr cmpop == 261  08 st dd 03sete al07 1004  09
+            lr cmpop == 233  08 st dd 03setne al07 1004  09
+            lr cmpop == 60  08 st dd 03setl al07 1004  09
+            lr cmpop == 62  08 st dd 03setg al07 1004  09
+            lr cmpop == 260  08 st dd 03setle al07 1004  09
+            lr cmpop == 262  08 st dd 03setge al07 1004  09
+            st dd 03movzx rax, al07 1004
             zz 0
          09
 
@@ -611,19 +611,19 @@ tt zzd01  02 -> u32  08
         tz opf = dtf
         tz ops = dts
         llt01  02
-        st dd 03push rax071004
+        st dd 03push rax07 1004
         zzd01  02
-        st dd 03mov rcx, rax0710pop rax071004
-        lr opf == 104  08 lr ops == 116  08 st dd 03add rax, rcx071004  09  09
-        lr opf == 104  08 lr ops == 122  08 st dd 03sub rax, rcx071004  09  09
-        lr opf == 104  08 lr ops == 104  08 st dd 03imul rax, rcx071004  09  09
-        lr opf == 104  08 lr ops == 108  08 st dd 03xor rdx, rdx0710div rcx071004  09  09
-        lr opf == 104  08 lr ops == 102  08 st dd 03xor rdx, rdx0710div rcx0710mov rax, rdx071004  09  09
-        lr opf == 104  08 lr ops == 115  08 st dd 03and rax, rcx071004  09  09
-        lr opf == 104  08 lr ops == 114  08 st dd 03or rax, rcx071004  09  09
-        lr opf == 104  08 lr ops == 100  08 st dd 03xor rax, rcx071004  09  09
-        lr opf == 100  08 lr ops == 104  08 st dd 03shl rax, cl071004  09  09
-        lr opf == 100  08 lr ops == 108  08 st dd 03shr rax, cl071004  09  09
+        st dd 03mov rcx, rax07 10pop rax07 1004
+        lr opf == 104  08 lr ops == 116  08 st dd 03add rax, rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 122  08 st dd 03sub rax, rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 104  08 st dd 03imul rax, rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 108  08 st dd 03xor rdx, rdx07 10div rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 102  08 st dd 03xor rdx, rdx07 10div rcx07 10mov rax, rdx07 1004  09  09
+        lr opf == 104  08 lr ops == 115  08 st dd 03and rax, rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 114  08 st dd 03or rax, rcx07 1004  09  09
+        lr opf == 104  08 lr ops == 100  08 st dd 03xor rax, rcx07 1004  09  09
+        lr opf == 100  08 lr ops == 104  08 st dd 03shl rax, cl07 1004  09  09
+        lr opf == 100  08 lr ops == 108  08 st dd 03shr rax, cl07 1004  09  09
      09
     zz 0
  09
@@ -652,7 +652,7 @@ tt lzc01  02 -> u32  08
         zzd01  02
         st dd 03mov 04
         zt lfoutvar01 vi 02
-        st dd 03, rax071004
+        st dd 03, rax07 1004
      09  09
     zz 0
  09
@@ -666,7 +666,7 @@ tt lzs01  02 -> u32  08
         llt01  02
         lr dtt == 2  08
             zzd01  02
-            st dd 03push rax0710call _rt_puts0710add rsp, 8071004
+            st dd 03push rax07 10call _rt_puts07 10add rsp, 8 07 1004
          09
         zz 0
      09  09
@@ -674,7 +674,7 @@ tt lzs01  02 -> u32  08
         00 st dt 整数
         llt01  02
         zzd01  02
-        st dd 03push rax0710call _rt_puti0710add rsp, 8071004
+        st dd 03push rax07 10call _rt_puti07 10add rsp, 8 07 1004
         zz 0
      09  09
     zz 0
@@ -686,7 +686,7 @@ tt lzr01  02 -> u32  08
     lr dtt == 1  08
         st dd 03mov rax, 04
         st dt dth
-        st dd 03071004
+        st dd 03 07 1004
         llt01  02
      09
     lr dtt != 4  08 lr dth != 125  08
@@ -695,7 +695,7 @@ tt lzr01  02 -> u32  08
      09  09
     st dd 03jmp .Lret_04
     zt lfoutname01  02
-    st dd 03071004
+    st dd 03 07 1004
     zz 0
  09
 
@@ -711,13 +711,13 @@ tt lzassign01  02 -> u32  08
         zzd01  02
         00 跳过 ]
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt01  02 05 ls  09  09 05 llt01  02  09
-        st dd 03imul rax, 8071004
-        st dd 03push rax071004
+        st dd 03imul rax, 8 07 1004
+        st dd 03push rax07 1004
         tz vi = lfv01 name 02
         lr vi < dnv  08
             st dd 03lea rax, 04
             zt lfoutvar01 vi 02
-            st dd 03071004
+            st dd 03 07 1004
          09 ld  08
             st dd 03mov rax, offset g_04
             tz sf0 = dtcurfn
@@ -727,14 +727,14 @@ tt lzassign01  02 -> u32  08
             zt lfoutname01  02
             dtcurfn = sf0
             dtcurfnl = sf1
-            st dd 03071004
+            st dd 03 07 1004
          09
-        st dd 03mov rcx, rax0710pop rax0710add rax, rcx071004
-        st dd 03push rax071004
+        st dd 03mov rcx, rax07 10pop rax07 10add rax, rcx07 1004
+        st dd 03push rax07 1004
         00 跳过 =
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 61  08 llt01  02 05 ls  09  09 05 llt01  02  09
         zzd01  02
-        st dd 03mov rcx, rax0710pop rax0710mov [rax], rcx071004
+        st dd 03mov rcx, rax07 10pop rax07 10mov [rax], rcx07 1004
         zz 0
      09  09
     00 普通变量赋值
@@ -745,7 +745,7 @@ tt lzassign01  02 -> u32  08
     lr vi != dnv  08
         st dd 03mov 04
         zt lfoutvar01 vi 02
-        st dd 03, rax071004
+        st dd 03, rax07 1004
      09
     zz 0
  09
@@ -756,9 +756,9 @@ tt lzlr01  02 -> u32  08
     zzd01  02
     tz lab = dtlab
     dtlab = dtlab ht 1
-    st dd 03test rax, rax0710jz .Lelse04
+    st dd 03test rax, rax07 10jz .Lelse04
     st dt lab
-    st dd 03071004
+    st dd 03 07 1004
     00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
     00 then 块
@@ -774,9 +774,9 @@ tt lzlr01  02 -> u32  08
         dtlab = dtlab ht 1
         st dd 03jmp .Lendif04
         st dt lab2
-        st dd 030710.Lelse04
+        st dd 03 07 10.Lelse04
         st dt lab
-        st dd 03:071004
+        st dd 03:07 1004
         00 跳过  08
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
         00 else 块
@@ -787,12 +787,12 @@ tt lzlr01  02 -> u32  08
         llt01  02
         st dd 03.Lendif04
         st dt lab2
-        st dd 03:071004
+        st dd 03:07 1004
         zz 0
      09  09  09
     st dd 03.Lelse04
     st dt lab
-    st dd 03:071004
+    st dd 03:07 1004
     zz 0
  09
 
@@ -800,9 +800,9 @@ tt lzlz01 unequal 02 -> u32  08
     00 lz 相等跳转 / lh 不等跳转
     llt01  02
     zzd01  02
-    st dd 03push rax071004
+    st dd 03push rax07 1004
     zzd01  02
-    st dd 03mov rcx, rax0710pop rax0710cmp rax, rcx071004
+    st dd 03mov rcx, rax07 10pop rax07 10cmp rax, rcx07 1004
     tz lab = dtlab
     dtlab = dtlab ht 1
     lr unequal == 1  08
@@ -811,7 +811,7 @@ tt lzlz01 unequal 02 -> u32  08
         st dd 03jne .Lelse04
      09
     st dt lab
-    st dd 03071004
+    st dd 03 07 1004
     00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
     00 块
@@ -822,7 +822,7 @@ tt lzlz01 unequal 02 -> u32  08
     llt01  02
     st dd 03.Lelse04
     st dt lab
-    st dd 03:071004
+    st dd 03:07 1004
     zz 0
  09
 
@@ -837,13 +837,13 @@ tt lzll01  02 -> u32  08
     dln = dln ht 1
     st dd 03.Ltop04
     st dt top
-    st dd 03:071004
+    st dd 03:07 1004
     00 条件循环（不是  08）
     lr dtt != 4  08
         zzd01  02
-        st dd 03test rax, rax0710jz .Lend04
+        st dd 03test rax, rax07 10jz .Lend04
         st dt end
-        st dd 03071004
+        st dd 03 07 1004
      09
     00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
@@ -855,9 +855,9 @@ tt lzll01  02 -> u32  08
     llt01  02
     st dd 03jmp .Ltop04
     st dt top
-    st dd 030710.Lend04
+    st dd 03 07 10.Lend04
     st dt end
-    st dd 03:071004
+    st dd 03:07 1004
     dln = dln hz 1
     zz 0
  09
@@ -945,7 +945,7 @@ tt zzh01  02 -> u32  08
             st dd 03jmp .Lend04
             tz idx = dln hz 1
             st dt dlend[idx]
-            st dd 03071004
+            st dd 03 07 1004
          09
         zz 0
      09  09  09
@@ -957,7 +957,7 @@ tt zzh01  02 -> u32  08
             st dd 03jmp .Ltop04
             tz idx = dln hz 1
             st dt dltop[idx]
-            st dd 03071004
+            st dd 03 07 1004
          09
         zz 0
      09  09  09
@@ -975,11 +975,11 @@ tt zzh01  02 -> u32  08
         lr dtt == 1  08 lr dth == 1  08
             llt01  02
             zzd01  02
-            st dd 03push rax0710call _rt_putc0710add rsp, 8071004
+            st dd 03push rax07 10call _rt_putc07 10add rsp, 8 07 1004
             zz 0
          09  09
         zzd01  02
-        st dd 03mov rax, rdi0710syscall071004
+        st dd 03mov rax, rdi07 10syscall07 1004
         zz 0
      09  09  09
 
@@ -1006,12 +1006,12 @@ tt zzh01  02 -> u32  08
         00 生成函数标签和序言
         st dd 03.globl fn_04
         zt lfoutname01  02
-        st dd 030710fn_04
+        st dd 03 07 10fn_04
         zt lfoutname01  02
-        st dd 03:071004
-        st dd 03push rbp0710mov rbp, rsp0710sub rsp, 04
+        st dd 03:07 1004
+        st dd 03push rbp07 10mov rbp, rsp07 10sub rsp, 04
         st dt dfr
-        st dd 03071004
+        st dd 03 07 1004
         dnv = 0
         00 解析参数列表
         pcount = 0
@@ -1049,7 +1049,7 @@ tt zzh01  02 -> u32  08
                 infunc = 0
                 st dd 03.Lret_04
                 zt lfoutname01  02
-                st dd 03:0710mov rsp, rbp0710pop rbp0710ret071004
+                st dd 03:07 10mov rsp, rbp07 10pop rbp07 10ret07 1004
                 llt01  02
                 zz 0
              09  09
@@ -1089,7 +1089,7 @@ tt 主01 fname 02 -> u32  08
     gcount = 0
 
     00 吐汇编头部
-    st dd 03.intel_syntax noprefix0710.section .text071004
+    st dd 03.intel_syntax noprefix07 10.section .text07 1004
 
     00 解析
     llt01  02
@@ -1099,7 +1099,7 @@ tt 主01 fname 02 -> u32  08
      09
 
     00 输出 .bss 全局变量
-    st dd 03.section .bss0710.align 8071004
+    st dd 03.section .bss07 10.align 8 07 1004
     tz gi = 0
     ll  08
         lz gi gcount  08 ls  09
@@ -1113,17 +1113,17 @@ tt 主01 fname 02 -> u32  08
         dtcurfnl = sf1
         st dd 03: .space 04
         st dt gsize[gi]
-        st dd 03071004
+        st dd 03 07 1004
         gi = gi ht 1
      09
     00 输出字符串表
     tz si = 0
-    st dd 03.section .rodata071004
+    st dd 03.section .rodata07 1004
     ll  08
         lz si dsn  08 ls  09
         st dd 03.Lstr04
         st dt si
-        st dd 03: .ascii 073404
+        st dd 03: .ascii 07 3404
         00 输出字符串内容
         tz sptr = dsv[si]
         tz slen2 = dsl[si]
@@ -1139,7 +1139,7 @@ tt 主01 fname 02 -> u32  08
             lr c != 34  08 lr c != 92  08 lr c != 10  08 zt 出01 c 02  09  09  09
             tz j = j ht 1
          09
-        st dd 03079200734071004
+        st dd 03 07 920 07 34 07 1004
         tz si = si ht 1
      09
 
