@@ -1,6 +1,6 @@
 00 ============================================================
 00 六爻自举编译器 lyc_self.ly - 纯血六爻版 v0.3.0
-00 规范版本: 六爻指令集 SPEC_v1.0 (64指令)
+00 规范版本: 六爻指令集 SPEC_v1.0 01 64指令 02
 00 架构：dt全局 + tf表 + tt函数 | 目标: x86-64 裸奔无libc
 00 状态: 完整自举版 - 支持tt/tz/st/zz/运算/赋值/循环/条件/函数调用/数组/指针
 00 ============================================================
@@ -37,7 +37,7 @@ tf dsl[256]: u64     00 字符串长度表
 tf dltop[16]: u64    00 循环开始标签栈
 tf dlend[16]: u64    00 循环结束标签栈
 tf gname[64]: u64    00 全局变量名表
-tf gsize[64]: u64    00 全局变量大小(字节)
+tf gsize[64]: u64    00 全局变量大小01 字节 02
 tf glen[64]: u64     00 全局变量名长度
 tz gcount            00 全局变量数
 tz infunc             00 是否在函数体内（1=是，0=否，用于区分全局/局部tz声明）
@@ -49,169 +49,169 @@ tz pcount            00 参数总数
 00 基础工具
 00 ============================================================
 
-tt lds(s) -> u32 {
+tt lds01 s 02 -> u32  08
     tz i = 0
-    ll {
+    ll  08
         tz a = s ht i
         tz r = fr a
         tz c = r hs 255
-        lz c 0 { zz i }
+        lz c 0  08 zz i  09
         tz i = i ht 1
-    }
-}
+     09
+ 09
 
-tt ldh(c) -> u32 {
-    lr c >= 48 { lr c <= 57 { zz 1 } }
+tt ldh01 c 02 -> u32  08
+    lr c >= 48  08 lr c <= 57  08 zz 1  09  09
     zz 0
-}
+ 09
 
-tt lsl(c) -> u32 {
-    lr c >= 97 { lr c <= 122 { zz 1 } }
-    lr c >= 65 { lr c <= 90 { zz 1 } }
-    lr c >= 48 { lr c <= 57 { zz 1 } }
-    lr c == 95 { zz 1 }
-    lr c >= 128 { zz 1 }
+tt lsl01 c 02 -> u32  08
+    lr c >= 97  08 lr c <= 122  08 zz 1  09  09
+    lr c >= 65  08 lr c <= 90  08 zz 1  09  09
+    lr c >= 48  08 lr c <= 57  08 zz 1  09  09
+    lr c == 95  08 zz 1  09
+    lr c >= 128  08 zz 1  09
     zz 0
-}
+ 09
 
-tt lsg(c) -> u32 {
-    lr c == 116 { zz 1 }
-    lr c == 122 { zz 1 }
-    lr c == 104 { zz 1 }
-    lr c == 108 { zz 1 }
-    lr c == 102 { zz 1 }
-    lr c == 115 { zz 1 }
-    lr c == 114 { zz 1 }
-    lr c == 100 { zz 1 }
+tt lsg01 c 02 -> u32  08
+    lr c == 116  08 zz 1  09
+    lr c == 122  08 zz 1  09
+    lr c == 104  08 zz 1  09
+    lr c == 108  08 zz 1  09
+    lr c == 102  08 zz 1  09
+    lr c == 115  08 zz 1  09
+    lr c == 114  08 zz 1  09
+    lr c == 100  08 zz 1  09
     zz 0
-}
+ 09
 
-tt ltm(a, b) -> u32 {
+tt ltm01 a, b 02 -> u32  08
     tz i = 0
-    ll {
+    ll  08
         tz aa = a ht i
         tz ra = fr aa
         tz ca = ra hs 255
         tz bb = b ht i
         tz rb = fr bb
         tz cb = rb hs 255
-        lr ca != cb { zz 0 }
-        lz ca 0 { zz 1 }
+        lr ca != cb  08 zz 0  09
+        lz ca 0  08 zz 1  09
         i = i ht 1
-    }
-}
+     09
+ 09
 
 00 ============================================================
 00 词法分析
 00 ============================================================
 
-tt lft() -> u32 {
-    ll {
-        lr dtb >= dtend { zz 0 }
+tt lft01  02 -> u32  08
+    ll  08
+        lr dtb >= dtend  08 zz 0  09
         tz a = dtb
         tz r = fr a
         tz c = r hs 255
-        lr c == 32 { dtb = dtb ht 1 }
-        lr c == 9 { dtb = dtb ht 1 }
-        lr c == 10 { dtb = dtb ht 1; dtl = dtl ht 1 }
-        lr c == 13 { dtb = dtb ht 1 }
-        lr c != 32 { lr c != 9 { lr c != 10 { lr c != 13 { ls } } } }
-    }
+        lr c == 32  08 dtb = dtb ht 1  09
+        lr c == 9  08 dtb = dtb ht 1  09
+        lr c == 10  08 dtb = dtb ht 1 05 dtl = dtl ht 1  09
+        lr c == 13  08 dtb = dtb ht 1  09
+        lr c != 32  08 lr c != 9  08 lr c != 10  08 lr c != 13  08 ls  09  09  09  09
+     09
     zz 0
-}
+ 09
 
-tt ldn() -> u32 {
+tt ldn01  02 -> u32  08
     tz val = 0
     tz digit = 0
-    ll {
-        lr dtb >= dtend { ls }
+    ll  08
+        lr dtb >= dtend  08 ls  09
         tz a = dtb
         tz r = fr a
         tz c = r hs 255
-        lr ldh(c) == 0 { ls }
+        lr ldh01 c 02 == 0  08 ls  09
         val = val hh 10
         digit = c hz 48
         val = val ht digit
         dtb = dtb ht 1
-    }
+     09
     dtt = 1
     dth = val
     dtz = 0
     dtu = 0
     zz 1
-}
+ 09
 
-tt lst() -> u32 {
+tt lst01  02 -> u32  08
     tz start = dtb
     dtb = dtb ht 1
-    ll {
-        lr dtb >= dtend { ls }
+    ll  08
+        lr dtb >= dtend  08 ls  09
         tz a = dtb
         tz r = fr a
         tz c = r hs 255
-        lr c == 34 { ls }
-        lr c == 92 { dtb = dtb ht 1 }
+        lr c == 34  08 ls  09
+        lr c == 92  08 dtb = dtb ht 1  09
         dtb = dtb ht 1
-    }
+     09
     dtb = dtb ht 1
     dtt = 2
     dtz = start
     dtu = dtb hz start
     dth = 0
     zz 1
-}
+ 09
 
-tt llt() -> u32 {
-    lft()
-    lr dtb >= dtend { dtt = 0; zz 0 }
+tt llt01  02 -> u32  08
+    lft01  02
+    lr dtb >= dtend  08 dtt = 0 05 zz 0  09
     tz a = dtb
     tz r = fr a
     tz c = r hs 255
     dtd = c
 
-    00 注释 (00)
-    lr c == 48 {
-        lr dtb ht 1 < dtend {
+    00 注释 01 00 02
+    lr c == 48  08
+        lr dtb ht 1 < dtend  08
             tz na = dtb ht 1
             tz nr = fr na
             tz nc = nr hs 255
-            lr nc == 48 {
+            lr nc == 48  08
                 dtb = dtb ht 2
-                ll {
-                    lr dtb >= dtend { ls }
+                ll  08
+                    lr dtb >= dtend  08 ls  09
                     tz a2 = dtb
                     tz r2 = fr a2
                     tz c2 = r2 hs 255
-                    lr c2 == 10 { ls }
+                    lr c2 == 10  08 ls  09
                     dtb = dtb ht 1
-                }
-                llt()
+                 09
+                llt01  02
                 zz 1
-            }
-        }
-    }
+             09
+         09
+     09
 
     00 数字
-    lr ldh(c) == 1 { ldn(); zz 1 }
+    lr ldh01 c 02 == 1  08 ldn01  02 05 zz 1  09
 
     00 字符串
-    lr c == 34 { lst(); zz 1 }
+    lr c == 34  08 lst01  02 05 zz 1  09
 
     00 两字节卦指令（第三字符若是标识符字符则是变量名，不是指令）
-    lr lsg(c) == 1 {
-        lr dtb ht 1 < dtend {
+    lr lsg01 c 02 == 1  08
+        lr dtb ht 1 < dtend  08
             tz a3 = dtb ht 1
             tz r3 = fr a3
             tz c3 = r3 hs 255
-            lr lsg(c3) == 1 {
+            lr lsg01 c3 02 == 1  08
                 tz is_kw = 1
-                lr dtb ht 2 < dtend {
+                lr dtb ht 2 < dtend  08
                     tz a4 = dtb ht 2
                     tz r4 = fr a4
                     tz c4 = r4 hs 255
-                    lr lsl(c4) == 1 { tz is_kw = 0 }
-                }
-                lr is_kw == 1 {
+                    lr lsl01 c4 02 == 1  08 tz is_kw = 0  09
+                 09
+                lr is_kw == 1  08
                     dtf = c
                     dts = c3
                     dtz = dtb
@@ -219,28 +219,28 @@ tt llt() -> u32 {
                     dtt = 5
                     dtb = dtb ht 2
                     zz 1
-                }
-            }
-        }
-    }
+                 09
+             09
+         09
+     09
 
     00 标识符
-    lr lsl(c) == 1 {
+    lr lsl01 c 02 == 1  08
         tz start = dtb
-        ll {
-            lr dtb >= dtend { ls }
+        ll  08
+            lr dtb >= dtend  08 ls  09
             tz a4 = dtb
             tz r4 = fr a4
             tz c4 = r4 hs 255
-            lr lsl(c4) == 0 { ls }
+            lr lsl01 c4 02 == 0  08 ls  09
             dtb = dtb ht 1
-        }
+         09
         dtz = start
         dtu = dtb hz start
         dtt = 3
         dth = 0
         zz 1
-    }
+     09
 
     00 标点（单字符）
     dtt = 4
@@ -249,47 +249,47 @@ tt llt() -> u32 {
     dtu = 1
     dtb = dtb ht 1
     zz 1
-}
+ 09
 
 00 ============================================================
 00 变量表
 00 ============================================================
 
-tt lfv(name) -> u32 {
+tt lfv01 name 02 -> u32  08
     tz i = 0
     tz j = 0
     tz vlen = 0
     tz match = 0
     00 先查局部变量表
-    ll {
-        lz i dnv { ls }
+    ll  08
+        lz i dnv  08 ls  09
         vlen = dtvl[i]
         match = 1
         j = 0
-        ll {
-            lz j vlen { ls }
+        ll  08
+            lz j vlen  08 ls  09
             tz aa = dtv[i] ht j
             tz ra = fr aa
             tz ca = ra hs 255
             tz bb = name ht j
             tz rb = fr bb
             tz cb = rb hs 255
-            lr ca != cb { match = 0; ls }
+            lr ca != cb  08 match = 0 05 ls  09
             j = j ht 1
-        }
-        lr match == 1 { zz i }
+         09
+        lr match == 1  08 zz i  09
         i = i ht 1
-    }
+     09
     00 局部没找到，查全局变量表
     tz gi = 0
-    ll {
-        lz gi gcount { zz dnv }  00 全局也没找到，返回dnv
+    ll  08
+        lz gi gcount  08 zz dnv  09  00 全局也没找到，返回dnv
 
         vlen = glen[gi]
         match = 1
         j = 0
-        ll {
-            lz j vlen { ls }
+        ll  08
+            lz j vlen  08 ls  09
             tz aa = gname[gi] ht j
             tz ra = fr aa
             tz ca = ra hs 255
@@ -297,345 +297,345 @@ tt lfv(name) -> u32 {
             tz rb = fr bb
             tz cb = rb hs 255
 
-            lr ca != cb { match = 0; ls }
+            lr ca != cb  08 match = 0 05 ls  09
             j = j ht 1
-        }
+         09
 
-        lr match == 1 { zz dnv ht gi ht 1 }  00 全局变量返回dnv+gi+1
+        lr match == 1  08 zz dnv ht gi ht 1  09  00 全局变量返回dnv+gi+1
         gi = gi ht 1
-    }
+     09
     zz dnv
-}
+ 09
 
-tt lfoutvar(vi) -> u32 {
+tt lfoutvar01 vi 02 -> u32  08
     00 全局变量（vi > dnv）
-    lr vi > dnv {
+    lr vi > dnv  08
         tz gi = vi hz dnv hz 1
-        st dd "[g_"
+        st dd 03[g_04
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
         dtcurfnl = glen[gi]
-        zt lfoutname()
+        zt lfoutname01  02
         dtcurfn = sf0
         dtcurfnl = sf1
-        st dd "]"
+        st dd 03]04
         zz 0
-    }
+     09
     00 参数用[rbp+N]，局部变量用[rbp-N]
-    lr dtisparam[vi] == 1 {
-        st dd "[rbp+"
+    lr dtisparam[vi] == 1  08
+        st dd 03[rbp+04
         st dt dtw[vi]
-        st dd "]"
+        st dd 03]04
         zz 0
-    }
-    st dd "[rbp-"
+     09
+    st dd 03[rbp-04
     st dt dtw[vi]
-    st dd "]"
+    st dd 03]04
     zz 0
-}
+ 09
 
 00 ============================================================
 00 预扫描：计算函数栈帧大小
 00 ============================================================
 
-tt lprescan() -> u32 {
-    00 进入时当前token是{后面的第一个token
+tt lprescan01  02 -> u32  08
+    00 进入时当前token是 08后面的第一个token
     tz depth = 1
-    ll {
-        lz dtt 0 { zz 0 }
-        lr dtt == 4 { lr dth == 123 { depth = depth ht 1 } }
-        lr dtt == 4 { lr dth == 125 {
+    ll  08
+        lz dtt 0  08 zz 0  09
+        lr dtt == 4  08 lr dth == 123  08 depth = depth ht 1  09  09
+        lr dtt == 4  08 lr dth == 125  08
             depth = depth hz 1
-            lz depth 0 { zz 0 }
-        } }
-        lr dtt == 5 { lr dtf == 116 { lr dts == 122 {
+            lz depth 0  08 zz 0  09
+         09  09
+        lr dtt == 5  08 lr dtf == 116  08 lr dts == 122  08
             00 tz 声明，每个占8字节
             dfr = dfr ht 8
-        } } }
-        llt()
-    }
-}
+         09  09  09
+        llt01  02
+     09
+ 09
 
 00 ============================================================
 00 基础输出
 00 ============================================================
 
-tt 出(c) -> u32 {
+tt 出01 c 02 -> u32  08
     00 输出一个字符到 stdout（用运行时 _rt_putc）
-    zt _rt_putc(c)
+    zt _rt_putc01 c 02
     zz 0
-}
+ 09
 
 00 ============================================================
 00 函数名mangle输出
 00 ============================================================
 
-tt lfoutname() -> u32 {
+tt lfoutname01  02 -> u32  08
     tz i = 0
-    ll {
-        lr i >= dtcurfnl { ls }
+    ll  08
+        lr i >= dtcurfnl  08 ls  09
         tz addr = dtcurfn ht i
         tz c = fr addr
         tz cb = c hs 255
         tz isasc = 0
-        lr cb >= 97 { lr cb <= 122 { tz isasc = 1 } }
-        lr cb >= 65 { lr cb <= 90 { tz isasc = 1 } }
-        lr cb >= 48 { lr cb <= 57 { tz isasc = 1 } }
-        lr cb == 95 { tz isasc = 1 }
-        lr isasc == 1 {
-            zt 出(cb)
-        } ld {
-            zt 出(95)
+        lr cb >= 97  08 lr cb <= 122  08 tz isasc = 1  09  09
+        lr cb >= 65  08 lr cb <= 90  08 tz isasc = 1  09  09
+        lr cb >= 48  08 lr cb <= 57  08 tz isasc = 1  09  09
+        lr cb == 95  08 tz isasc = 1  09
+        lr isasc == 1  08
+            zt 出01 cb 02
+         09 ld  08
+            zt 出01 95 02
             tz hi = cb dl 4
             tz lo = cb hs 15
-            lr hi < 10 { zt 出(hi ht 48) }
-            lr hi >= 10 { zt 出(hi ht 87) }
-            lr lo < 10 { zt 出(lo ht 48) }
-            lr lo >= 10 { zt 出(lo ht 87) }
-        }
+            lr hi < 10  08 zt 出01 hi ht 48 02  09
+            lr hi >= 10  08 zt 出01 hi ht 87 02  09
+            lr lo < 10  08 zt 出01 lo ht 48 02  09
+            lr lo >= 10  08 zt 出01 lo ht 87 02  09
+         09
         i = i ht 1
-    }
+     09
     zz i
-}
+ 09
 
 00 ============================================================
 00 表达式解析
 00 ============================================================
 
-tt zzp() -> u32 {
+tt zzp01  02 -> u32  08
     00 zt 函数调用前缀
-    lr dtt == 5 { lr dtf == 122 { lr dts == 116 {
-        llt()
-        lr dtt == 3 {
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
+        llt01  02
+        lr dtt == 3  08
             tz name = dtz
             tz namelen = dtu
-            llt()
-            lr dtt == 4 { lr dth == 40 {
-                llt()
+            llt01  02
+            lr dtt == 4  08 lr dth == 40  08
+                llt01  02
                 tz nargs = 0
-                ll {
-                    lr dtt == 4 { lr dth == 41 { ls } }
-                    zzd()
-                    st dd "push rax\n"
+                ll  08
+                    lr dtt == 4  08 lr dth == 41  08 ls  09  09
+                    zzd01  02
+                    st dd 03push rax071004
                     nargs = nargs ht 1
-                    lr dtt == 4 { lr dth == 44 { llt() } }
-                }
-                llt()
+                    lr dtt == 4  08 lr dth == 44  08 llt01  02  09  09
+                 09
+                llt01  02
                 tz savefn = dtcurfn
                 tz savefnl = dtcurfnl
                 dtcurfn = name
                 dtcurfnl = namelen
-                st dd "call fn_"
-                zt lfoutname()
-                st dd "\n"
+                st dd 03call fn_04
+                zt lfoutname01  02
+                st dd 03071004
                 dtcurfn = savefn
                 dtcurfnl = savefnl
-                lr nargs > 0 {
-                    st dd "add rsp, "
+                lr nargs > 0  08
+                    st dd 03add rsp, 04
                     tz nbytes = nargs hh 8
                     st dt nbytes
-                    st dd "\n"
-                }
+                    st dd 03071004
+                 09
                 zz 0
-            } }
-        }
+             09  09
+         09
         zz 0
-    } } }
+     09  09  09
     00 数字
-    lr dtt == 1 {
-        st dd "mov rax, "
+    lr dtt == 1  08
+        st dd 03mov rax, 04
         st dt dth
-        st dd "\n"
-        llt()
+        st dd 03071004
+        llt01  02
         zz 0
-    }
+     09
     00 字符串
-    lr dtt == 2 {
+    lr dtt == 2  08
         tz idx = dsn
         dsv[idx] = dtz
         dsl[idx] = dtu
         dsn = dsn ht 1
-        st dd "lea rax, [rip + .Lstr"
+        st dd 03lea rax, [rip + .Lstr04
         st dt idx
-        st dd "]\n"
-        llt()
+        st dd 03]071004
+        llt01  02
         zz 0
-    }
+     09
     00 fr 解引用
-    lr dtt == 5 { lr dtf == 102 { lr dts == 114 {
-        llt()
-        zzd()
-        st dd "mov rax, [rax]\n"
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
+        llt01  02
+        zzd01  02
+        st dd 03mov rax, [rax]071004
         zz 0
-    } } }
+     09  09  09
     00 zf 取地址
-    lr dtt == 5 { lr dtf == 122 { lr dts == 102 {
-        llt()
-        lr dtt == 3 {
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 102  08
+        llt01  02
+        lr dtt == 3  08
             tz name = dtz
-            llt()
-            tz vi = lfv(name)
-            lr vi < dnv {
-                st dd "lea rax, "
-                zt lfoutvar(vi)
-                st dd "\n"
+            llt01  02
+            tz vi = lfv01 name 02
+            lr vi < dnv  08
+                st dd 03lea rax, 04
+                zt lfoutvar01 vi 02
+                st dd 03071004
                 zz 0
-            }
-        }
-        st dd "mov rax, 0\n"
+             09
+         09
+        st dd 03mov rax, 0071004
         zz 0
-    } } }
+     09  09  09
     00 标识符/数组下标/函数调用
-    lr dtt == 3 {
+    lr dtt == 3  08
         tz name = dtz
         tz namelen = dtu
-        llt()
+        llt01  02
         00 数组下标 arr[i]
-        lr dtt == 4 { lr dth == 91 {
-            llt()
-            zzd()
+        lr dtt == 4  08 lr dth == 91  08
+            llt01  02
+            zzd01  02
             00 跳过 ]
-            ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
-            st dd "imul rax, 8\n"
-            st dd "push rax\n"
-            tz vi = lfv(name)
-            lr vi < dnv {
-                st dd "lea rax, "
-                zt lfoutvar(vi)
-                st dd "\n"
-            } ld {
-                st dd "mov rax, offset g_"
+            ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt01  02 05 ls  09  09 05 llt01  02  09
+            st dd 03imul rax, 8071004
+            st dd 03push rax071004
+            tz vi = lfv01 name 02
+            lr vi < dnv  08
+                st dd 03lea rax, 04
+                zt lfoutvar01 vi 02
+                st dd 03071004
+             09 ld  08
+                st dd 03mov rax, offset g_04
                 tz sf0 = dtcurfn
                 tz sf1 = dtcurfnl
                 dtcurfn = name
                 dtcurfnl = namelen
-                zt lfoutname()
+                zt lfoutname01  02
                 dtcurfn = sf0
                 dtcurfnl = sf1
-                st dd "\n"
-            }
-            st dd "mov rcx, rax\npop rax\nadd rax, rcx\n"
-            st dd "mov rax, [rax]\n"
+                st dd 03071004
+             09
+            st dd 03mov rcx, rax0710pop rax0710add rax, rcx071004
+            st dd 03mov rax, [rax]071004
             zz 0
-        } }
-        00 函数调用 name(args)
-        lr dtt == 4 { lr dth == 40 {
-            llt()
+         09  09
+        00 函数调用 name01 args 02
+        lr dtt == 4  08 lr dth == 40  08
+            llt01  02
             tz nargs = 0
-            ll {
-                lr dtt == 4 { lr dth == 41 { ls } }
-                zzd()
-                st dd "push rax\n"
+            ll  08
+                lr dtt == 4  08 lr dth == 41  08 ls  09  09
+                zzd01  02
+                st dd 03push rax071004
                 nargs = nargs ht 1
-                lr dtt == 4 { lr dth == 44 { llt() } }
-            }
-            llt()
+                lr dtt == 4  08 lr dth == 44  08 llt01  02  09  09
+             09
+            llt01  02
             00 临时设置函数名用于mangle
             tz savefn = dtcurfn
             tz savefnl = dtcurfnl
             dtcurfn = name
             dtcurfnl = namelen
-            st dd "call fn_"
-            zt lfoutname()
-            st dd "\n"
+            st dd 03call fn_04
+            zt lfoutname01  02
+            st dd 03071004
             dtcurfn = savefn
             dtcurfnl = savefnl
-            lr nargs > 0 {
-                st dd "add rsp, "
+            lr nargs > 0  08
+                st dd 03add rsp, 04
                 tz nbytes = nargs hh 8
                 st dt nbytes
-                st dd "\n"
-            }
+                st dd 03071004
+             09
             zz 0
-        } }
+         09  09
         00 普通变量
-        tz vi = lfv(name)
-        lr vi != dnv {
-            st dd "mov rax, "
-            zt lfoutvar(vi)
-            st dd "\n"
+        tz vi = lfv01 name 02
+        lr vi != dnv  08
+            st dd 03mov rax, 04
+            zt lfoutvar01 vi 02
+            st dd 03071004
             zz 0
-        }
-        st dd "mov rax, 0\n"
+         09
+        st dd 03mov rax, 0071004
         zz 0
-    }
+     09
     00 未知，返回0
-    llt()
-    st dd "mov rax, 0\n"
+    llt01  02
+    st dd 03mov rax, 0071004
     zz 0
-}
+ 09
 
-tt zzd() -> u32 {
-    zzp()
-    ll {
+tt zzd01  02 -> u32  08
+    zzp01  02
+    ll  08
         00 卦指令运算符（h_系, dh/dl）
         tz isop = 0
-        lr dtt == 5 {
-            lr dtf == 104 { tz isop = 1 }
-            lr dtf == 100 { lr dts == 104 { tz isop = 1 } }
-            lr dtf == 100 { lr dts == 108 { tz isop = 1 } }
-        }
+        lr dtt == 5  08
+            lr dtf == 104  08 tz isop = 1  09
+            lr dtf == 100  08 lr dts == 104  08 tz isop = 1  09  09
+            lr dtf == 100  08 lr dts == 108  08 tz isop = 1  09  09
+         09
         00 比较运算符（标点）
-        lr dtt == 4 {
-            lr dth == 60 { tz isop = 1 }
-            lr dth == 62 { tz isop = 1 }
-            lr dth == 61 { tz isop = 1 }
-            lr dth == 33 { tz isop = 1 }
-        }
-        lr isop == 0 { ls }
+        lr dtt == 4  08
+            lr dth == 60  08 tz isop = 1  09
+            lr dth == 62  08 tz isop = 1  09
+            lr dth == 61  08 tz isop = 1  09
+            lr dth == 33  08 tz isop = 1  09
+         09
+        lr isop == 0  08 ls  09
 
         00 比较运算符
-        lr dtt == 4 {
+        lr dtt == 4  08
             tz cmpop = dth
-            llt()
+            llt01  02
             00 >= <= == !=
-            lr cmpop == 62 { lr dtt == 4 { lr dth == 61 { tz cmpop = 262; llt() } } }
-            lr cmpop == 60 { lr dtt == 4 { lr dth == 61 { tz cmpop = 260; llt() } } }
-            lr cmpop == 61 { lr dtt == 4 { lr dth == 61 { tz cmpop = 261; llt() } } }
-            lr cmpop == 33 { lr dtt == 4 { lr dth == 61 { tz cmpop = 233; llt() } } }
-            st dd "push rax\n"
-            zzd()
-            st dd "mov rcx, rax\npop rax\ncmp rax, rcx\n"
-            lr cmpop == 261 { st dd "sete al\n" }
-            lr cmpop == 233 { st dd "setne al\n" }
-            lr cmpop == 60 { st dd "setl al\n" }
-            lr cmpop == 62 { st dd "setg al\n" }
-            lr cmpop == 260 { st dd "setle al\n" }
-            lr cmpop == 262 { st dd "setge al\n" }
-            st dd "movzx rax, al\n"
+            lr cmpop == 62  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 262 05 llt01  02  09  09  09
+            lr cmpop == 60  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 260 05 llt01  02  09  09  09
+            lr cmpop == 61  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 261 05 llt01  02  09  09  09
+            lr cmpop == 33  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 233 05 llt01  02  09  09  09
+            st dd 03push rax071004
+            zzd01  02
+            st dd 03mov rcx, rax0710pop rax0710cmp rax, rcx071004
+            lr cmpop == 261  08 st dd 03sete al071004  09
+            lr cmpop == 233  08 st dd 03setne al071004  09
+            lr cmpop == 60  08 st dd 03setl al071004  09
+            lr cmpop == 62  08 st dd 03setg al071004  09
+            lr cmpop == 260  08 st dd 03setle al071004  09
+            lr cmpop == 262  08 st dd 03setge al071004  09
+            st dd 03movzx rax, al071004
             zz 0
-        }
+         09
 
         00 卦指令运算符
         tz opf = dtf
         tz ops = dts
-        llt()
-        st dd "push rax\n"
-        zzd()
-        st dd "mov rcx, rax\npop rax\n"
-        lr opf == 104 { lr ops == 116 { st dd "add rax, rcx\n" } }
-        lr opf == 104 { lr ops == 122 { st dd "sub rax, rcx\n" } }
-        lr opf == 104 { lr ops == 104 { st dd "imul rax, rcx\n" } }
-        lr opf == 104 { lr ops == 108 { st dd "xor rdx, rdx\ndiv rcx\n" } }
-        lr opf == 104 { lr ops == 102 { st dd "xor rdx, rdx\ndiv rcx\nmov rax, rdx\n" } }
-        lr opf == 104 { lr ops == 115 { st dd "and rax, rcx\n" } }
-        lr opf == 104 { lr ops == 114 { st dd "or rax, rcx\n" } }
-        lr opf == 104 { lr ops == 100 { st dd "xor rax, rcx\n" } }
-        lr opf == 100 { lr ops == 104 { st dd "shl rax, cl\n" } }
-        lr opf == 100 { lr ops == 108 { st dd "shr rax, cl\n" } }
-    }
+        llt01  02
+        st dd 03push rax071004
+        zzd01  02
+        st dd 03mov rcx, rax0710pop rax071004
+        lr opf == 104  08 lr ops == 116  08 st dd 03add rax, rcx071004  09  09
+        lr opf == 104  08 lr ops == 122  08 st dd 03sub rax, rcx071004  09  09
+        lr opf == 104  08 lr ops == 104  08 st dd 03imul rax, rcx071004  09  09
+        lr opf == 104  08 lr ops == 108  08 st dd 03xor rdx, rdx0710div rcx071004  09  09
+        lr opf == 104  08 lr ops == 102  08 st dd 03xor rdx, rdx0710div rcx0710mov rax, rdx071004  09  09
+        lr opf == 104  08 lr ops == 115  08 st dd 03and rax, rcx071004  09  09
+        lr opf == 104  08 lr ops == 114  08 st dd 03or rax, rcx071004  09  09
+        lr opf == 104  08 lr ops == 100  08 st dd 03xor rax, rcx071004  09  09
+        lr opf == 100  08 lr ops == 104  08 st dd 03shl rax, cl071004  09  09
+        lr opf == 100  08 lr ops == 108  08 st dd 03shr rax, cl071004  09  09
+     09
     zz 0
-}
+ 09
 
 00 ============================================================
 00 语句处理
 00 ============================================================
 
-tt lzc() -> u32 {
+tt lzc01  02 -> u32  08
     00 tz 变量声明
-    llt()
-    lr dtt != 3 { zz 0 }
+    llt01  02
+    lr dtt != 3  08 zz 0  09
     tz name = dtz
     tz namelen = dtu
     tz vi = dnv
@@ -645,261 +645,261 @@ tt lzc() -> u32 {
     dtw[vi] = dloc
     dtisparam[vi] = 0
     dnv = dnv ht 1
-    llt()
+    llt01  02
     00 = 赋值
-    lr dtt == 4 { lr dth == 61 {
-        llt()
-        zzd()
-        st dd "mov "
-        zt lfoutvar(vi)
-        st dd ", rax\n"
-    } }
+    lr dtt == 4  08 lr dth == 61  08
+        llt01  02
+        zzd01  02
+        st dd 03mov 04
+        zt lfoutvar01 vi 02
+        st dd 03, rax071004
+     09  09
     zz 0
-}
+ 09
 
-tt lzs() -> u32 {
+tt lzs01  02 -> u32  08
     00 st 输出
-    llt()
-    lr dtt != 5 { zz 0 }
-    lr dtf == 100 { lr dts == 100 {
+    llt01  02
+    lr dtt != 5  08 zz 0  09
+    lr dtf == 100  08 lr dts == 100  08
         00 st dd 字符串
-        llt()
-        lr dtt == 2 {
-            zzd()
-            st dd "push rax\ncall _rt_puts\nadd rsp, 8\n"
-        }
+        llt01  02
+        lr dtt == 2  08
+            zzd01  02
+            st dd 03push rax0710call _rt_puts0710add rsp, 8071004
+         09
         zz 0
-    } }
-    lr dtf == 100 { lr dts == 116 {
+     09  09
+    lr dtf == 100  08 lr dts == 116  08
         00 st dt 整数
-        llt()
-        zzd()
-        st dd "push rax\ncall _rt_puti\nadd rsp, 8\n"
+        llt01  02
+        zzd01  02
+        st dd 03push rax0710call _rt_puti0710add rsp, 8071004
         zz 0
-    } }
+     09  09
     zz 0
-}
+ 09
 
-tt lzr() -> u32 {
+tt lzr01  02 -> u32  08
     00 zz 返回
-    llt()
-    lr dtt == 1 {
-        st dd "mov rax, "
+    llt01  02
+    lr dtt == 1  08
+        st dd 03mov rax, 04
         st dt dth
-        st dd "\n"
-        llt()
-    }
-    lr dtt != 4 { lr dth != 125 {
+        st dd 03071004
+        llt01  02
+     09
+    lr dtt != 4  08 lr dth != 125  08
         00 返回表达式
-        zzd()
-    } }
-    st dd "jmp .Lret_"
-    zt lfoutname()
-    st dd "\n"
+        zzd01  02
+     09  09
+    st dd 03jmp .Lret_04
+    zt lfoutname01  02
+    st dd 03071004
     zz 0
-}
+ 09
 
-tt lzassign() -> u32 {
+tt lzassign01  02 -> u32  08
     00 赋值语句：变量=表达式 或 数组[i]=表达式
     00 进入时当前token是标识符
     tz name = dtz
     tz namelen = dtu
-    llt()
+    llt01  02
     00 数组下标 arr[i] = expr
-    lr dtt == 4 { lr dth == 91 {
-        llt()
-        zzd()
+    lr dtt == 4  08 lr dth == 91  08
+        llt01  02
+        zzd01  02
         00 跳过 ]
-        ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
-        st dd "imul rax, 8\n"
-        st dd "push rax\n"
-        tz vi = lfv(name)
-        lr vi < dnv {
-            st dd "lea rax, "
-            zt lfoutvar(vi)
-            st dd "\n"
-        } ld {
-            st dd "mov rax, offset g_"
+        ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt01  02 05 ls  09  09 05 llt01  02  09
+        st dd 03imul rax, 8071004
+        st dd 03push rax071004
+        tz vi = lfv01 name 02
+        lr vi < dnv  08
+            st dd 03lea rax, 04
+            zt lfoutvar01 vi 02
+            st dd 03071004
+         09 ld  08
+            st dd 03mov rax, offset g_04
             tz sf0 = dtcurfn
             tz sf1 = dtcurfnl
             dtcurfn = name
             dtcurfnl = namelen
-            zt lfoutname()
+            zt lfoutname01  02
             dtcurfn = sf0
             dtcurfnl = sf1
-            st dd "\n"
-        }
-        st dd "mov rcx, rax\npop rax\nadd rax, rcx\n"
-        st dd "push rax\n"
+            st dd 03071004
+         09
+        st dd 03mov rcx, rax0710pop rax0710add rax, rcx071004
+        st dd 03push rax071004
         00 跳过 =
-        ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 61 { llt(); ls } }; llt() }
-        zzd()
-        st dd "mov rcx, rax\npop rax\nmov [rax], rcx\n"
+        ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 61  08 llt01  02 05 ls  09  09 05 llt01  02  09
+        zzd01  02
+        st dd 03mov rcx, rax0710pop rax0710mov [rax], rcx071004
         zz 0
-    } }
+     09  09
     00 普通变量赋值
     00 跳过 =
-    ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 61 { llt(); ls } }; llt() }
-    zzd()
-    tz vi = lfv(name)
-    lr vi != dnv {
-        st dd "mov "
-        zt lfoutvar(vi)
-        st dd ", rax\n"
-    }
+    ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 61  08 llt01  02 05 ls  09  09 05 llt01  02  09
+    zzd01  02
+    tz vi = lfv01 name 02
+    lr vi != dnv  08
+        st dd 03mov 04
+        zt lfoutvar01 vi 02
+        st dd 03, rax071004
+     09
     zz 0
-}
+ 09
 
-tt lzlr() -> u32 {
-    00 lr 条件 { ... } [ld { ... }]
-    llt()
-    zzd()
+tt lzlr01  02 -> u32  08
+    00 lr 条件  08 ...  09 [ld  08 ...  09]
+    llt01  02
+    zzd01  02
     tz lab = dtlab
     dtlab = dtlab ht 1
-    st dd "test rax, rax\njz .Lelse"
+    st dd 03test rax, rax0710jz .Lelse04
     st dt lab
-    st dd "\n"
-    00 跳过 {
-    ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
+    st dd 03071004
+    00 跳过  08
+    ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
     00 then 块
-    ll {
-        lr dtt == 4 { lr dth == 125 { ls } }
-        zzh()
-    }
-    llt()
+    ll  08
+        lr dtt == 4  08 lr dth == 125  08 ls  09  09
+        zzh01  02
+     09
+    llt01  02
     00 ld else
-    lr dtt == 5 { lr dtf == 108 { lr dts == 100 {
-        llt()
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 100  08
+        llt01  02
         tz lab2 = dtlab
         dtlab = dtlab ht 1
-        st dd "jmp .Lendif"
+        st dd 03jmp .Lendif04
         st dt lab2
-        st dd "\n.Lelse"
+        st dd 030710.Lelse04
         st dt lab
-        st dd ":\n"
-        00 跳过 {
-        ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
+        st dd 03:071004
+        00 跳过  08
+        ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
         00 else 块
-        ll {
-            lr dtt == 4 { lr dth == 125 { ls } }
-            zzh()
-        }
-        llt()
-        st dd ".Lendif"
+        ll  08
+            lr dtt == 4  08 lr dth == 125  08 ls  09  09
+            zzh01  02
+         09
+        llt01  02
+        st dd 03.Lendif04
         st dt lab2
-        st dd ":\n"
+        st dd 03:071004
         zz 0
-    } } }
-    st dd ".Lelse"
+     09  09  09
+    st dd 03.Lelse04
     st dt lab
-    st dd ":\n"
+    st dd 03:071004
     zz 0
-}
+ 09
 
-tt lzlz(unequal) -> u32 {
+tt lzlz01 unequal 02 -> u32  08
     00 lz 相等跳转 / lh 不等跳转
-    llt()
-    zzd()
-    st dd "push rax\n"
-    zzd()
-    st dd "mov rcx, rax\npop rax\ncmp rax, rcx\n"
+    llt01  02
+    zzd01  02
+    st dd 03push rax071004
+    zzd01  02
+    st dd 03mov rcx, rax0710pop rax0710cmp rax, rcx071004
     tz lab = dtlab
     dtlab = dtlab ht 1
-    lr unequal == 1 {
-        st dd "je .Lelse"
-    } ld {
-        st dd "jne .Lelse"
-    }
+    lr unequal == 1  08
+        st dd 03je .Lelse04
+     09 ld  08
+        st dd 03jne .Lelse04
+     09
     st dt lab
-    st dd "\n"
-    00 跳过 {
-    ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
+    st dd 03071004
+    00 跳过  08
+    ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
     00 块
-    ll {
-        lr dtt == 4 { lr dth == 125 { ls } }
-        zzh()
-    }
-    llt()
-    st dd ".Lelse"
+    ll  08
+        lr dtt == 4  08 lr dth == 125  08 ls  09  09
+        zzh01  02
+     09
+    llt01  02
+    st dd 03.Lelse04
     st dt lab
-    st dd ":\n"
+    st dd 03:071004
     zz 0
-}
+ 09
 
-tt lzll() -> u32 {
-    00 ll [条件] { ... }
-    llt()
+tt lzll01  02 -> u32  08
+    00 ll [条件]  08 ...  09
+    llt01  02
     tz top = dtlab
     tz end = dtlab ht 1
     dtlab = dtlab ht 2
     dltop[dln] = top
     dlend[dln] = end
     dln = dln ht 1
-    st dd ".Ltop"
+    st dd 03.Ltop04
     st dt top
-    st dd ":\n"
-    00 条件循环（不是 {）
-    lr dtt != 4 {
-        zzd()
-        st dd "test rax, rax\njz .Lend"
+    st dd 03:071004
+    00 条件循环（不是  08）
+    lr dtt != 4  08
+        zzd01  02
+        st dd 03test rax, rax0710jz .Lend04
         st dt end
-        st dd "\n"
-    }
-    00 跳过 {
-    ll { lr dtt == 4 { lr dth == 123 { llt(); ls } }; llt() }
+        st dd 03071004
+     09
+    00 跳过  08
+    ll  08 lr dtt == 4  08 lr dth == 123  08 llt01  02 05 ls  09  09 05 llt01  02  09
     00 循环体
-    ll {
-        lr dtt == 4 { lr dth == 125 { ls } }
-        zzh()
-    }
-    llt()
-    st dd "jmp .Ltop"
+    ll  08
+        lr dtt == 4  08 lr dth == 125  08 ls  09  09
+        zzh01  02
+     09
+    llt01  02
+    st dd 03jmp .Ltop04
     st dt top
-    st dd "\n.Lend"
+    st dd 030710.Lend04
     st dt end
-    st dd ":\n"
+    st dd 03:071004
     dln = dln hz 1
     zz 0
-}
+ 09
 
 00 ============================================================
 00 语句分派
 00 ============================================================
 
-tt zzh() -> u32 {
-    lr dtt == 0 { zz 0 }
+tt zzh01  02 -> u32  08
+    lr dtt == 0  08 zz 0  09
 
 
     00 tf 全局数组声明
-    lr dtt == 5 { lr dtf == 116 { lr dts == 102 {
-        llt()
-        lr dtt == 3 {
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 102  08
+        llt01  02
+        lr dtt == 3  08
             tz gi = gcount
             gname[gi] = dtz
             glen[gi] = dtu
-            llt()
+            llt01  02
             00 跳过 [
-            ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 91 { llt(); ls } }; llt() }
+            ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 91  08 llt01  02 05 ls  09  09 05 llt01  02  09
             tz arrn = dth
-            llt()
+            llt01  02
             00 跳过 ]
-            ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 93 { llt(); ls } }; llt() }
+            ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt01  02 05 ls  09  09 05 llt01  02  09
             00 跳过 : type
-            ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 58 { llt(); ls } }; llt() }
-            llt()  00 跳过类型名
+            ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 58  08 llt01  02 05 ls  09  09 05 llt01  02  09
+            llt01  02  00 跳过类型名
             gsize[gi] = arrn hh 8
             gcount = gcount ht 1
-        }
+         09
         zz 0
-    } } }
+     09  09  09
     00 tz 声明
-    lr dtt == 5 { lr dtf == 116 { lr dts == 122 {
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 122  08
 
-        lr infunc == 0 {
+        lr infunc == 0  08
             00 全局tz变量：记录到全局表，.bss分配8字节
-            llt()
+            llt01  02
 
-            lr dtt == 3 {
+            lr dtt == 3  08
                 tz gi = gcount
                 gname[gi] = dtz
                 glen[gi] = dtu
@@ -907,175 +907,175 @@ tt zzh() -> u32 {
                 gcount = gcount ht 1
 
 
-                llt()
+                llt01  02
 
                 00 跳过 = 初始化（全局变量暂不支持初始化，跳过）
-                lr dtt == 4 { lr dth == 61 {
-                    ll { lz dtt 0 { ls }; lr dtt == 4 { lr dth == 10 { llt(); ls } }; llt() }
-                } }
-            }
+                lr dtt == 4  08 lr dth == 61  08
+                    ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 10  08 llt01  02 05 ls  09  09 05 llt01  02  09
+                 09  09
+             09
             zz 0
-        }
-        lzc()
+         09
+        lzc01  02
         zz 0
-    } } }
+     09  09  09
 
     00 st 输出
-    lr dtt == 5 { lr dtf == 115 { lr dts == 116 { lzs(); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 116  08 lzs01  02 05 zz 0  09  09  09
 
     00 zz 返回
-    lr dtt == 5 { lr dtf == 122 { lr dts == 122 { lzr(); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 122  08 lzr01  02 05 zz 0  09  09  09
 
     00 lr 条件
-    lr dtt == 5 { lr dtf == 108 { lr dts == 114 { lzlr(); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 114  08 lzlr01  02 05 zz 0  09  09  09
 
     00 lz 相等跳转
-    lr dtt == 5 { lr dtf == 108 { lr dts == 122 { zt lzlz(0); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 122  08 zt lzlz01 0 02 05 zz 0  09  09  09
 
     00 lh 不等跳转
-    lr dtt == 5 { lr dtf == 108 { lr dts == 104 { zt lzlz(1); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 104  08 zt lzlz01 1 02 05 zz 0  09  09  09
 
     00 ll 循环
-    lr dtt == 5 { lr dtf == 108 { lr dts == 108 { lzll(); zz 0 } } }
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 108  08 lzll01  02 05 zz 0  09  09  09
 
     00 ls 跳出
-    lr dtt == 5 { lr dtf == 108 { lr dts == 115 {
-        llt()
-        lr dln > 0 {
-            st dd "jmp .Lend"
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 115  08
+        llt01  02
+        lr dln > 0  08
+            st dd 03jmp .Lend04
             tz idx = dln hz 1
             st dt dlend[idx]
-            st dd "\n"
-        }
+            st dd 03071004
+         09
         zz 0
-    } } }
+     09  09  09
 
     00 lf 继续
-    lr dtt == 5 { lr dtf == 108 { lr dts == 102 {
-        llt()
-        lr dln > 0 {
-            st dd "jmp .Ltop"
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 102  08
+        llt01  02
+        lr dln > 0  08
+            st dd 03jmp .Ltop04
             tz idx = dln hz 1
             st dt dltop[idx]
-            st dd "\n"
-        }
+            st dd 03071004
+         09
         zz 0
-    } } }
+     09  09  09
 
     00 zt 函数调用语句
-    lr dtt == 5 { lr dtf == 122 { lr dts == 116 {
-        llt()
-        zzd()
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
+        llt01  02
+        zzd01  02
         zz 0
-    } } }
+     09  09  09
 
     00 zd 系统调用（简化：zd 1 cc = 输出字符）
-    lr dtt == 5 { lr dtf == 122 { lr dts == 100 {
-        llt()
-        lr dtt == 1 { lr dth == 1 {
-            llt()
-            zzd()
-            st dd "push rax\ncall _rt_putc\nadd rsp, 8\n"
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 100  08
+        llt01  02
+        lr dtt == 1  08 lr dth == 1  08
+            llt01  02
+            zzd01  02
+            st dd 03push rax0710call _rt_putc0710add rsp, 8071004
             zz 0
-        } }
-        zzd()
-        st dd "mov rax, rdi\nsyscall\n"
+         09  09
+        zzd01  02
+        st dd 03mov rax, rdi0710syscall071004
         zz 0
-    } } }
+     09  09  09
 
     00 tt 函数定义
-    lr dtt == 5 { lr dtf == 116 { lr dts == 116 {
-        llt()
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 116  08
+        llt01  02
         tz save_dtb = dtb
-        lr dtt == 3 {
+        lr dtt == 3  08
             dtcurfn = dtz
             dtcurfnl = dtu
-        }
+         09
         00 跳过参数列表
-        ll { llt(); lr dtt == 4 { lr dth == 41 { ls } } }
-        00 跳过返回类型 -> u32 {
-        ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
-        llt()
+        ll  08 llt01  02 05 lr dtt == 4  08 lr dth == 41  08 ls  09  09  09
+        00 跳过返回类型 -> u32  08
+        ll  08 llt01  02 05 lr dtt == 4  08 lr dth == 123  08 ls  09  09  09
+        llt01  02
         00 预扫描
         dfr = 0
         dnv = 0
-        zt lprescan()
+        zt lprescan01  02
         00 恢复重新解析
         dtb = save_dtb
-        llt()
+        llt01  02
         00 生成函数标签和序言
-        st dd ".globl fn_"
-        zt lfoutname()
-        st dd "\nfn_"
-        zt lfoutname()
-        st dd ":\n"
-        st dd "push rbp\nmov rbp, rsp\nsub rsp, "
+        st dd 03.globl fn_04
+        zt lfoutname01  02
+        st dd 030710fn_04
+        zt lfoutname01  02
+        st dd 03:071004
+        st dd 03push rbp0710mov rbp, rsp0710sub rsp, 04
         st dt dfr
-        st dd "\n"
+        st dd 03071004
         dnv = 0
         00 解析参数列表
         pcount = 0
-        llt()  00 跳过 (
-        ll {
-            lr dtt == 4 { lr dth == 41 { ls } }
-            lr dtt == 3 {
+        llt01  02  00 跳过 01 
+        ll  08
+            lr dtt == 4  08 lr dth == 41  08 ls  09  09
+            lr dtt == 3  08
                 pname[pcount] = dtz
                 plen[pcount] = dtu
                 pcount = pcount ht 1
-                llt()
-            }
-            lr dtt == 4 { lr dth == 44 { llt() } }
-        }
-        llt()  00 跳过 )
-        00 参数加入变量表: 第i个参数偏移=16+8*(pcount-1-i)
+                llt01  02
+             09
+            lr dtt == 4  08 lr dth == 44  08 llt01  02  09  09
+         09
+        llt01  02  00 跳过  02
+        00 参数加入变量表: 第i个参数偏移=16+8*01 pcount-1-i 02
         tz pi2 = 0
-        ll {
-            lz pi2 pcount { ls }
+        ll  08
+            lz pi2 pcount  08 ls  09
             dtv[dnv] = pname[pi2]
             dtvl[dnv] = plen[pi2]
-            dtw[dnv] = 16 ht (8 hh (pcount hz 1 hz pi2))
+            dtw[dnv] = 16 ht 01 8 hh 01 pcount hz 1 hz pi2 02 02
             dtisparam[dnv] = 1
             dnv = dnv ht 1
             pi2 = pi2 ht 1
-        }
+         09
         dloc = 0
         00 跳过返回类型
-        ll { llt(); lr dtt == 4 { lr dth == 123 { ls } } }
-        llt()
+        ll  08 llt01  02 05 lr dtt == 4  08 lr dth == 123  08 ls  09  09  09
+        llt01  02
         00 解析函数体
         infunc = 1
-        ll {
-            lr dtt == 4 { lr dth == 125 {
+        ll  08
+            lr dtt == 4  08 lr dth == 125  08
                 infunc = 0
-                st dd ".Lret_"
-                zt lfoutname()
-                st dd ":\nmov rsp, rbp\npop rbp\nret\n"
-                llt()
+                st dd 03.Lret_04
+                zt lfoutname01  02
+                st dd 03:0710mov rsp, rbp0710pop rbp0710ret071004
+                llt01  02
                 zz 0
-            } }
-            zzh()
-        }
+             09  09
+            zzh01  02
+         09
         infunc = 0
         zz 0
-    } } }
+     09  09  09
 
     00 赋值语句（标识符开头）
-    lr dtt == 3 { lzassign(); zz 0 }
+    lr dtt == 3  08 lzassign01  02 05 zz 0  09
 
     00 未知，跳过
-    llt()
+    llt01  02
     zz 0
-}
+ 09
 
 00 ============================================================
 00 主函数
 00 ============================================================
 
-tt 主(fname) -> u32 {
+tt 主01 fname 02 -> u32  08
     00 从命令行参数读取源码文件
     tz slen = 0
-    tz src = zt _rt_slurp(fname, zf slen)
-    lz src 0 { zz 1 }
+    tz src = zt _rt_slurp01 fname, zf slen 02
+    lz src 0  08 zz 1  09
 
     dtb = src
     dtn = slen
@@ -1089,59 +1089,59 @@ tt 主(fname) -> u32 {
     gcount = 0
 
     00 吐汇编头部
-    st dd ".intel_syntax noprefix\n.section .text\n"
+    st dd 03.intel_syntax noprefix0710.section .text071004
 
     00 解析
-    llt()
-    ll {
-        lz dtt 0 { ls }
-        zzh()
-    }
+    llt01  02
+    ll  08
+        lz dtt 0  08 ls  09
+        zzh01  02
+     09
 
     00 输出 .bss 全局变量
-    st dd ".section .bss\n.align 8\n"
+    st dd 03.section .bss0710.align 8071004
     tz gi = 0
-    ll {
-        lz gi gcount { ls }
-        st dd "g_"
+    ll  08
+        lz gi gcount  08 ls  09
+        st dd 03g_04
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
         dtcurfnl = glen[gi]
-        zt lfoutname()
+        zt lfoutname01  02
         dtcurfn = sf0
         dtcurfnl = sf1
-        st dd ": .space "
+        st dd 03: .space 04
         st dt gsize[gi]
-        st dd "\n"
+        st dd 03071004
         gi = gi ht 1
-    }
+     09
     00 输出字符串表
     tz si = 0
-    st dd ".section .rodata\n"
-    ll {
-        lz si dsn { ls }
-        st dd ".Lstr"
+    st dd 03.section .rodata071004
+    ll  08
+        lz si dsn  08 ls  09
+        st dd 03.Lstr04
         st dt si
-        st dd ": .ascii \""
+        st dd 03: .ascii 073404
         00 输出字符串内容
         tz sptr = dsv[si]
         tz slen2 = dsl[si]
         tz j = 0
-        ll {
-            lz j slen2 { ls }
+        ll  08
+            lz j slen2  08 ls  09
             tz a = sptr ht j
             tz r = fr a
             tz c = r hs 255
-            lr c == 34 { zt 出(92); zt 出(34) }
-            lr c == 92 { zt 出(92); zt 出(92) }
-            lr c == 10 { zt 出(92); zt 出(110) }
-            lr c != 34 { lr c != 92 { lr c != 10 { zt 出(c) } } }
+            lr c == 34  08 zt 出01 92 02 05 zt 出01 34 02  09
+            lr c == 92  08 zt 出01 92 02 05 zt 出01 92 02  09
+            lr c == 10  08 zt 出01 92 02 05 zt 出01 110 02  09
+            lr c != 34  08 lr c != 92  08 lr c != 10  08 zt 出01 c 02  09  09  09
             tz j = j ht 1
-        }
-        st dd "\\0\"\n"
+         09
+        st dd 03079200734071004
         tz si = si ht 1
-    }
+     09
 
     zz 0
-}
+ 09
