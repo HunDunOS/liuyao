@@ -441,7 +441,7 @@ tt lprescan 01  02 -> u32  08
 00 基础输出
 00 ============================================================
 
-tt 出 01 c 02 -> u32  08
+tt chu 01 c 02 -> u32  08
     00 输出一个字符到 stdout（用运行时 _rt_putc）
     zt _rt_putc 01 c 02
     zz 0
@@ -464,15 +464,15 @@ tt lfoutname 01  02 -> u32  08
         lr cb >= 48  08 lr cb <= 57  08 tz isasc = 1  09  09
         lr cb == 95  08 tz isasc = 1  09
         lr isasc == 1  08
-            zt 出 01 cb 02
+            zt chu 01 cb 02
          09 ld  08
-            zt 出 01 95 02
+            zt chu 01 95 02
             tz hi = cb dl 4
             tz lo = cb hs 15
-            lr hi < 10  08 zt 出 01 hi ht 48 02  09
-            lr hi >= 10  08 zt 出 01 hi ht 87 02  09
-            lr lo < 10  08 zt 出 01 lo ht 48 02  09
-            lr lo >= 10  08 zt 出 01 lo ht 87 02  09
+            lr hi < 10  08 zt chu 01 hi ht 48 02  09
+            lr hi >= 10  08 zt chu 01 hi ht 87 02  09
+            lr lo < 10  08 zt chu 01 lo ht 48 02  09
+            lr lo >= 10  08 zt chu 01 lo ht 87 02  09
          09
         i = i ht 1
      09
@@ -1151,7 +1151,7 @@ tt zzh 01  02 -> u32  08
 00 主函数
 00 ============================================================
 
-tt 主 01 fname 02 -> u32  08
+tt zhu 01 fname 02 -> u32  08
     00 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp 01 fname, zf slen 02
@@ -1213,10 +1213,10 @@ tt 主 01 fname 02 -> u32  08
             tz a = sptr ht j
             tz r = fr a
             tz c = r hs 255
-            lr c == 34  08 zt 出 01 92 02 05 zt 出 01 34 02  09
-            lr c == 92  08 zt 出 01 92 02 05 zt 出 01 92 02  09
-            lr c == 10  08 zt 出 01 92 02 05 zt 出 01 110 02  09
-            lr c != 34  08 lr c != 92  08 lr c != 10  08 zt 出 01 c 02  09  09  09
+            lr c == 34  08 zt chu 01 92 02 05 zt chu 01 34 02  09
+            lr c == 92  08 zt chu 01 92 02 05 zt chu 01 92 02  09
+            lr c == 10  08 zt chu 01 92 02 05 zt chu 01 110 02  09
+            lr c != 34  08 lr c != 92  08 lr c != 10  08 zt chu 01 c 02  09  09  09
             tz j = j ht 1
          09
         st dd 03 07 920 07 34 07 10 04
