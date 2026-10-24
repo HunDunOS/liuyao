@@ -1007,6 +1007,12 @@
 25155 0 g_dsl
 25175 1 _rt_oob
 25187 0 g_dsl
-25317 1 _rt_putc
-25357 0 .Lstr120
-25362 1 _rt_puts
+25354 1 _rt_putc
+25371 1 _rt_putc
+25422 1 _rt_putc
+25439 1 _rt_putc
+25490 1 _rt_putc
+25507 1 _rt_putc
+25626 1 _rt_putc
+25666 0 .Lstr120
+25671 1 _rt_puts
