@@ -484,6 +484,27 @@ tt lfoutname 01  02 -> u64  08
 00 ============================================================
 
 tt zzp 01  02 -> u64  08
+    00 前缀运算：ht a b = a + b, hz a b = a - b 等
+    lr dtt == 5  08 lr dtf == 104  08
+        tz preop1 = dtf
+        tz preop2 = dts
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03mov rcx, rax 07 10pop rax 07 10 04
+        lr preop1 == 104  08 lr preop2 == 116  08 st dd 03add rax, rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 122  08 st dd 03sub rax, rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 104  08 st dd 03imul rax, rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 108  08 st dd 03xor rdx, rdx 07 10div rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 102  08 st dd 03xor rdx, rdx 07 10div rcx 07 10mov rax, rdx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 115  08 st dd 03and rax, rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 114  08 st dd 03or rax, rcx 07 10 04  09  09
+        lr preop1 == 104  08 lr preop2 == 100  08 st dd 03xor rax, rcx 07 10 04  09  09
+        lr preop1 == 100  08 lr preop2 == 104  08 st dd 03shl rax, cl 07 10 04  09  09
+        lr preop1 == 100  08 lr preop2 == 108  08 st dd 03shr rax, cl 07 10 04  09  09
+        zz 0
+     09  09
     00 zt 函数调用前缀
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
         llt 01  02
@@ -885,15 +906,12 @@ tt lzlz 01 unequal 02 -> u64  08
     00 lz 相等跳转 / lh 不等跳转
     llt 01  02
     zzd 01  02
-    st dd 03push rax 07 10 04
-    zzd 01  02
-    st dd 03mov rcx, rax 07 10pop rax 07 10cmp rax, rcx 07 10 04
     tz lab = dtlab
     dtlab = dtlab ht 1
-    lr unequal == 1  08
-        st dd 03je .Lelse04
+    lr unequal == 0  08
+        st dd 03test rax, rax 07 10jnz .Lelse04
      09 ld  08
-        st dd 03jne .Lelse04
+        st dd 03test rax, rax 07 10jz .Lelse04
      09
     st dt lab
     st dd 03 07 10 04
