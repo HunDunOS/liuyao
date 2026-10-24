@@ -1524,7 +1524,7 @@ static void emit_header(void) {
         em("mov rsp, offset _kernel_stack_top");
         em("call _gfx_init");
         em("call _rt_cls");
-        em("call fn_%s", mangle("主"));
+        em("call fn_%s", mangle("zhu"));
         lbl(".Lhang"); em("cli"); em("hlt"); em("jmp .Lhang");
         return;
     }
@@ -1542,7 +1542,7 @@ static void emit_header(void) {
     em("mov rsp, offset _kernel_stack_top");
     em("call _gfx_init");                  /* EBX = XBP，取自引导器 */
     em("call _rt_cls");                    /* 开机先清屏，抹掉引导器残留 */
-    em("call fn_%s", mangle("主"));
+    em("call fn_%s", mangle("zhu"));
     lbl(".Lhang"); em("cli"); em("hlt"); em("jmp .Lhang");
 }
 
