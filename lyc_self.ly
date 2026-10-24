@@ -743,8 +743,15 @@ tt lzs 01  02 -> u64  08
     lr dtt != 5  08 zz 0  09
     lr dtf == 100  08 lr dts == 100  08
         00 st dd 字符串
+        llt 01  02
         lr dtt == 2  08
+            dsv[dsn] = dtz
+            dsl[dsn] = dtu
+            st dd 03lea rax, [rip+.Lstr04
+            st dt dsn
+            st dd 0307 93 07 10 04
             st dd 03push rax 07 10call _rt_puts 07 10add rsp, 8 07 10 04
+            dsn = dsn ht 1
          09
         zz 0
      09  09
@@ -1198,8 +1205,8 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03.intel_syntax noprefix 07 10.section .text 07 10 04
 
     00 解析
+    llt 01  02
     ll  08
-        llt 01  02
         lz dtt 0  08 ls  09
         zzh 01  02
      09
