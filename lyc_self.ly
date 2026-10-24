@@ -549,6 +549,18 @@ tt zzp 01  02 -> u64  08
         st dd 03mov rax, 0 07 10 04
         zz 0
      09  09  09
+    00 df 数组字面量（简化：返回0）
+    lr dtt == 5  08 lr dtf == 100  08 lr dts == 102  08
+        llt 01  02
+        st dd 03mov rax, 0 07 10 04
+        zz 0
+     09  09  09
+    00 ds 结构体字面量（简化：返回0）
+    lr dtt == 5  08 lr dtf == 100  08 lr dts == 115  08
+        llt 01  02
+        st dd 03mov rax, 0 07 10 04
+        zz 0
+     09  09  09
     00 数字
     lr dtt == 1  08
         st dd 03mov rax, 04
@@ -583,8 +595,50 @@ tt zzp 01  02 -> u64  08
         st dd 03test rax, rax 07 10sete al 07 10movzx rax, al 07 10 04
         zz 0
      09  09  09
+    00 ft 读键盘
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 116  08
+        llt 01  02
+        st dd 03call _rt_getc 07 10 04
+        zz 0
+     09  09  09
+    00 fh 读内存地址
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 104  08
+        llt 01  02
+        zzd 01  02
+        st dd 03mov rax, [rax]07 10 04
+        zz 0
+     09  09  09
+    00 ff 读数组元素
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 102  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov rax, [rax+rcx*8]07 10 04
+        zz 0
+     09  09  09
     00 fr 解引用
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
+        llt 01  02
+        zzd 01  02
+        st dd 03mov rax, [rax]07 10 04
+        zz 0
+     09  09  09
+    00 fz 读文件流（简化：当成读内存）
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 122  08
+        llt 01  02
+        zzd 01  02
+        st dd 03mov rax, [rax]07 10 04
+        zz 0
+     09  09  09
+    00 fl 读硬件IO端口（简化：返回0）
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 108  08
+        llt 01  02
+        st dd 03mov rax, 0 07 10 04
+        zz 0
+     09  09  09
+    00 fs 读结构体成员（简化：当成读内存）
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
         st dd 03mov rax, [rax]07 10 04
@@ -992,6 +1046,72 @@ tt lzll 01  02 -> u64  08
 tt zzh 01  02 -> u64  08
     lr dtt == 0  08 zz 0  09
 
+    00 rt 进入作用域 {
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 116  08
+        llt 01  02
+        zz 0
+     09  09  09
+
+    00 rz 退出作用域 }
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 122  08
+        llt 01  02
+        zz 0
+     09  09  09
+
+    00 rh 强制类型转换（简化：空操作）
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 104  08
+        llt 01  02
+        zzd 01  02
+        zz 0
+     09  09  09
+
+    00 rl 运行时类型检查（简化：空操作）
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 108  08
+        llt 01  02
+        zzd 01  02
+        zz 0
+     09  09  09
+
+    00 rf 内存清零
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 102  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10pop rdi 07 10mov rdi, rax 07 10mov rax, rcx 07 10call memset 07 10 04
+        zz 0
+     09  09  09
+
+    00 rs 释放内存
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 115  08
+        llt 01  02
+        zzd 01  02
+        st dd 03mov rdi, rax 07 10call free 07 10 04
+        zz 0
+     09  09  09
+
+    00 rr 申请堆内存
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 114  08
+        llt 01  02
+        zzd 01  02
+        st dd 03mov rdi, rax 07 10call malloc 07 10 04
+        zz 0
+     09  09  09
+
+    00 rd 内存拷贝
+    lr dtt == 5  08 lr dtf == 114  08 lr dts == 100  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rdx 07 10pop rsi 07 10pop rdi 07 10call memcpy 07 10 04
+        zz 0
+     09  09  09
+
     00 lt 无条件跳转
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 116  08
         llt 01  02
@@ -1053,6 +1173,19 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
+    00 tl 结构体蓝图（简化：当成全局变量）
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 108  08
+        llt 01  02
+        lr dtt == 3  08
+            tz gi = gcount
+            gname[gi] = dtz
+            glen[gi] = dtu
+            gsize[gi] = 8
+            gcount = gcount ht 1
+         09
+        zz 0
+     09  09  09
+
     00 tf 全局数组声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 102  08
         llt 01  02
@@ -1097,6 +1230,69 @@ tt zzh 01  02 -> u64  08
 
     00 st 输出
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 116  08 lzs 01  02 05 zz 0  09  09  09
+
+    00 sz 写文件流（简化：当成写屏幕）
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 122  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10call _rt_puts 07 10add rsp, 8 07 10 04
+        zz 0
+     09  09  09
+
+    00 sh 写内存地址
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 104  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov [rax], rcx 07 10 04
+        zz 0
+     09  09  09
+
+    00 sl 写硬件IO端口（简化：空操作）
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 108  08
+        llt 01  02
+        zzd 01  02
+        zz 0
+     09  09  09
+
+    00 sf 写数组元素
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 102  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov [rax+rcx*8], rax 07 10 04
+        zz 0
+     09  09  09
+
+    00 ss 写结构体成员（简化：当成写内存）
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 115  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov [rax], rcx 07 10 04
+        zz 0
+     09  09  09
+
+    00 sr 指针写入
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 114  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov [rax], rcx 07 10 04
+        zz 0
+     09  09  09
+
+    00 sd 调试/日志输出（简化：当成写屏幕）
+    lr dtt == 5  08 lr dtf == 115  08 lr dts == 100  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10call _rt_puti 07 10add rsp, 8 07 10 04
+        zz 0
+     09  09  09
 
     00 zz 返回
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 122  08 lzr 01  02 05 zz 0  09  09  09
