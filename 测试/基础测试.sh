@@ -19,17 +19,17 @@ test() {
   fi
 }
 
-test "数字打印" 'tt 主 01 02 -> u32 08
+test "数字打印" 'tt zhu 01 02 -> u32 08
     st dt 123
     zz 0
 09' "123"
 
-test "字符串打印" 'tt 主 01 02 -> u32 08
+test "字符串打印" 'tt zhu 01 02 -> u32 08
     st dd 03hello world04
     zz 0
 09' "hello world"
 
-test "加法" 'tt 主 01 02 -> u32 08
+test "加法" 'tt zhu 01 02 -> u32 08
     tz a = 1
     tz b = 2
     tz c = a ht b
@@ -37,7 +37,7 @@ test "加法" 'tt 主 01 02 -> u32 08
     zz 0
 09' "3"
 
-test "乘法优先级" 'tt 主 01 02 -> u32 08
+test "乘法优先级" 'tt zhu 01 02 -> u32 08
     tz a = 1 ht 2 hh 3
     st dt a
     zz 0
