@@ -1,4 +1,4 @@
-tt zhu 01 02 -> u32 08
+tt zhu 01 02 -> u64 08
     st dd 03hello07 10world04
     zz 0
 09

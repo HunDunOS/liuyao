@@ -49,7 +49,7 @@ tz pcount            00 参数总数
 00 基础工具
 00 ============================================================
 
-tt lds 01 s 02 -> u32  08
+tt lds 01 s 02 -> u64  08
     tz i = 0
     ll  08
         tz a = s ht i
@@ -60,12 +60,12 @@ tt lds 01 s 02 -> u32  08
      09
  09
 
-tt ldh 01 c 02 -> u32  08
+tt ldh 01 c 02 -> u64  08
     lr c >= 48  08 lr c <= 57  08 zz 1  09  09
     zz 0
  09
 
-tt lsl 01 c 02 -> u32  08
+tt lsl 01 c 02 -> u64  08
     lr c >= 97  08 lr c <= 122  08 zz 1  09  09
     lr c >= 65  08 lr c <= 90  08 zz 1  09  09
     lr c >= 48  08 lr c <= 57  08 zz 1  09  09
@@ -74,7 +74,7 @@ tt lsl 01 c 02 -> u32  08
     zz 0
  09
 
-tt lsg 01 c 02 -> u32  08
+tt lsg 01 c 02 -> u64  08
     lr c == 116  08 zz 1  09
     lr c == 122  08 zz 1  09
     lr c == 104  08 zz 1  09
@@ -86,7 +86,7 @@ tt lsg 01 c 02 -> u32  08
     zz 0
  09
 
-tt ltm 01 a, b 02 -> u32  08
+tt ltm 01 a, b 02 -> u64  08
     tz i = 0
     ll  08
         tz aa = a ht i
@@ -105,7 +105,7 @@ tt ltm 01 a, b 02 -> u32  08
 00 词法分析
 00 ============================================================
 
-tt lft 01  02 -> u32  08
+tt lft 01  02 -> u64  08
     ll  08
         lr dtb >= dtend  08 zz 0  09
         tz a = dtb
@@ -120,7 +120,7 @@ tt lft 01  02 -> u32  08
     zz 0
  09
 
-tt ldn 01  02 -> u32  08
+tt ldn 01  02 -> u64  08
     tz val = 0
     tz digit = 0
     ll  08
@@ -141,7 +141,7 @@ tt ldn 01  02 -> u32  08
     zz 1
  09
 
-tt lst 01  02 -> u32  08
+tt lst 01  02 -> u64  08
     tz start = dtb
     dtb = dtb ht 1
     ll  08
@@ -161,7 +161,7 @@ tt lst 01  02 -> u32  08
     zz 1
  09
 
-tt lstc 01 02 -> u32  08
+tt lstc 01 02 -> u64  08
     00 纯血字符串扫描：零三开始零四结束，零七转义
     tz start = dtb
     dtb = dtb ht 2
@@ -208,7 +208,7 @@ tt lstc 01 02 -> u32  08
     zz 1
  09
 
-tt llt 01  02 -> u32  08
+tt llt 01  02 -> u64  08
     lft 01  02
     lr dtb >= dtend  08 dtt = 0 zz 0  09
     tz a = dtb
@@ -335,7 +335,7 @@ tt llt 01  02 -> u32  08
 00 变量表
 00 ============================================================
 
-tt lfv 01 name 02 -> u32  08
+tt lfv 01 name 02 -> u64  08
     tz i = 0
     tz j = 0
     tz vlen = 0
@@ -387,7 +387,7 @@ tt lfv 01 name 02 -> u32  08
     zz dnv
  09
 
-tt lfoutvar 01 vi 02 -> u32  08
+tt lfoutvar 01 vi 02 -> u64  08
     00 全局变量（vi > dnv）
     lr vi > dnv  08
         tz gi = vi hz dnv hz 1
@@ -419,7 +419,7 @@ tt lfoutvar 01 vi 02 -> u32  08
 00 预扫描：计算函数栈帧大小
 00 ============================================================
 
-tt lprescan 01  02 -> u32  08
+tt lprescan 01  02 -> u64  08
     00 进入时当前token是 08后面的第一个token
     tz depth = 1
     ll  08
@@ -441,7 +441,7 @@ tt lprescan 01  02 -> u32  08
 00 基础输出
 00 ============================================================
 
-tt chu 01 c 02 -> u32  08
+tt chu 01 c 02 -> u64  08
     00 输出一个字符到 stdout（用运行时 _rt_putc）
     zt _rt_putc 01 c 02
     zz 0
@@ -451,7 +451,7 @@ tt chu 01 c 02 -> u32  08
 00 函数名mangle输出
 00 ============================================================
 
-tt lfoutname 01  02 -> u32  08
+tt lfoutname 01  02 -> u64  08
     tz i = 0
     ll  08
         lr i >= dtcurfnl  08 ls  09
@@ -483,7 +483,7 @@ tt lfoutname 01  02 -> u32  08
 00 表达式解析
 00 ============================================================
 
-tt zzp 01  02 -> u32  08
+tt zzp 01  02 -> u64  08
     00 zt 函数调用前缀
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
         llt 01  02
@@ -646,7 +646,7 @@ tt zzp 01  02 -> u32  08
     zz 0
  09
 
-tt zzd 01  02 -> u32  08
+tt zzd 01  02 -> u64  08
     zzp 01  02
     ll  08
         00 卦指令运算符（h_系, dh/dl）
@@ -712,7 +712,7 @@ tt zzd 01  02 -> u32  08
 00 语句处理
 00 ============================================================
 
-tt lzc 01  02 -> u32  08
+tt lzc 01  02 -> u64  08
     00 tz 变量声明
     llt 01  02
     lr dtt != 3  08 zz 0  09
@@ -737,7 +737,7 @@ tt lzc 01  02 -> u32  08
     zz 0
  09
 
-tt lzs 01  02 -> u32  08
+tt lzs 01  02 -> u64  08
     00 st 输出
     llt 01  02
     lr dtt != 5  08 zz 0  09
@@ -760,7 +760,7 @@ tt lzs 01  02 -> u32  08
     zz 0
  09
 
-tt lzr 01  02 -> u32  08
+tt lzr 01  02 -> u64  08
     00 zz 返回
     llt 01  02
     lr dtt == 1  08
@@ -779,7 +779,7 @@ tt lzr 01  02 -> u32  08
     zz 0
  09
 
-tt lzassign 01  02 -> u32  08
+tt lzassign 01  02 -> u64  08
     00 赋值语句：变量=表达式 或 数组[i]=表达式
     00 进入时当前token是标识符
     tz name = dtz
@@ -830,7 +830,7 @@ tt lzassign 01  02 -> u32  08
     zz 0
  09
 
-tt lzlr 01  02 -> u32  08
+tt lzlr 01  02 -> u64  08
     00 lr 条件  08 ...  09 [ld  08 ...  09]
     llt 01  02
     zzd 01  02
@@ -876,7 +876,7 @@ tt lzlr 01  02 -> u32  08
     zz 0
  09
 
-tt lzlz 01 unequal 02 -> u32  08
+tt lzlz 01 unequal 02 -> u64  08
     00 lz 相等跳转 / lh 不等跳转
     llt 01  02
     zzd 01  02
@@ -906,7 +906,7 @@ tt lzlz 01 unequal 02 -> u32  08
     zz 0
  09
 
-tt lzll 01  02 -> u32  08
+tt lzll 01  02 -> u64  08
     00 ll [条件]  08 ...  09
     llt 01  02
     tz top = dtlab
@@ -946,7 +946,7 @@ tt lzll 01  02 -> u32  08
 00 语句分派
 00 ============================================================
 
-tt zzh 01  02 -> u32  08
+tt zzh 01  02 -> u64  08
     lr dtt == 0  08 zz 0  09
 
 
@@ -1073,7 +1073,7 @@ tt zzh 01  02 -> u32  08
          09
         00 跳过参数列表
         ll  08 llt 01  02 05 lr dtt == 4  08 lr dth == 41  08 ls  09  09  09
-        00 跳过返回类型 -> u32  08
+        00 跳过返回类型 -> u64  08
         ll  08 llt 01  02 05 lr dtt == 4  08 lr dth == 123  08 ls  09  09  09
         llt 01  02
         00 预扫描
@@ -1151,7 +1151,7 @@ tt zzh 01  02 -> u32  08
 00 主函数
 00 ============================================================
 
-tt zhu 01 fname 02 -> u32  08
+tt zhu 01 fname 02 -> u64  08
     00 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp 01 fname, zf slen 02
