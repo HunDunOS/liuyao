@@ -12,4 +12,6 @@ dd dd df hf
 dd dl ls rr 
 tf dh zt df 
 fs dz sh hl 
-ff dz tl dd 
+ff dz tl ld 
+fh zz th zs 
+ff dz sd dd 
