@@ -1,0 +1,58 @@
+# 金系j
+jj 123
+jj 03hello04
+js
+jh 03test.wx04
+jt 03test.txt04 03hello04
+
+# 木系m
+mj 03hello world04 03world04
+mm 03list04 1
+ms 03dict04 03key04 03val04
+mt 0312304
+
+# 水系s
+sj 03ls04
+sm
+ss
+sh 03.04
+st
+
+# 火系h
+hj 03myfunc04
+hm 0
+hs
+hh 03MyClass04
+ht 03mymod04
+
+# 土系t
+tj a 10
+tm 03[0-9]+04 03123abc04
+ts
+th
+tt
+
+# 春系C
+Cj i 0 10 1
+Ct
+
+# 夏系X
+Xj a gt 5
+Xm a gt 3
+Xs
+Xh a
+Xt
+
+# 秋系Q
+Qj 03http://example.com04
+Qm 03http://example.com04
+Qs 03http://example.com/file04
+Qh 03User-Agent: test04
+Qt 031.1.1.1 8004
+
+# 冬系D
+Dj
+Dm
+Ds
+Dh
+Dt 03ls04
