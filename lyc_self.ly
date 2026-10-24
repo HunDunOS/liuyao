@@ -1027,6 +1027,32 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
+    00 tr 枚举类型（简化：当成全局变量）
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 114  08
+        llt 01  02
+        lr dtt == 3  08
+            tz gi = gcount
+            gname[gi] = dtz
+            glen[gi] = dtu
+            gsize[gi] = 8
+            gcount = gcount ht 1
+         09
+        zz 0
+     09  09  09
+
+    00 td 布尔类型（简化：当成u64）
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 100  08
+        llt 01  02
+        lr dtt == 3  08
+            tz gi = gcount
+            gname[gi] = dtz
+            glen[gi] = dtu
+            gsize[gi] = 8
+            gcount = gcount ht 1
+         09
+        zz 0
+     09  09  09
+
     00 tf 全局数组声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 102  08
         llt 01  02
@@ -1075,6 +1101,34 @@ tt zzh 01  02 -> u64  08
     00 zz 返回
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 122  08 lzr 01  02 05 zz 0  09  09  09
 
+    00 zl 函数指针/回调（简化：当成函数调用）
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 108  08
+        llt 01  02
+        zzd 01  02
+        st dd 03call rax 07 10 04
+        zz 0
+     09  09  09
+
+    00 zr 断言（简化：直接停机）
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 114  08
+        llt 01  02
+        zzd 01  02
+        st dd 03test rax, rax 07 10jnz .Lok04
+        st dd 03mov rax, 60 07 10xor rdi, rdi 07 10syscall 07 10 04
+        st dd 03.Lok04:07 10 04
+        zz 0
+     09  09  09
+
+    00 zs 内联汇编块（简化：直接输出汇编）
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 115  08
+        llt 01  02
+        lr dtt == 2  08
+            st dd 03 04
+            llt 01  02
+         09
+        zz 0
+     09  09  09
+
     00 lr 条件
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 114  08 lzlr 01  02 05 zz 0  09  09  09
 
@@ -1108,6 +1162,14 @@ tt zzh 01  02 -> u64  08
             st dt dltop[idx]
             st dd 03 07 10 04
          09
+        zz 0
+     09  09  09
+
+    00 ld 开关分支（简化：当成if-else链）
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 100  08
+        llt 01  02
+        zzd 01  02
+        st dd 03push rax 07 10 04
         zz 0
      09  09  09
 
