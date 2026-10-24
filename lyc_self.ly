@@ -506,7 +506,7 @@ tt zzp 01  02 -> u64  08
                 tz savefnl = dtcurfnl
                 dtcurfn = name
                 dtcurfnl = namelen
-                st dd 03call fn_ 04
+                st dd 03call fn_04
                 zt lfoutname 01  02
                 st dd 03 07 10 04
                 dtcurfn = savefn
@@ -536,7 +536,7 @@ tt zzp 01  02 -> u64  08
         dsv[idx] = dtz
         dsl[idx] = dtu
         dsn = dsn ht 1
-        st dd 03lea rax, [rip + .Lstr 04
+        st dd 03lea rax, [rip+.Lstr04
         st dt idx
         st dd 03]07 10 04
         llt 01  02
@@ -616,7 +616,7 @@ tt zzp 01  02 -> u64  08
             tz savefnl = dtcurfnl
             dtcurfn = name
             dtcurfnl = namelen
-            st dd 03call fn_ 04
+            st dd 03call fn_04
             zt lfoutname 01  02
             st dd 03 07 10 04
             dtcurfn = savefn
@@ -773,7 +773,7 @@ tt lzr 01  02 -> u64  08
         00 返回表达式
         zzd 01  02
      09  09
-    st dd 03jmp .Lret_ 04
+    st dd 03jmp .Lret_04
     zt lfoutname 01  02
     st dd 03 07 10 04
     zz 0
@@ -1084,9 +1084,9 @@ tt zzh 01  02 -> u64  08
         dtb = save_dtb
         llt 01  02
         00 生成函数标签和序言
-        st dd 03.globl fn_ 04
+        st dd 03.globl fn_04
         zt lfoutname 01  02
-        st dd 03 07 10fn_ 04
+        st dd 03 07 10fn_04
         zt lfoutname 01  02
         st dd 03:07 10 04
         st dd 03push rbp 07 10mov rbp, rsp 07 10sub rsp, 04
@@ -1127,7 +1127,7 @@ tt zzh 01  02 -> u64  08
         ll  08
             lr dtt == 4  08 lr dth == 125  08
                 infunc = 0
-                st dd 03.Lret_ 04
+                st dd 03.Lret_04
                 zt lfoutname 01  02
                 st dd 03:07 10mov rsp, rbp 07 10pop rbp 07 10ret 07 10 04
                 llt 01  02
@@ -1155,9 +1155,6 @@ tt zhu 01 fname 02 -> u64  08
     00 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp 01 fname, zf slen 02
-    st dd 03slen=04
-    st dt slen
-    st dd 03/n04
     lz src 0  08 zz 1  09
 
     dtb = src
@@ -1204,12 +1201,12 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03.section .rodata 07 10 04
     ll  08
         lz si dsn  08 ls  09
-        st dd 03.Lstr 04
+        st dd 03.Lstr04
         st dt si
         st dd 03: .ascii 07 34 04
-        00 输出字符串内容
-        tz sptr = dsv[si]
-        tz slen2 = dsl[si]
+        00 输出字符串内容（跳过03头04尾）
+        tz sptr = dsv[si] ht 2
+        tz slen2 = dsl[si] hz 4
         tz j = 0
         ll  08
             lz j slen2  08 ls  09
