@@ -391,7 +391,7 @@ tt lfoutvar 01 vi 02 -> u64  08
     00 全局变量（vi > dnv）
     lr vi > dnv  08
         tz gi = vi hz dnv hz 1
-        st dd 03[g_ 04
+        st dd 03[g_04
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
@@ -585,7 +585,7 @@ tt zzp 01  02 -> u64  08
                 zt lfoutvar 01 vi 02
                 st dd 03 07 10 04
              09 ld  08
-                st dd 03mov rax, offset g_ 04
+                st dd 03mov rax, offset g_04
                 tz sf0 = dtcurfn
                 tz sf1 = dtcurfnl
                 dtcurfn = name
@@ -679,10 +679,10 @@ tt zzd 01  02 -> u64  08
             st dd 03mov rcx, rax 07 10pop rax 07 10cmp rax, rcx 07 10 04
             lr cmpop == 261  08 st dd 03sete al 07 10 04  09
             lr cmpop == 233  08 st dd 03setne al 07 10 04  09
-            lr cmpop == 60  08 st dd 03setl al 07 10 04  09
-            lr cmpop == 62  08 st dd 03setg al 07 10 04  09
-            lr cmpop == 260  08 st dd 03setle al 07 10 04  09
-            lr cmpop == 262  08 st dd 03setge al 07 10 04  09
+            lr cmpop == 60  08 st dd 03setb al 07 10 04  09
+            lr cmpop == 62  08 st dd 03seta al 07 10 04  09
+            lr cmpop == 260  08 st dd 03setbe al 07 10 04  09
+            lr cmpop == 262  08 st dd 03setae al 07 10 04  09
             st dd 03movzx rax, al 07 10 04
             zz 0
          09
@@ -743,9 +743,7 @@ tt lzs 01  02 -> u64  08
     lr dtt != 5  08 zz 0  09
     lr dtf == 100  08 lr dts == 100  08
         00 st dd 字符串
-        llt 01  02
         lr dtt == 2  08
-            zzd 01  02
             st dd 03push rax 07 10call _rt_puts 07 10add rsp, 8 07 10 04
          09
         zz 0
@@ -799,7 +797,7 @@ tt lzassign 01  02 -> u64  08
             zt lfoutvar 01 vi 02
             st dd 03 07 10 04
          09 ld  08
-            st dd 03mov rax, offset g_ 04
+            st dd 03mov rax, offset g_04
             tz sf0 = dtcurfn
             tz sf1 = dtcurfnl
             dtcurfn = name
@@ -836,7 +834,7 @@ tt lzlr 01  02 -> u64  08
     zzd 01  02
     tz lab = dtlab
     dtlab = dtlab ht 1
-    st dd 03test rax, rax 07 10jz .Lelse 04
+    st dd 03test rax, rax 07 10jz .Lelse04
     st dt lab
     st dd 03 07 10 04
     00 跳过  08
@@ -852,9 +850,9 @@ tt lzlr 01  02 -> u64  08
         llt 01  02
         tz lab2 = dtlab
         dtlab = dtlab ht 1
-        st dd 03jmp .Lendif 04
+        st dd 03jmp .Lendif04
         st dt lab2
-        st dd 03 07 10.Lelse 04
+        st dd 03 07 10.Lelse04
         st dt lab
         st dd 03:07 10 04
         00 跳过  08
@@ -865,12 +863,12 @@ tt lzlr 01  02 -> u64  08
             zzh 01  02
          09
         llt 01  02
-        st dd 03.Lendif 04
+        st dd 03.Lendif04
         st dt lab2
         st dd 03:07 10 04
         zz 0
      09  09  09
-    st dd 03.Lelse 04
+    st dd 03.Lelse04
     st dt lab
     st dd 03:07 10 04
     zz 0
@@ -886,9 +884,9 @@ tt lzlz 01 unequal 02 -> u64  08
     tz lab = dtlab
     dtlab = dtlab ht 1
     lr unequal == 1  08
-        st dd 03je .Lelse 04
+        st dd 03je .Lelse04
      09 ld  08
-        st dd 03jne .Lelse 04
+        st dd 03jne .Lelse04
      09
     st dt lab
     st dd 03 07 10 04
@@ -900,7 +898,7 @@ tt lzlz 01 unequal 02 -> u64  08
         zzh 01  02
      09
     llt 01  02
-    st dd 03.Lelse 04
+    st dd 03.Lelse04
     st dt lab
     st dd 03:07 10 04
     zz 0
@@ -915,7 +913,7 @@ tt lzll 01  02 -> u64  08
     dltop[dln] = top
     dlend[dln] = end
     dln = dln ht 1
-    st dd 03.Ltop 04
+    st dd 03.Ltop04
     st dt top
     st dd 03:07 10 04
     00 条件循环（不是  08）
@@ -933,9 +931,9 @@ tt lzll 01  02 -> u64  08
         zzh 01  02
      09
     llt 01  02
-    st dd 03jmp .Ltop 04
+    st dd 03jmp .Ltop04
     st dt top
-    st dd 03 07 10.Lend 04
+    st dd 03 07 10.Lend04
     st dt end
     st dd 03:07 10 04
     dln = dln hz 1
@@ -985,14 +983,6 @@ tt zzh 01  02 -> u64  08
                 glen[gi] = dtu
                 gsize[gi] = 8
                 gcount = gcount ht 1
-
-
-                llt 01  02
-
-                00 跳过 = 初始化（全局变量暂不支持初始化，跳过）
-                lr dtt == 4  08 lr dth == 61  08
-                    ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 10  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-                 09  09
              09
             zz 0
          09
@@ -1022,7 +1012,7 @@ tt zzh 01  02 -> u64  08
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 115  08
         llt 01  02
         lr dln > 0  08
-            st dd 03jmp .Lend 04
+            st dd 03jmp .Lend04
             tz idx = dln hz 1
             st dt dlend[idx]
             st dd 03 07 10 04
@@ -1034,7 +1024,7 @@ tt zzh 01  02 -> u64  08
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 102  08
         llt 01  02
         lr dln > 0  08
-            st dd 03jmp .Ltop 04
+            st dd 03jmp .Ltop04
             tz idx = dln hz 1
             st dt dltop[idx]
             st dd 03 07 10 04
@@ -1139,8 +1129,44 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 赋值语句（标识符开头）
-    lr dtt == 3  08 lzassign 01  02 05 zz 0  09
+    00 标识符开头：=或[走赋值，否则表达式语句（函数调用）
+    lr dtt == 3  08
+        tz s_dtd = dtd
+        tz s_dtt = dtt
+        tz s_dth = dth
+        tz s_dtz = dtz
+        tz s_dtu = dtu
+        tz s_dtb = dtb
+        llt 01  02
+        lr dtt == 4  08 lr dth == 61  08
+            dtd = s_dtd
+            dtt = s_dtt
+            dth = s_dth
+            dtz = s_dtz
+            dtu = s_dtu
+            dtb = s_dtb
+            lzassign 01  02
+            zz 0
+         09  09
+        lr dtt == 4  08 lr dth == 91  08
+            dtd = s_dtd
+            dtt = s_dtt
+            dth = s_dth
+            dtz = s_dtz
+            dtu = s_dtu
+            dtb = s_dtb
+            lzassign 01  02
+            zz 0
+         09  09
+        dtd = s_dtd
+        dtt = s_dtt
+        dth = s_dth
+        dtz = s_dtz
+        dtu = s_dtu
+        dtb = s_dtb
+        zzd 01  02
+        zz 0
+     09
 
     00 未知，跳过
     llt 01  02
@@ -1172,8 +1198,8 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03.intel_syntax noprefix 07 10.section .text 07 10 04
 
     00 解析
-    llt 01  02
     ll  08
+        llt 01  02
         lz dtt 0  08 ls  09
         zzh 01  02
      09
@@ -1183,7 +1209,7 @@ tt zhu 01 fname 02 -> u64  08
     tz gi = 0
     ll  08
         lz gi gcount  08 ls  09
-        st dd 03g_ 04
+        st dd 03g_04
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
@@ -1213,11 +1239,46 @@ tt zhu 01 fname 02 -> u64  08
             tz a = sptr ht j
             tz r = fr a
             tz c = r hs 255
-            lr c == 34  08 zt chu 01 92 02 05 zt chu 01 34 02  09
-            lr c == 92  08 zt chu 01 92 02 05 zt chu 01 92 02  09
-            lr c == 10  08 zt chu 01 92 02 05 zt chu 01 110 02  09
-            lr c != 34  08 lr c != 92  08 lr c != 10  08 zt chu 01 c 02  09  09  09
-            tz j = j ht 1
+            tz h07nxt = c
+            tz h07jump = 1
+            00 07转义：07 空格 数字[数字] → 字节
+            lr c == 48  08
+                tz h07q1a = sptr ht j ht 1
+                tz h07q1r = fr h07q1a
+                tz h07q1 = h07q1r hs 255
+                lr h07q1 == 55  08
+                    tz h07q2a = sptr ht j ht 2
+                    tz h07q2r = fr h07q2a
+                    tz h07q2 = h07q2r hs 255
+                    lr h07q2 == 32  08
+                        tz h07q3a = sptr ht j ht 3
+                        tz h07q3r = fr h07q3a
+                        tz h07q3 = h07q3r hs 255
+                        lr h07q3 >= 48  08 lr h07q3 <= 57  08
+                            tz h07val = h07q3 hz 48
+                            tz h07q4a = sptr ht j ht 4
+                            tz h07q4r = fr h07q4a
+                            tz h07q4 = h07q4r hs 255
+                            lr h07q4 >= 48  08 lr h07q4 <= 57  08
+                                tz h07v2 = h07q4 hz 48
+                                h07val = h07val hh 10
+                                h07val = h07val ht h07v2
+                                h07jump = 5
+                             09 ld  08
+                                h07jump = 4
+                             09
+                            h07nxt = h07val
+                         09
+                     09
+                 09
+             09
+         09
+     09
+            lr h07nxt == 34  08 zt chu 01 92 02 05 zt chu 01 34 02  09
+            lr h07nxt == 92  08 zt chu 01 92 02 05 zt chu 01 92 02  09
+            lr h07nxt == 10  08 zt chu 01 92 02 05 zt chu 01 110 02  09
+            lr h07nxt != 34  08 lr h07nxt != 92  08 lr h07nxt != 10  08 zt chu 01 h07nxt 02  09  09  09
+            tz j = j ht h07jump
          09
         st dd 03 07 920 07 34 07 10 04
         tz si = si ht 1
