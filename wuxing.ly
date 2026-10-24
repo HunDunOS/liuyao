@@ -18,6 +18,7 @@ qj g_offsets[4096]
 qj g_func_count
 qj g_if_taken
 qj g_func_names[512]
+qj g_func_lines[128]
 qj g_func_start[32]
 qj g_ret_stack[64]
 qj g_ret_sp
@@ -70,7 +71,8 @@ tt 主 01 path 02 -> u32 08
     09
     g_offsets[g_line_count] = slen
     tz g_line_count g_line_count ht 1
-    g_var_count = 0
+    g_func_count = 0
+g_var_count = 0
     g_arr_count = 0
     g_func_count = 0
 g_if_taken = 0
@@ -468,6 +470,44 @@ g_if_taken = 0
                 tz jumped 1
             09
             lr c2 == 115 08 zt _rt_exit 01 0 02 09
+        09
+        lr c1 == 122 08
+            lr c2 == 116 08
+                tz i 2
+                ll 08
+                    lz i llen 08 ls 09
+                    tz ch fn_get_byte 01 g_src ht off ht i 02
+                    lr ch == 32 08 tz i i ht 1 09
+                    lr ch != 32 08 ls 09
+                09
+                tz fname_start i
+                ll 08
+                    lz i llen 08 ls 09
+                    tz ch fn_get_byte 01 g_src ht off ht i 02
+                    lr ch == 32 08 ls 09
+                    i = i ht 1
+                09
+                tz fname_len i hz fname_start
+                tz fi 0
+                ll 08
+                    lz fi g_func_count 08 ls 09
+                    tz match 1
+                    tz j 0
+                    ll 08
+                        lz j fname_len 08 ls 09
+                        tz c1 fn_get_byte 01 g_src ht off ht fname_start ht j 02
+                        tz c2 fn_get_byte 01 g_func_names ht fi hh 32 ht j 02
+                        lr c1 != c2 08 tz match 0 09
+                        j = j ht 1
+                    09
+                    lr match == 1 08
+                        cur_ip = g_func_lines[fi]
+                        tz jumped 1
+                        ls
+                    09
+                    fi = fi ht 1
+                09
+            09
         09
         lr c1 == 81 08
             lr c2 == 106 08 zt wx_do_Qj 01 g_src ht off ht 2, llen hz 2 02 09
