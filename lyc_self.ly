@@ -1155,6 +1155,9 @@ tt zhu 01 fname 02 -> u64  08
     00 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp 01 fname, zf slen 02
+    st dd 03slen=04
+    st dt slen
+    st dd 03/n04
     lz src 0  08 zz 1  09
 
     dtb = src

@@ -194,17 +194,17 @@ def main():
                 镜像[位 - 基址 + k] = (v >> (8 * k)) & 255
             补了几笔 += 1
 
-    # ── 5) 入口：优先找用户的tt 主函数fn__e4_b8_bb，从用户对象里找，不要运行时的 ──
+    # ── 5) 入口：找用户的tt zhu主函数，从用户对象里找，不要运行时的 ──
     入口函数 = None
-    # 先遍历所有用户对象找主函数
-    for p in 排:
-        print('符号表:', list(p['本'].keys()), file=sys.stderr)
-        if 'fn__e4_b8_bb' in p['本']:
-            入口函数 = p['本']['fn__e4_b8_bb']
-            print('找到主函数:', hex(入口函数), file=sys.stderr)
-            break
+    主候选 = ('fn_zhu', 'fn__e4_b8_bb')
+    for 名 in 主候选:
+        for p in 排:
+            if 名 in p['本']:
+                入口函数 = p['本'][名]
+                break
+        if 入口函数: break
     if 入口函数 is None:
-        for 名 in ('fn__e4_b8_bb',):
+        for 名 in 主候选:
             if 名 in 全部符号: 入口函数 = 全部符号[名]; break
     if 入口函数 is None:
         for p in 排:
