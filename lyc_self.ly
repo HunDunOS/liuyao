@@ -543,6 +543,12 @@ tt zzp 01  02 -> u64  08
          09
         zz 0
      09  09  09
+    00 dz 空值/Null字面量
+    lr dtt == 5  08 lr dtf == 100  08 lr dts == 122  08
+        llt 01  02
+        st dd 03mov rax, 0 07 10 04
+        zz 0
+     09  09  09
     00 数字
     lr dtt == 1  08
         st dd 03mov rax, 04
@@ -563,6 +569,20 @@ tt zzp 01  02 -> u64  08
         llt 01  02
         zz 0
      09
+    00 dr 按位取反
+    lr dtt == 5  08 lr dtf == 100  08 lr dts == 114  08
+        llt 01  02
+        zzd 01  02
+        st dd 03not rax 07 10 04
+        zz 0
+     09  09  09
+    00 fd 逻辑非
+    lr dtt == 5  08 lr dtf == 102  08 lr dts == 100  08
+        llt 01  02
+        zzd 01  02
+        st dd 03test rax, rax 07 10sete al 07 10movzx rax, al 07 10 04
+        zz 0
+     09  09  09
     00 fr 解引用
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
         llt 01  02
@@ -972,6 +992,40 @@ tt lzll 01  02 -> u64  08
 tt zzh 01  02 -> u64  08
     lr dtt == 0  08 zz 0  09
 
+    00 lt 无条件跳转
+    lr dtt == 5  08 lr dtf == 108  08 lr dts == 116  08
+        llt 01  02
+        lr dtt == 3  08
+            st dd 03jmp .L04
+            zt lfoutname 01  02
+            st dd 03 07 10 04
+         09
+        zz 0
+     09  09  09
+
+    00 zh 标签定义
+    lr dtt == 5  08 lr dtf == 122  08 lr dts == 104  08
+        llt 01  02
+        lr dtt == 3  08
+            st dd 03.L04
+            zt lfoutname 01  02
+            st dd 03:07 10 04
+         09
+        zz 0
+     09  09  09
+
+    00 th 只读常量
+    lr dtt == 5  08 lr dtf == 116  08 lr dts == 104  08
+        llt 01  02
+        lr dtt == 3  08
+            tz gi = gcount
+            gname[gi] = dtz
+            glen[gi] = dtu
+            gsize[gi] = 8
+            gcount = gcount ht 1
+         09
+        zz 0
+     09  09  09
 
     00 tf 全局数组声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 102  08
@@ -1254,7 +1308,7 @@ tt zhu 01 fname 02 -> u64  08
         lz si dsn  08 ls  09
         st dd 03.Lstr04
         st dt si
-        st dd 03: .ascii 07 34 04
+        st dd 03: .asciz 07 34 04
         00 输出字符串内容（跳过03头04尾）
         tz sptr = dsv[si] ht 2
         tz slen2 = dsl[si] hz 4
@@ -1305,7 +1359,7 @@ tt zhu 01 fname 02 -> u64  08
             lr h07nxt != 34  08 lr h07nxt != 92  08 lr h07nxt != 10  08 zt chu 01 h07nxt 02  09  09  09
             tz j = j ht h07jump
          09
-        st dd 03 07 920 07 34 07 10 04
+        st dd 0307 34 07 10 04
         tz si = si ht 1
      09
 
