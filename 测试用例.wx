@@ -1,0 +1,41 @@
+# 测试1：数字打印
+jj 123
+
+# 测试2：变量赋值
+tj a 10
+tj b 20
+tj c a ht b
+jj c
+
+# 测试3：表达式优先级
+tj r 1 ht 2 hh 3
+jj r
+
+# 测试4：括号
+tj s 01 1 ht 2 02 hh 3
+jj s
+
+# 测试5：比较
+jj 5 gt 3
+
+# 测试6：if
+Xj 5 gt 3
+jj 03yes04
+Xt
+
+# 测试7：while循环
+tj i 0
+ll i lt 3
+jj i
+tj i i ht 1
+ld
+
+# 测试8：break
+tj i 0
+ll i lt 10
+jj i
+Xj i eq 3
+Dj
+Xt
+tj i i ht 1
+ld

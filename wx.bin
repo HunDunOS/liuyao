@@ -6,7 +6,7 @@
 fn__e4_b8_bb:
 	push rbp
 	mov rbp, rsp
-	sub rsp, 1520
+	sub rsp, 1616
 	mov rax, 0
 	call fn__rt_platform
 	mov [rbp-8], rax
@@ -108,8 +108,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-288], rax
-	lea rax, [rbp-288]
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 0
@@ -148,8 +148,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-328], rax
-	lea rax, [rbp-328]
+	mov [rbp-1552], rax
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 46
@@ -187,8 +187,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-288], rax
-	lea rax, [rbp-288]
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 0
@@ -255,8 +255,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-288], rax
-	lea rax, [rbp-288]
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 10
@@ -339,6 +339,11 @@ fn__e4_b8_bb:
 	mov [rbp-112], rax
 	mov rax, 0
 	push rax
+	mov rax, offset g_g_func_count
+	pop rcx
+	mov [rax], rcx
+	mov rax, 0
+	push rax
 	mov rax, offset g_g_var_count
 	pop rcx
 	mov [rax], rcx
@@ -374,9 +379,9 @@ fn__e4_b8_bb:
 	pop rcx
 	mov [rax], rcx
 	mov rax, 0
-	mov [rbp-256], rax
+	mov [rbp-1528], rax
 .Lltop18:
-	lea rax, [rbp-256]
+	lea rax, [rbp-1528]
 	mov rax, [rax]
 	push rax
 	lea rax, [rbp-112]
@@ -388,7 +393,7 @@ fn__e4_b8_bb:
 	jmp .Llend19
 .Lelse20:
 	mov rax, offset g_g_offsets
-	lea rax, [rbp-256]
+	lea rax, [rbp-1528]
 	mov rax, [rax]
 	cmp rax, 4096
 	jb .Lbok21
@@ -404,7 +409,7 @@ fn__e4_b8_bb:
 	mov [rbp-152], rax
 	mov rax, 0
 	mov [rbp-168], rax
-	lea rax, [rbp-256]
+	lea rax, [rbp-1528]
 	mov rax, [rax]
 	push rax
 	lea rax, [rbp-112]
@@ -697,7 +702,7 @@ fn__e4_b8_bb:
 	pop rax
 	add rax, rcx
 	push rax
-	lea rax, [rbp-256]
+	lea rax, [rbp-1528]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -720,20 +725,20 @@ fn__e4_b8_bb:
 	mov [rax], rcx
 .Lelse24:
 .Lelse23:
-	lea rax, [rbp-256]
+	lea rax, [rbp-1528]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-256], rax
+	mov [rbp-1528], rax
 	jmp .Lltop18
 .Llend19:
 	mov rax, 0
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 .Lltop39:
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	lea rax, [rbp-112]
@@ -745,7 +750,7 @@ fn__e4_b8_bb:
 	jmp .Llend40
 .Lelse41:
 	mov rax, offset g_g_offsets
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	cmp rax, 4096
 	jb .Lbok42
@@ -760,7 +765,7 @@ fn__e4_b8_bb:
 	mov rax, [rax]
 	mov [rbp-304], rax
 	mov rax, offset g_g_offsets
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -802,8 +807,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-288], rax
-	lea rax, [rbp-288]
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 32
@@ -823,7 +828,7 @@ fn__e4_b8_bb:
 	add rax, rcx
 	mov [rbp-304], rax
 .Lelse47:
-	lea rax, [rbp-288]
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 9
@@ -843,7 +848,7 @@ fn__e4_b8_bb:
 	add rax, rcx
 	mov [rbp-304], rax
 .Lelse48:
-	lea rax, [rbp-288]
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 32
@@ -854,7 +859,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse49
-	lea rax, [rbp-288]
+	lea rax, [rbp-1512]
 	mov rax, [rax]
 	push rax
 	mov rax, 9
@@ -890,14 +895,14 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse51
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 0
 	jmp .Lret__e4_b8_bb
 .Lelse51:
@@ -912,9 +917,9 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-328], rax
+	mov [rbp-1552], rax
 	mov rax, 0
-	mov [rbp-344], rax
+	mov [rbp-1560], rax
 	lea rax, [rbp-312]
 	mov rax, [rax]
 	push rax
@@ -942,10 +947,10 @@ fn__e4_b8_bb:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-344], rax
+	mov [rbp-1560], rax
 .Lelse52:
 	mov rax, 0
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 0
 	mov [rbp-464], rax
 	mov rax, 0
@@ -1209,7 +1214,7 @@ fn__e4_b8_bb:
 	call fn_wx_call_func
 	add rsp, 16
 .Lelse69:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 104
@@ -1220,7 +1225,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse70
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 106
@@ -1231,7 +1236,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse71
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -1334,9 +1339,9 @@ fn__e4_b8_bb:
 	jz .Lelse78
 	lea rax, [rbp-1328]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse78:
@@ -1353,7 +1358,7 @@ fn__e4_b8_bb:
 .Llend73:
 .Lelse71:
 .Lelse70:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 67
@@ -1364,7 +1369,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse79
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 106
@@ -1401,7 +1406,7 @@ fn__e4_b8_bb:
 	add rsp, 16
 .Lelse80:
 .Lelse79:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 67
@@ -1412,7 +1417,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse81
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 109
@@ -1423,7 +1428,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse82
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	mov [rbp-552], rax
 	mov rax, 1
@@ -1533,7 +1538,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse88
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -1641,9 +1646,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse95:
@@ -1661,7 +1666,7 @@ fn__e4_b8_bb:
 .Lelse88:
 .Lelse82:
 .Lelse81:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 67
@@ -1672,7 +1677,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse96
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 115
@@ -1962,7 +1967,7 @@ fn__e4_b8_bb:
 	add rsp, 24
 .Lelse97:
 .Lelse96:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 108
@@ -1973,7 +1978,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse112
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 108
@@ -1984,7 +1989,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse113
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	mov [rbp-768], rax
 	mov rax, 2
@@ -2094,7 +2099,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse119
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -2202,9 +2207,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse126:
@@ -2222,7 +2227,7 @@ fn__e4_b8_bb:
 .Lelse119:
 .Lelse113:
 .Lelse112:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 88
@@ -2233,7 +2238,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse127
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 106
@@ -2371,7 +2376,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse135
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -2474,9 +2479,9 @@ fn__e4_b8_bb:
 	jz .Lelse142
 	lea rax, [rbp-1328]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse142:
@@ -2493,9 +2498,9 @@ fn__e4_b8_bb:
 	jz .Lelse143
 	lea rax, [rbp-1328]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse143:
@@ -2517,9 +2522,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse144:
@@ -2537,7 +2542,7 @@ fn__e4_b8_bb:
 .Lelse135:
 .Lelse128:
 .Lelse127:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 88
@@ -2548,7 +2553,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse145
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 109
@@ -2570,7 +2575,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse147
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -2678,9 +2683,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse154:
@@ -2829,7 +2834,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse162
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -2932,9 +2937,9 @@ fn__e4_b8_bb:
 	jz .Lelse169
 	lea rax, [rbp-1328]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse169:
@@ -2951,9 +2956,9 @@ fn__e4_b8_bb:
 	jz .Lelse170
 	lea rax, [rbp-1328]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse170:
@@ -2975,9 +2980,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse171:
@@ -2996,7 +3001,7 @@ fn__e4_b8_bb:
 .Lelse155:
 .Lelse146:
 .Lelse145:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 88
@@ -3007,7 +3012,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse172
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 115
@@ -3029,7 +3034,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse174
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -3137,9 +3142,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 	mov rax, 1
 	mov [rbp-1320], rax
 .Lelse181:
@@ -3174,7 +3179,7 @@ fn__e4_b8_bb:
 .Lelse182:
 .Lelse173:
 .Lelse172:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 88
@@ -3185,7 +3190,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse183
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 116
@@ -3203,7 +3208,7 @@ fn__e4_b8_bb:
 	mov [rax], rcx
 .Lelse184:
 .Lelse183:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 68
@@ -3214,7 +3219,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse185
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 106
@@ -3225,7 +3230,7 @@ fn__e4_b8_bb:
 	movzx rax, al
 	test rax, rax
 	jz .Lelse186
-	lea rax, [rbp-1512]
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
@@ -3436,9 +3441,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 .Lelse199:
 .Lelse198:
 .Lelse197:
@@ -3490,9 +3495,9 @@ fn__e4_b8_bb:
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 .Lelse202:
 .Lelse201:
 .Lelse200:
@@ -3507,7 +3512,7 @@ fn__e4_b8_bb:
 	jmp .Lltop187
 .Llend188:
 .Lelse186:
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 109
@@ -3531,7 +3536,7 @@ fn__e4_b8_bb:
 	jz .Lelse204
 	lea rax, [rbp-552]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 .Lelse204:
 	lea rax, [rbp-776]
 	mov rax, [rax]
@@ -3546,12 +3551,12 @@ fn__e4_b8_bb:
 	jz .Lelse205
 	lea rax, [rbp-768]
 	mov rax, [rax]
-	mov [rbp-1512], rax
+	mov [rbp-1616], rax
 .Lelse205:
 	mov rax, 1
-	mov [rbp-1472], rax
+	mov [rbp-1576], rax
 .Lelse203:
-	lea rax, [rbp-344]
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 115
@@ -3568,7 +3573,304 @@ fn__e4_b8_bb:
 	add rsp, 8
 .Lelse206:
 .Lelse185:
-	lea rax, [rbp-328]
+	lea rax, [rbp-1552]
+	mov rax, [rax]
+	push rax
+	mov rax, 122
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse207
+	lea rax, [rbp-1560]
+	mov rax, [rax]
+	push rax
+	mov rax, 116
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse208
+	mov rax, 2
+	mov [rbp-1496], rax
+.Lltop209:
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-312]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	jne .Lelse211
+	jmp .Llend210
+.Lelse211:
+	lea rax, [rbp-48]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-304]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse212
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov [rbp-1496], rax
+.Lelse212:
+	lea rax, [rbp-1512]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	setne al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse213
+	jmp .Llend210
+.Lelse213:
+	jmp .Lltop209
+.Llend210:
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	mov [rbp-1504], rax
+.Lltop214:
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-312]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	jne .Lelse216
+	jmp .Llend215
+.Lelse216:
+	lea rax, [rbp-48]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-304]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-1512], rax
+	lea rax, [rbp-1512]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse217
+	jmp .Llend215
+.Lelse217:
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov [rbp-1496], rax
+	jmp .Lltop214
+.Llend215:
+	lea rax, [rbp-1496]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-1504]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	sub rax, rcx
+	mov [rbp-1520], rax
+	mov rax, 0
+	mov [rbp-1528], rax
+.Lltop218:
+	lea rax, [rbp-1528]
+	mov rax, [rax]
+	push rax
+	mov rax, offset g_g_func_count
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	jne .Lelse220
+	jmp .Llend219
+.Lelse220:
+	mov rax, 1
+	mov [rbp-1568], rax
+	mov rax, 0
+	mov [rbp-1544], rax
+.Lltop221:
+	lea rax, [rbp-1544]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-1520]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	jne .Lelse223
+	jmp .Llend222
+.Lelse223:
+	lea rax, [rbp-48]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-304]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	lea rax, [rbp-1504]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	lea rax, [rbp-1544]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-1552], rax
+	mov rax, offset g_g_func_names
+	push rax
+	lea rax, [rbp-1528]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	imul rax, rcx
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	lea rax, [rbp-1544]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-1560], rax
+	lea rax, [rbp-1552]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-1560]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	setne al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse224
+	mov rax, 0
+	mov [rbp-1568], rax
+.Lelse224:
+	lea rax, [rbp-1544]
+	mov rax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov [rbp-1544], rax
+	jmp .Lltop221
+.Llend222:
+	lea rax, [rbp-1568]
+	mov rax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse225
+	mov rax, offset g_g_func_lines
+	lea rax, [rbp-1528]
+	mov rax, [rax]
+	cmp rax, 128
+	jb .Lbok226
+	call _rt_oob
+.Lbok226:
+	imul rax, 8
+	push rax
+	mov rax, offset g_g_func_lines
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov rax, [rax]
+	mov [rbp-1616], rax
+	mov rax, 1
+	mov [rbp-1576], rax
+	jmp .Llend219
+.Lelse225:
+	lea rax, [rbp-1528]
+	mov rax, [rax]
+	push rax
+	mov rax, 1
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	mov [rbp-1528], rax
+	jmp .Lltop218
+.Llend219:
+.Lelse208:
+.Lelse207:
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 81
@@ -3578,8 +3880,8 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse207
-	lea rax, [rbp-344]
+	jz .Lelse227
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 106
@@ -3589,7 +3891,7 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse208
+	jz .Lelse228
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -3614,8 +3916,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_wx_do_Qj
 	add rsp, 16
-.Lelse208:
-	lea rax, [rbp-344]
+.Lelse228:
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 109
@@ -3625,7 +3927,7 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse209
+	jz .Lelse229
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -3650,8 +3952,8 @@ fn__e4_b8_bb:
 	push rax
 	call fn_wx_do_Qm
 	add rsp, 16
-.Lelse209:
-	lea rax, [rbp-344]
+.Lelse229:
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 115
@@ -3661,7 +3963,7 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse210
+	jz .Lelse230
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -3686,9 +3988,9 @@ fn__e4_b8_bb:
 	push rax
 	call fn_wx_do_Qs
 	add rsp, 16
-.Lelse210:
-.Lelse207:
-	lea rax, [rbp-1472]
+.Lelse230:
+.Lelse227:
+	lea rax, [rbp-1576]
 	mov rax, [rax]
 	push rax
 	mov rax, 0
@@ -3698,7 +4000,7 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse211
+	jz .Lelse231
 	lea rax, [rbp-312]
 	mov rax, [rax]
 	push rax
@@ -3709,7 +4011,7 @@ fn__e4_b8_bb:
 	seta al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse212
+	jz .Lelse232
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -3724,9 +4026,9 @@ fn__e4_b8_bb:
 	push rax
 	call fn_wx_exec_line
 	add rsp, 16
-.Lelse212:
-.Lelse211:
-	lea rax, [rbp-1472]
+.Lelse232:
+.Lelse231:
+	lea rax, [rbp-1576]
 	mov rax, [rax]
 	push rax
 	mov rax, 0
@@ -3736,8 +4038,8 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse213
-	lea rax, [rbp-328]
+	jz .Lelse233
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 67
@@ -3747,8 +4049,8 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse214
-	lea rax, [rbp-344]
+	jz .Lelse234
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 116
@@ -3758,12 +4060,12 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse215
+	jz .Lelse235
 	lea rax, [rbp-552]
 	mov rax, [rax]
-	mov [rbp-1512], rax
-.Lelse215:
-	lea rax, [rbp-344]
+	mov [rbp-1616], rax
+.Lelse235:
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 116
@@ -3773,18 +4075,18 @@ fn__e4_b8_bb:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse216
-	lea rax, [rbp-1512]
+	jz .Lelse236
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
-.Lelse216:
-.Lelse214:
-	lea rax, [rbp-328]
+	mov [rbp-1616], rax
+.Lelse236:
+.Lelse234:
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 108
@@ -3794,8 +4096,8 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse217
-	lea rax, [rbp-344]
+	jz .Lelse237
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 100
@@ -3805,12 +4107,12 @@ fn__e4_b8_bb:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse218
+	jz .Lelse238
 	lea rax, [rbp-768]
 	mov rax, [rax]
-	mov [rbp-1512], rax
-.Lelse218:
-	lea rax, [rbp-344]
+	mov [rbp-1616], rax
+.Lelse238:
+	lea rax, [rbp-1560]
 	mov rax, [rax]
 	push rax
 	mov rax, 100
@@ -3820,18 +4122,18 @@ fn__e4_b8_bb:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse219
-	lea rax, [rbp-1512]
+	jz .Lelse239
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
-.Lelse219:
-.Lelse217:
-	lea rax, [rbp-328]
+	mov [rbp-1616], rax
+.Lelse239:
+.Lelse237:
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 67
@@ -3841,8 +4143,8 @@ fn__e4_b8_bb:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse220
-	lea rax, [rbp-328]
+	jz .Lelse240
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 108
@@ -3852,8 +4154,8 @@ fn__e4_b8_bb:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse221
-	lea rax, [rbp-328]
+	jz .Lelse241
+	lea rax, [rbp-1552]
 	mov rax, [rax]
 	push rax
 	mov rax, 68
@@ -3863,19 +4165,19 @@ fn__e4_b8_bb:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse222
-	lea rax, [rbp-1512]
+	jz .Lelse242
+	lea rax, [rbp-1616]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-1512], rax
-.Lelse222:
-.Lelse221:
-.Lelse220:
-.Lelse213:
+	mov [rbp-1616], rax
+.Lelse242:
+.Lelse241:
+.Lelse240:
+.Lelse233:
 	jmp .Lltop39
 .Llend40:
 	mov rax, 0
@@ -3895,7 +4197,7 @@ fn_wx_call_func:
 	mov [rbp-120], rax
 	mov rax, 0
 	mov [rbp-112], rax
-.Lltop223:
+.Lltop243:
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	push rax
@@ -3904,9 +4206,9 @@ fn_wx_call_func:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse225
-	jmp .Llend224
-.Lelse225:
+	jne .Lelse245
+	jmp .Llend244
+.Lelse245:
 	lea rax, [rbp-112]
 	mov rax, [rax]
 	push rax
@@ -3917,9 +4219,9 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse226
-	jmp .Llend224
-.Lelse226:
+	jz .Lelse246
+	jmp .Llend244
+.Lelse246:
 	mov rax, 1
 	mov [rbp-96], rax
 	mov rax, 0
@@ -3932,7 +4234,7 @@ fn_wx_call_func:
 	pop rax
 	imul rax, rcx
 	mov [rbp-40], rax
-.Lltop227:
+.Lltop247:
 	lea rax, [rbp-104]
 	mov rax, [rax]
 	push rax
@@ -3940,9 +4242,9 @@ fn_wx_call_func:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse229
-	jmp .Llend228
-.Lelse229:
+	jne .Lelse249
+	jmp .Llend248
+.Lelse249:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -3982,7 +4284,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse230
+	jz .Lelse250
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -3993,12 +4295,12 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse231
+	jz .Lelse251
 	mov rax, 0
 	mov [rbp-96], rax
-.Lelse231:
-	jmp .Llend228
-.Lelse230:
+.Lelse251:
+	jmp .Llend248
+.Lelse250:
 	lea rax, [rbp-208]
 	mov rax, [rax]
 	push rax
@@ -4009,7 +4311,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse232
+	jz .Lelse252
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -4020,12 +4322,12 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse233
+	jz .Lelse253
 	mov rax, 0
 	mov [rbp-96], rax
-.Lelse233:
-	jmp .Llend228
-.Lelse232:
+.Lelse253:
+	jmp .Llend248
+.Lelse252:
 	lea rax, [rbp-208]
 	mov rax, [rax]
 	push rax
@@ -4036,7 +4338,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse234
+	jz .Lelse254
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -4047,12 +4349,12 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse235
+	jz .Lelse255
 	mov rax, 0
 	mov [rbp-96], rax
-.Lelse235:
-	jmp .Llend228
-.Lelse234:
+.Lelse255:
+	jmp .Llend248
+.Lelse254:
 	lea rax, [rbp-208]
 	mov rax, [rax]
 	push rax
@@ -4072,10 +4374,10 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse236
+	jz .Lelse256
 	mov rax, 0
 	mov [rbp-96], rax
-.Lelse236:
+.Lelse256:
 	lea rax, [rbp-104]
 	mov rax, [rax]
 	push rax
@@ -4084,8 +4386,8 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	mov [rbp-104], rax
-	jmp .Lltop227
-.Llend228:
+	jmp .Lltop247
+.Llend248:
 	lea rax, [rbp-96]
 	mov rax, [rax]
 	push rax
@@ -4096,10 +4398,10 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse237
+	jz .Lelse257
 	mov rax, 1
 	mov [rbp-112], rax
-.Lelse237:
+.Lelse257:
 	lea rax, [rbp-112]
 	mov rax, [rax]
 	push rax
@@ -4110,7 +4412,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse238
+	jz .Lelse258
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	push rax
@@ -4119,9 +4421,9 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	mov [rbp-120], rax
-.Lelse238:
-	jmp .Lltop223
-.Llend224:
+.Lelse258:
+	jmp .Lltop243
+.Llend244:
 	lea rax, [rbp-112]
 	mov rax, [rax]
 	push rax
@@ -4132,17 +4434,17 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse239
+	jz .Lelse259
 	mov rax, 0
 	jmp .Lret_wx_call_func
-.Lelse239:
+.Lelse259:
 	mov rax, offset g_g_func_start
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok240
+	jb .Lbok260
 	call _rt_oob
-.Lbok240:
+.Lbok260:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_func_start
@@ -4154,7 +4456,7 @@ fn_wx_call_func:
 	lea rax, [rbp-128]
 	mov rax, [rax]
 	mov [rbp-240], rax
-.Lltop241:
+.Lltop261:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -4163,16 +4465,16 @@ fn_wx_call_func:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse243
-	jmp .Llend242
-.Lelse243:
+	jne .Lelse263
+	jmp .Llend262
+.Lelse263:
 	mov rax, offset g_g_offsets
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	cmp rax, 4096
-	jb .Lbok244
+	jb .Lbok264
 	call _rt_oob
-.Lbok244:
+.Lbok264:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_offsets
@@ -4190,9 +4492,9 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	cmp rax, 4096
-	jb .Lbok245
+	jb .Lbok265
 	call _rt_oob
-.Lbok245:
+.Lbok265:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_offsets
@@ -4212,7 +4514,7 @@ fn_wx_call_func:
 	mov [rbp-160], rax
 	mov rax, 0
 	mov [rbp-192], rax
-.Lltop246:
+.Lltop266:
 	lea rax, [rbp-192]
 	mov rax, [rax]
 	push rax
@@ -4221,9 +4523,9 @@ fn_wx_call_func:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse248
-	jmp .Llend247
-.Lelse248:
+	jne .Lelse268
+	jmp .Llend267
+.Lelse268:
 	mov rax, offset g_g_src
 	mov rax, [rax]
 	push rax
@@ -4252,7 +4554,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse249
+	jz .Lelse269
 	lea rax, [rbp-192]
 	mov rax, [rax]
 	push rax
@@ -4261,7 +4563,7 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	mov [rbp-192], rax
-.Lelse249:
+.Lelse269:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4272,7 +4574,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse250
+	jz .Lelse270
 	lea rax, [rbp-192]
 	mov rax, [rax]
 	push rax
@@ -4281,7 +4583,7 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	mov [rbp-192], rax
-.Lelse250:
+.Lelse270:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4292,7 +4594,7 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse251
+	jz .Lelse271
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4303,12 +4605,12 @@ fn_wx_call_func:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse252
-	jmp .Llend247
-.Lelse252:
-.Lelse251:
-	jmp .Lltop246
-.Llend247:
+	jz .Lelse272
+	jmp .Llend267
+.Lelse272:
+.Lelse271:
+	jmp .Lltop266
+.Llend267:
 	lea rax, [rbp-192]
 	mov rax, [rax]
 	push rax
@@ -4320,7 +4622,7 @@ fn_wx_call_func:
 	setae al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse253
+	jz .Lelse273
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -4331,7 +4633,7 @@ fn_wx_call_func:
 	mov [rbp-240], rax
 	mov rax, 0
 	jmp .Lret_wx_call_func
-.Lelse253:
+.Lelse273:
 	mov rax, offset g_g_src
 	mov rax, [rax]
 	push rax
@@ -4362,7 +4664,7 @@ fn_wx_call_func:
 	seta al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse254
+	jz .Lelse274
 	mov rax, offset g_g_src
 	mov rax, [rax]
 	push rax
@@ -4386,7 +4688,7 @@ fn_wx_call_func:
 	call fn_fn_get_byte
 	add rsp, 8
 	mov [rbp-224], rax
-.Lelse254:
+.Lelse274:
 	lea rax, [rbp-208]
 	mov rax, [rax]
 	push rax
@@ -4397,7 +4699,7 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse255
+	jz .Lelse275
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -4408,12 +4710,12 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse256
+	jz .Lelse276
 	mov rax, offset g_g_func_ret_val
 	mov rax, [rax]
 	jmp .Lret_wx_call_func
-.Lelse256:
-.Lelse255:
+.Lelse276:
+.Lelse275:
 	mov rax, 0
 	mov [rbp-232], rax
 	mov rax, offset g_g_src
@@ -4461,11 +4763,11 @@ fn_wx_call_func:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse257
+	jz .Lelse277
 	mov rax, offset g_g_func_ret_val
 	mov rax, [rax]
 	jmp .Lret_wx_call_func
-.Lelse257:
+.Lelse277:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -4474,8 +4776,8 @@ fn_wx_call_func:
 	pop rax
 	add rax, rcx
 	mov [rbp-240], rax
-	jmp .Lltop241
-.Llend242:
+	jmp .Lltop261
+.Llend262:
 	mov rax, offset g_g_func_ret_val
 	mov rax, [rax]
 	jmp .Lret_wx_call_func
@@ -4494,7 +4796,7 @@ fn_wx_exec_line:
 	mov [rbp-456], rax
 	mov rax, 0
 	mov [rbp-40], rax
-.Lltop258:
+.Lltop278:
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -4503,9 +4805,9 @@ fn_wx_exec_line:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse260
-	jmp .Llend259
-.Lelse260:
+	jne .Lelse280
+	jmp .Llend279
+.Lelse280:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4528,7 +4830,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse261
+	jz .Lelse281
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -4537,7 +4839,7 @@ fn_wx_exec_line:
 	pop rax
 	add rax, rcx
 	mov [rbp-40], rax
-.Lelse261:
+.Lelse281:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -4548,7 +4850,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse262
+	jz .Lelse282
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -4557,7 +4859,7 @@ fn_wx_exec_line:
 	pop rax
 	add rax, rcx
 	mov [rbp-40], rax
-.Lelse262:
+.Lelse282:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -4568,7 +4870,7 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse263
+	jz .Lelse283
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -4579,12 +4881,12 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse264
-	jmp .Llend259
-.Lelse264:
-.Lelse263:
-	jmp .Lltop258
-.Llend259:
+	jz .Lelse284
+	jmp .Llend279
+.Lelse284:
+.Lelse283:
+	jmp .Lltop278
+.Llend279:
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -4596,10 +4898,10 @@ fn_wx_exec_line:
 	setae al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse265
+	jz .Lelse285
 	mov rax, 0
 	jmp .Lret_wx_exec_line
-.Lelse265:
+.Lelse285:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4630,7 +4932,7 @@ fn_wx_exec_line:
 	seta al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse266
+	jz .Lelse286
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4648,12 +4950,12 @@ fn_wx_exec_line:
 	call fn_fn_get_byte
 	add rsp, 8
 	mov [rbp-64], rax
-.Lelse266:
+.Lelse286:
 	mov rax, 0
 	mov [rbp-176], rax
 	mov rax, 0
 	mov [rbp-184], rax
-.Lltop267:
+.Lltop287:
 	lea rax, [rbp-184]
 	mov rax, [rax]
 	push rax
@@ -4662,9 +4964,9 @@ fn_wx_exec_line:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse269
-	jmp .Llend268
-.Lelse269:
+	jne .Lelse289
+	jmp .Llend288
+.Lelse289:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4675,9 +4977,9 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse270
-	jmp .Llend268
-.Lelse270:
+	jz .Lelse290
+	jmp .Llend288
+.Lelse290:
 	mov rax, 1
 	mov [rbp-160], rax
 	mov rax, 0
@@ -4690,7 +4992,7 @@ fn_wx_exec_line:
 	pop rax
 	imul rax, rcx
 	mov [rbp-104], rax
-.Lltop271:
+.Lltop291:
 	lea rax, [rbp-168]
 	mov rax, [rax]
 	push rax
@@ -4698,9 +5000,9 @@ fn_wx_exec_line:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse273
-	jmp .Llend272
-.Lelse273:
+	jne .Lelse293
+	jmp .Llend292
+.Lelse293:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4746,7 +5048,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse274
+	jz .Lelse294
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	push rax
@@ -4757,12 +5059,12 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse275
+	jz .Lelse295
 	mov rax, 0
 	mov [rbp-160], rax
-.Lelse275:
-	jmp .Llend272
-.Lelse274:
+.Lelse295:
+	jmp .Llend292
+.Lelse294:
 	lea rax, [rbp-112]
 	mov rax, [rax]
 	push rax
@@ -4773,7 +5075,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse276
+	jz .Lelse296
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	push rax
@@ -4784,12 +5086,12 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse277
+	jz .Lelse297
 	mov rax, 0
 	mov [rbp-160], rax
-.Lelse277:
-	jmp .Llend272
-.Lelse276:
+.Lelse297:
+	jmp .Llend292
+.Lelse296:
 	lea rax, [rbp-112]
 	mov rax, [rax]
 	push rax
@@ -4800,7 +5102,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse278
+	jz .Lelse298
 	lea rax, [rbp-120]
 	mov rax, [rax]
 	push rax
@@ -4811,12 +5113,12 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse279
+	jz .Lelse299
 	mov rax, 0
 	mov [rbp-160], rax
-.Lelse279:
-	jmp .Llend272
-.Lelse278:
+.Lelse299:
+	jmp .Llend292
+.Lelse298:
 	mov rax, 10
 	push rax
 	call fn__rt_putc
@@ -4840,10 +5142,10 @@ fn_wx_exec_line:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse280
+	jz .Lelse300
 	mov rax, 0
 	mov [rbp-160], rax
-.Lelse280:
+.Lelse300:
 	lea rax, [rbp-168]
 	mov rax, [rax]
 	push rax
@@ -4852,8 +5154,8 @@ fn_wx_exec_line:
 	pop rax
 	add rax, rcx
 	mov [rbp-168], rax
-	jmp .Lltop271
-.Llend272:
+	jmp .Lltop291
+.Llend292:
 	lea rax, [rbp-160]
 	mov rax, [rax]
 	push rax
@@ -4864,10 +5166,10 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse281
+	jz .Lelse301
 	mov rax, 1
 	mov [rbp-176], rax
-.Lelse281:
+.Lelse301:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4878,7 +5180,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse282
+	jz .Lelse302
 	lea rax, [rbp-184]
 	mov rax, [rax]
 	push rax
@@ -4887,9 +5189,9 @@ fn_wx_exec_line:
 	pop rax
 	add rax, rcx
 	mov [rbp-184], rax
-.Lelse282:
-	jmp .Lltop267
-.Llend268:
+.Lelse302:
+	jmp .Lltop287
+.Llend288:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -4900,7 +5202,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse283
+	jz .Lelse303
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4925,7 +5227,7 @@ fn_wx_exec_line:
 	lea rax, [rbp-456]
 	mov rax, [rax]
 	jmp .Lret_wx_exec_line
-.Lelse283:
+.Lelse303:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -4936,7 +5238,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse284
+	jz .Lelse304
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -4947,7 +5249,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse285
+	jz .Lelse305
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -4979,7 +5281,7 @@ fn_wx_exec_line:
 	call fn_wx_do_jj
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse285:
+.Lelse305:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -4990,7 +5292,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse286
+	jz .Lelse306
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5022,7 +5324,7 @@ fn_wx_exec_line:
 	call fn_wx_do_jm
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse286:
+.Lelse306:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5033,7 +5335,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse287
+	jz .Lelse307
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5065,7 +5367,7 @@ fn_wx_exec_line:
 	call fn_wx_do_js
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse287:
+.Lelse307:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5076,7 +5378,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse288
+	jz .Lelse308
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5108,7 +5410,7 @@ fn_wx_exec_line:
 	call fn_wx_do_jh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse288:
+.Lelse308:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5119,7 +5421,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse289
+	jz .Lelse309
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5151,8 +5453,8 @@ fn_wx_exec_line:
 	call fn_wx_do_jt
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse289:
-.Lelse284:
+.Lelse309:
+.Lelse304:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -5163,7 +5465,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse290
+	jz .Lelse310
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5174,7 +5476,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse291
+	jz .Lelse311
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5206,7 +5508,7 @@ fn_wx_exec_line:
 	call fn_wx_do_mj
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse291:
+.Lelse311:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5217,7 +5519,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse292
+	jz .Lelse312
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5249,7 +5551,7 @@ fn_wx_exec_line:
 	call fn_wx_do_mm
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse292:
+.Lelse312:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5260,7 +5562,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse293
+	jz .Lelse313
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5292,7 +5594,7 @@ fn_wx_exec_line:
 	call fn_wx_do_ms
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse293:
+.Lelse313:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5303,7 +5605,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse294
+	jz .Lelse314
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5335,7 +5637,7 @@ fn_wx_exec_line:
 	call fn_wx_do_mh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse294:
+.Lelse314:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5346,7 +5648,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse295
+	jz .Lelse315
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5378,8 +5680,8 @@ fn_wx_exec_line:
 	call fn_wx_do_mt
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse295:
-.Lelse290:
+.Lelse315:
+.Lelse310:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -5390,7 +5692,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse296
+	jz .Lelse316
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5401,7 +5703,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse297
+	jz .Lelse317
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5433,7 +5735,7 @@ fn_wx_exec_line:
 	call fn_wx_do_sj
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse297:
+.Lelse317:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5444,7 +5746,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse298
+	jz .Lelse318
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5476,7 +5778,7 @@ fn_wx_exec_line:
 	call fn_wx_do_sm
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse298:
+.Lelse318:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5487,7 +5789,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse299
+	jz .Lelse319
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5519,7 +5821,7 @@ fn_wx_exec_line:
 	call fn_wx_do_ss
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse299:
+.Lelse319:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5530,7 +5832,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse300
+	jz .Lelse320
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5562,7 +5864,7 @@ fn_wx_exec_line:
 	call fn_wx_do_sh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse300:
+.Lelse320:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5573,7 +5875,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse301
+	jz .Lelse321
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5605,8 +5907,8 @@ fn_wx_exec_line:
 	call fn_wx_do_st
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse301:
-.Lelse296:
+.Lelse321:
+.Lelse316:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -5617,7 +5919,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse302
+	jz .Lelse322
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5628,7 +5930,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse303
+	jz .Lelse323
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5660,7 +5962,7 @@ fn_wx_exec_line:
 	call fn_wx_do_hj
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse303:
+.Lelse323:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5671,7 +5973,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse304
+	jz .Lelse324
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5708,7 +6010,7 @@ fn_wx_exec_line:
 	mov [rbp-336], rax
 	mov rax, 1
 	mov [rbp-344], rax
-.Lelse304:
+.Lelse324:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5719,7 +6021,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse305
+	jz .Lelse325
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5751,7 +6053,7 @@ fn_wx_exec_line:
 	call fn_wx_do_hs
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse305:
+.Lelse325:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5762,7 +6064,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse306
+	jz .Lelse326
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5794,7 +6096,7 @@ fn_wx_exec_line:
 	call fn_wx_do_hh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse306:
+.Lelse326:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5805,7 +6107,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse307
+	jz .Lelse327
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5837,8 +6139,8 @@ fn_wx_exec_line:
 	call fn_wx_do_ht
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse307:
-.Lelse302:
+.Lelse327:
+.Lelse322:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -5849,7 +6151,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse308
+	jz .Lelse328
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5860,7 +6162,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse309
+	jz .Lelse329
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5892,7 +6194,7 @@ fn_wx_exec_line:
 	call fn_wx_do_tj
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse309:
+.Lelse329:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5903,7 +6205,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse310
+	jz .Lelse330
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5935,7 +6237,7 @@ fn_wx_exec_line:
 	call fn_wx_do_tm
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse310:
+.Lelse330:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5946,7 +6248,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse311
+	jz .Lelse331
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -5978,7 +6280,7 @@ fn_wx_exec_line:
 	call fn_wx_do_ts
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse311:
+.Lelse331:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -5989,7 +6291,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse312
+	jz .Lelse332
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6021,7 +6323,7 @@ fn_wx_exec_line:
 	call fn_wx_do_th
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse312:
+.Lelse332:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6032,7 +6334,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse313
+	jz .Lelse333
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6064,8 +6366,8 @@ fn_wx_exec_line:
 	call fn_wx_do_tt
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse313:
-.Lelse308:
+.Lelse333:
+.Lelse328:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6076,7 +6378,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse314
+	jz .Lelse334
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6087,7 +6389,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse315
+	jz .Lelse335
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6119,8 +6421,8 @@ fn_wx_exec_line:
 	call fn_wx_do_Ch
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse315:
-.Lelse314:
+.Lelse335:
+.Lelse334:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6131,7 +6433,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse316
+	jz .Lelse336
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6142,7 +6444,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse317
+	jz .Lelse337
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6174,8 +6476,8 @@ fn_wx_exec_line:
 	call fn_wx_do_Xh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse317:
-.Lelse316:
+.Lelse337:
+.Lelse336:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6186,7 +6488,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse318
+	jz .Lelse338
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6197,7 +6499,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse319
+	jz .Lelse339
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6229,7 +6531,7 @@ fn_wx_exec_line:
 	call fn_wx_do_Qh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse319:
+.Lelse339:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6240,7 +6542,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse320
+	jz .Lelse340
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6272,8 +6574,8 @@ fn_wx_exec_line:
 	call fn_wx_do_Qt
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse320:
-.Lelse318:
+.Lelse340:
+.Lelse338:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6284,7 +6586,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse321
+	jz .Lelse341
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6295,7 +6597,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse322
+	jz .Lelse342
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6327,7 +6629,7 @@ fn_wx_exec_line:
 	call fn_wx_do_Dh
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse322:
+.Lelse342:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6338,7 +6640,7 @@ fn_wx_exec_line:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse323
+	jz .Lelse343
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6370,8 +6672,8 @@ fn_wx_exec_line:
 	call fn_wx_do_Dt
 	add rsp, 16
 	mov [rbp-456], rax
-.Lelse323:
-.Lelse321:
+.Lelse343:
+.Lelse341:
 	lea rax, [rbp-456]
 	mov rax, [rax]
 	jmp .Lret_wx_exec_line
@@ -6388,7 +6690,7 @@ fn_wx_do_jj:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-88], rax
-.Lltop324:
+.Lltop344:
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6397,9 +6699,9 @@ fn_wx_do_jj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse326
-	jmp .Llend325
-.Lelse326:
+	jne .Lelse346
+	jmp .Llend345
+.Lelse346:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6422,7 +6724,7 @@ fn_wx_do_jj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse327
+	jz .Lelse347
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6431,7 +6733,7 @@ fn_wx_do_jj:
 	pop rax
 	add rax, rcx
 	mov [rbp-88], rax
-.Lelse327:
+.Lelse347:
 	lea rax, [rbp-16]
 	mov rax, [rax]
 	push rax
@@ -6442,11 +6744,11 @@ fn_wx_do_jj:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse328
-	jmp .Llend325
-.Lelse328:
-	jmp .Lltop324
-.Llend325:
+	jz .Lelse348
+	jmp .Llend345
+.Lelse348:
+	jmp .Lltop344
+.Llend345:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6469,7 +6771,7 @@ fn_wx_do_jj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse329
+	jz .Lelse349
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6489,7 +6791,7 @@ fn_wx_do_jj:
 	setb al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse330
+	jz .Lelse350
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6512,7 +6814,7 @@ fn_wx_do_jj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse331
+	jz .Lelse351
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6521,7 +6823,7 @@ fn_wx_do_jj:
 	pop rax
 	add rax, rcx
 	mov [rbp-88], rax
-.Lltop332:
+.Lltop352:
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6530,9 +6832,9 @@ fn_wx_do_jj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse334
-	jmp .Llend333
-.Lelse334:
+	jne .Lelse354
+	jmp .Llend353
+.Lelse354:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6555,7 +6857,7 @@ fn_wx_do_jj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse335
+	jz .Lelse355
 	lea rax, [rbp-88]
 	mov rax, [rax]
 	push rax
@@ -6575,7 +6877,7 @@ fn_wx_do_jj:
 	setb al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse336
+	jz .Lelse356
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6598,16 +6900,16 @@ fn_wx_do_jj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse337
+	jz .Lelse357
 	mov rax, 10
 	push rax
 	call fn__rt_putc
 	add rsp, 8
 	mov rax, 0
 	jmp .Lret_wx_do_jj
-.Lelse337:
-.Lelse336:
-.Lelse335:
+.Lelse357:
+.Lelse356:
+.Lelse355:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -6621,17 +6923,17 @@ fn_wx_do_jj:
 	pop rax
 	add rax, rcx
 	mov [rbp-88], rax
-	jmp .Lltop332
-.Llend333:
+	jmp .Lltop352
+.Llend353:
 	mov rax, 10
 	push rax
 	call fn__rt_putc
 	add rsp, 8
 	mov rax, 0
 	jmp .Lret_wx_do_jj
-.Lelse331:
-.Lelse330:
-.Lelse329:
+.Lelse351:
+.Lelse350:
+.Lelse349:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6677,7 +6979,7 @@ fn_wx_do_jm:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-24], rax
-.Lltop338:
+.Lltop358:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -6686,9 +6988,9 @@ fn_wx_do_jm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse340
-	jmp .Llend339
-.Lelse340:
+	jne .Lelse360
+	jmp .Llend359
+.Lelse360:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6711,7 +7013,7 @@ fn_wx_do_jm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse341
+	jz .Lelse361
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -6720,7 +7022,7 @@ fn_wx_do_jm:
 	pop rax
 	add rax, rcx
 	mov [rbp-24], rax
-.Lelse341:
+.Lelse361:
 	lea rax, [rbp-16]
 	mov rax, [rax]
 	push rax
@@ -6731,11 +7033,11 @@ fn_wx_do_jm:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse342
-	jmp .Llend339
-.Lelse342:
-	jmp .Lltop338
-.Llend339:
+	jz .Lelse362
+	jmp .Llend359
+.Lelse362:
+	jmp .Lltop358
+.Llend359:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6783,7 +7085,7 @@ fn_wx_do_js:
 	mov [rbp-8], rax
 	mov rax, 0
 	mov [rbp-32], rax
-.Lltop343:
+.Lltop363:
 	call fn__rt_getc
 	mov [rbp-24], rax
 	lea rax, [rbp-24]
@@ -6796,9 +7098,9 @@ fn_wx_do_js:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse345
-	jmp .Llend344
-.Lelse345:
+	jz .Lelse365
+	jmp .Llend364
+.Lelse365:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp-32]
@@ -6820,8 +7122,8 @@ fn_wx_do_js:
 	pop rax
 	add rax, rcx
 	mov [rbp-32], rax
-	jmp .Lltop343
-.Llend344:
+	jmp .Lltop363
+.Llend364:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp-32]
@@ -6849,7 +7151,7 @@ fn_wx_do_jh:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-24], rax
-.Lltop346:
+.Lltop366:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -6858,9 +7160,9 @@ fn_wx_do_jh:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse348
-	jmp .Llend347
-.Lelse348:
+	jne .Lelse368
+	jmp .Llend367
+.Lelse368:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6883,7 +7185,7 @@ fn_wx_do_jh:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse349
+	jz .Lelse369
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -6892,7 +7194,7 @@ fn_wx_do_jh:
 	pop rax
 	add rax, rcx
 	mov [rbp-24], rax
-.Lelse349:
+.Lelse369:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6903,11 +7205,11 @@ fn_wx_do_jh:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse350
-	jmp .Llend347
-.Lelse350:
-	jmp .Lltop346
-.Llend347:
+	jz .Lelse370
+	jmp .Llend367
+.Lelse370:
+	jmp .Lltop366
+.Llend367:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -6922,7 +7224,7 @@ fn_wx_do_jh:
 	mov [rbp-32], rax
 	mov rax, 0
 	mov [rbp-56], rax
-.Lltop351:
+.Lltop371:
 	lea rax, [rbp-32]
 	mov rax, [rax]
 	push rax
@@ -6945,9 +7247,9 @@ fn_wx_do_jh:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse353
-	jmp .Llend352
-.Lelse353:
+	jz .Lelse373
+	jmp .Llend372
+.Lelse373:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6961,8 +7263,8 @@ fn_wx_do_jh:
 	pop rax
 	add rax, rcx
 	mov [rbp-56], rax
-	jmp .Lltop351
-.Llend352:
+	jmp .Lltop371
+.Llend372:
 	mov rax, 0
 	jmp .Lret_wx_do_jh
 .Lret_wx_do_jh:
@@ -6978,7 +7280,7 @@ fn_wx_do_jt:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-48], rax
-.Lltop354:
+.Lltop374:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -6987,9 +7289,9 @@ fn_wx_do_jt:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse356
-	jmp .Llend355
-.Lelse356:
+	jne .Lelse376
+	jmp .Llend375
+.Lelse376:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7012,7 +7314,7 @@ fn_wx_do_jt:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse357
+	jz .Lelse377
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -7021,7 +7323,7 @@ fn_wx_do_jt:
 	pop rax
 	add rax, rcx
 	mov [rbp-48], rax
-.Lelse357:
+.Lelse377:
 	lea rax, [rbp-96]
 	mov rax, [rax]
 	push rax
@@ -7032,15 +7334,15 @@ fn_wx_do_jt:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse358
-	jmp .Llend355
-.Lelse358:
-	jmp .Lltop354
-.Llend355:
+	jz .Lelse378
+	jmp .Llend375
+.Lelse378:
+	jmp .Lltop374
+.Llend375:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	mov [rbp-32], rax
-.Lltop359:
+.Lltop379:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -7049,9 +7351,9 @@ fn_wx_do_jt:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse361
-	jmp .Llend360
-.Lelse361:
+	jne .Lelse381
+	jmp .Llend380
+.Lelse381:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7074,9 +7376,9 @@ fn_wx_do_jt:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse362
-	jmp .Llend360
-.Lelse362:
+	jz .Lelse382
+	jmp .Llend380
+.Lelse382:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -7085,8 +7387,8 @@ fn_wx_do_jt:
 	pop rax
 	add rax, rcx
 	mov [rbp-48], rax
-	jmp .Lltop359
-.Llend360:
+	jmp .Lltop379
+.Llend380:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	push rax
@@ -7098,7 +7400,7 @@ fn_wx_do_jt:
 	mov [rbp-56], rax
 	mov rax, 2
 	mov [rbp-80], rax
-.Lltop363:
+.Lltop383:
 	lea rax, [rbp-80]
 	mov rax, [rax]
 	push rax
@@ -7107,9 +7409,9 @@ fn_wx_do_jt:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse365
-	jmp .Llend364
-.Lelse365:
+	jne .Lelse385
+	jmp .Llend384
+.Lelse385:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7149,8 +7451,8 @@ fn_wx_do_jt:
 	pop rax
 	add rax, rcx
 	mov [rbp-80], rax
-	jmp .Lltop363
-.Llend364:
+	jmp .Lltop383
+.Llend384:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp-80]
@@ -7166,7 +7468,7 @@ fn_wx_do_jt:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	mov [rbp-104], rax
-.Lltop366:
+.Lltop386:
 	lea rax, [rbp-104]
 	mov rax, [rax]
 	push rax
@@ -7175,9 +7477,9 @@ fn_wx_do_jt:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse368
-	jmp .Llend367
-.Lelse368:
+	jne .Lelse388
+	jmp .Llend387
+.Lelse388:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7200,7 +7502,7 @@ fn_wx_do_jt:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse369
+	jz .Lelse389
 	lea rax, [rbp-104]
 	mov rax, [rax]
 	push rax
@@ -7209,7 +7511,7 @@ fn_wx_do_jt:
 	pop rax
 	add rax, rcx
 	mov [rbp-104], rax
-.Lelse369:
+.Lelse389:
 	lea rax, [rbp-96]
 	mov rax, [rax]
 	push rax
@@ -7220,11 +7522,11 @@ fn_wx_do_jt:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse370
-	jmp .Llend367
-.Lelse370:
-	jmp .Lltop366
-.Llend367:
+	jz .Lelse390
+	jmp .Llend387
+.Lelse390:
+	jmp .Lltop386
+.Llend387:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp+24]
@@ -7253,7 +7555,7 @@ fn_wx_do_mj:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-64], rax
-.Lltop371:
+.Lltop391:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -7262,9 +7564,9 @@ fn_wx_do_mj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse373
-	jmp .Llend372
-.Lelse373:
+	jne .Lelse393
+	jmp .Llend392
+.Lelse393:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7287,7 +7589,7 @@ fn_wx_do_mj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse374
+	jz .Lelse394
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -7296,7 +7598,7 @@ fn_wx_do_mj:
 	pop rax
 	add rax, rcx
 	mov [rbp-64], rax
-.Lelse374:
+.Lelse394:
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -7307,14 +7609,14 @@ fn_wx_do_mj:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse375
-	jmp .Llend372
-.Lelse375:
-	jmp .Lltop371
-.Llend372:
+	jz .Lelse395
+	jmp .Llend392
+.Lelse395:
+	jmp .Lltop391
+.Llend392:
 	mov rax, 0
 	mov [rbp-56], rax
-.Lltop376:
+.Lltop396:
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -7323,9 +7625,9 @@ fn_wx_do_mj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse378
-	jmp .Llend377
-.Lelse378:
+	jne .Lelse398
+	jmp .Llend397
+.Lelse398:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7348,7 +7650,7 @@ fn_wx_do_mj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse379
+	jz .Lelse399
 	lea rax, [rbp-64]
 	mov rax, [rax]
 	push rax
@@ -7357,7 +7659,7 @@ fn_wx_do_mj:
 	pop rax
 	add rax, rcx
 	mov [rbp-64], rax
-.Lelse379:
+.Lelse399:
 	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
@@ -7368,9 +7670,9 @@ fn_wx_do_mj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse380
-	jmp .Llend377
-.Lelse380:
+	jz .Lelse400
+	jmp .Llend397
+.Lelse400:
 	lea rax, [rbp-56]
 	mov rax, [rax]
 	push rax
@@ -7387,8 +7689,8 @@ fn_wx_do_mj:
 	pop rax
 	add rax, rcx
 	mov [rbp-64], rax
-	jmp .Lltop376
-.Llend377:
+	jmp .Lltop396
+.Llend397:
 	lea rax, [rbp-56]
 	mov rax, [rax]
 	jmp .Lret_wx_do_mj
@@ -7405,7 +7707,7 @@ fn_wx_do_mm:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-240], rax
-.Lltop381:
+.Lltop401:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7414,9 +7716,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse383
-	jmp .Llend382
-.Lelse383:
+	jne .Lelse403
+	jmp .Llend402
+.Lelse403:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7439,7 +7741,7 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse384
+	jz .Lelse404
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7448,7 +7750,7 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-240], rax
-.Lelse384:
+.Lelse404:
 	lea rax, [rbp-232]
 	mov rax, [rax]
 	push rax
@@ -7459,15 +7761,15 @@ fn_wx_do_mm:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse385
-	jmp .Llend382
-.Lelse385:
-	jmp .Lltop381
-.Llend382:
+	jz .Lelse405
+	jmp .Llend402
+.Lelse405:
+	jmp .Lltop401
+.Llend402:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	mov [rbp-32], rax
-.Lltop386:
+.Lltop406:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7476,9 +7778,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse388
-	jmp .Llend387
-.Lelse388:
+	jne .Lelse408
+	jmp .Llend407
+.Lelse408:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7501,9 +7803,9 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse389
-	jmp .Llend387
-.Lelse389:
+	jz .Lelse409
+	jmp .Llend407
+.Lelse409:
 	lea rax, [rbp-232]
 	mov rax, [rax]
 	push rax
@@ -7514,9 +7816,9 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse390
-	jmp .Llend387
-.Lelse390:
+	jz .Lelse410
+	jmp .Llend407
+.Lelse410:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7525,8 +7827,8 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-240], rax
-	jmp .Lltop386
-.Llend387:
+	jmp .Lltop406
+.Llend407:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7540,7 +7842,7 @@ fn_wx_do_mm:
 	mov [rbp-176], rax
 	mov rax, 0
 	mov [rbp-160], rax
-.Lltop391:
+.Lltop411:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -7549,9 +7851,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse393
-	jmp .Llend392
-.Lelse393:
+	jne .Lelse413
+	jmp .Llend412
+.Lelse413:
 	lea rax, [rbp-160]
 	mov rax, [rax]
 	push rax
@@ -7562,9 +7864,9 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse394
-	jmp .Llend392
-.Lelse394:
+	jz .Lelse414
+	jmp .Llend412
+.Lelse414:
 	mov rax, 1
 	mov [rbp-152], rax
 	mov rax, 0
@@ -7577,7 +7879,7 @@ fn_wx_do_mm:
 	pop rax
 	imul rax, rcx
 	mov [rbp-184], rax
-.Lltop395:
+.Lltop415:
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -7586,9 +7888,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse397
-	jmp .Llend396
-.Lelse397:
+	jne .Lelse417
+	jmp .Llend416
+.Lelse417:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7643,10 +7945,10 @@ fn_wx_do_mm:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse398
+	jz .Lelse418
 	mov rax, 0
 	mov [rbp-152], rax
-.Lelse398:
+.Lelse418:
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -7655,8 +7957,8 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-224], rax
-	jmp .Lltop395
-.Llend396:
+	jmp .Lltop415
+.Llend416:
 	mov rax, offset g_g_arr_names
 	push rax
 	lea rax, [rbp-184]
@@ -7684,10 +7986,10 @@ fn_wx_do_mm:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse399
+	jz .Lelse419
 	mov rax, 0
 	mov [rbp-152], rax
-.Lelse399:
+.Lelse419:
 	lea rax, [rbp-152]
 	mov rax, [rax]
 	push rax
@@ -7698,10 +8000,10 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse400
+	jz .Lelse420
 	mov rax, 1
 	mov [rbp-160], rax
-.Lelse400:
+.Lelse420:
 	lea rax, [rbp-160]
 	mov rax, [rax]
 	push rax
@@ -7712,7 +8014,7 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse401
+	jz .Lelse421
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	push rax
@@ -7721,9 +8023,9 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-176], rax
-.Lelse401:
-	jmp .Lltop391
-.Llend392:
+.Lelse421:
+	jmp .Lltop411
+.Llend412:
 	lea rax, [rbp-160]
 	mov rax, [rax]
 	push rax
@@ -7734,7 +8036,7 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse402
+	jz .Lelse422
 	mov rax, offset g_g_arr_count
 	mov rax, [rax]
 	mov [rbp-176], rax
@@ -7756,7 +8058,7 @@ fn_wx_do_mm:
 	mov [rbp-216], rax
 	mov rax, 0
 	mov [rbp-224], rax
-.Lltop403:
+.Lltop423:
 	lea rax, [rbp-224]
 	mov rax, [rax]
 	push rax
@@ -7765,9 +8067,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse405
-	jmp .Llend404
-.Lelse405:
+	jne .Lelse425
+	jmp .Llend424
+.Lelse425:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7810,8 +8112,8 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-224], rax
-	jmp .Lltop403
-.Llend404:
+	jmp .Lltop423
+.Llend424:
 	lea rax, [rbp-216]
 	mov rax, [rax]
 	push rax
@@ -7823,9 +8125,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok406
+	jb .Lbok426
 	call _rt_oob
-.Lbok406:
+.Lbok426:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_offset
@@ -7847,9 +8149,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok407
+	jb .Lbok427
 	call _rt_oob
-.Lbok407:
+.Lbok427:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_size
@@ -7872,8 +8174,8 @@ fn_wx_do_mm:
 	mov rax, offset g_g_arr_count
 	pop rcx
 	mov [rax], rcx
-.Lelse402:
-.Lltop408:
+.Lelse422:
+.Lltop428:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7882,9 +8184,9 @@ fn_wx_do_mm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse410
-	jmp .Llend409
-.Lelse410:
+	jne .Lelse430
+	jmp .Llend429
+.Lelse430:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7907,7 +8209,7 @@ fn_wx_do_mm:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse411
+	jz .Lelse431
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7916,7 +8218,7 @@ fn_wx_do_mm:
 	pop rax
 	add rax, rcx
 	mov [rbp-240], rax
-.Lelse411:
+.Lelse431:
 	lea rax, [rbp-232]
 	mov rax, [rax]
 	push rax
@@ -7927,11 +8229,11 @@ fn_wx_do_mm:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse412
-	jmp .Llend409
-.Lelse412:
-	jmp .Lltop408
-.Llend409:
+	jz .Lelse432
+	jmp .Llend429
+.Lelse432:
+	jmp .Lltop428
+.Llend429:
 	lea rax, [rbp-240]
 	mov rax, [rax]
 	push rax
@@ -7943,14 +8245,14 @@ fn_wx_do_mm:
 	setae al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse413
+	jz .Lelse433
 	mov rax, offset g_g_arr_size
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok414
+	jb .Lbok434
 	call _rt_oob
-.Lbok414:
+.Lbok434:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_size
@@ -7959,7 +8261,7 @@ fn_wx_do_mm:
 	add rax, rcx
 	mov rax, [rax]
 	jmp .Lret_wx_do_mm
-.Lelse413:
+.Lelse433:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -7985,9 +8287,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok415
+	jb .Lbok435
 	call _rt_oob
-.Lbok415:
+.Lbok435:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_offset
@@ -8000,9 +8302,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok416
+	jb .Lbok436
 	call _rt_oob
-.Lbok416:
+.Lbok436:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_size
@@ -8024,9 +8326,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-272]
 	mov rax, [rax]
 	cmp rax, 4096
-	jb .Lbok417
+	jb .Lbok437
 	call _rt_oob
-.Lbok417:
+.Lbok437:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_data
@@ -8043,9 +8345,9 @@ fn_wx_do_mm:
 	lea rax, [rbp-176]
 	mov rax, [rax]
 	cmp rax, 32
-	jb .Lbok418
+	jb .Lbok438
 	call _rt_oob
-.Lbok418:
+.Lbok438:
 	imul rax, 8
 	push rax
 	mov rax, offset g_g_arr_size
@@ -8105,7 +8407,7 @@ fn_wx_do_mt:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-24], rax
-.Lltop419:
+.Lltop439:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -8114,9 +8416,9 @@ fn_wx_do_mt:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse421
-	jmp .Llend420
-.Lelse421:
+	jne .Lelse441
+	jmp .Llend440
+.Lelse441:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -8139,7 +8441,7 @@ fn_wx_do_mt:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse422
+	jz .Lelse442
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -8148,7 +8450,7 @@ fn_wx_do_mt:
 	pop rax
 	add rax, rcx
 	mov [rbp-24], rax
-.Lelse422:
+.Lelse442:
 	lea rax, [rbp-16]
 	mov rax, [rax]
 	push rax
@@ -8159,11 +8461,11 @@ fn_wx_do_mt:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse423
-	jmp .Llend420
-.Lelse423:
-	jmp .Lltop419
-.Llend420:
+	jz .Lelse443
+	jmp .Llend440
+.Lelse443:
+	jmp .Lltop439
+.Llend440:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -8197,10 +8499,10 @@ fn_wx_do_mt:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse424
+	jz .Lelse444
 	mov rax, 1
 	mov [rbp-48], rax
-.Lelse424:
+.Lelse444:
 	lea rax, [rbp-48]
 	mov rax, [rax]
 	jmp .Lret_wx_do_mt
@@ -8217,7 +8519,7 @@ fn_wx_do_sj:
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-72], rax
-.Lltop425:
+.Lltop445:
 	lea rax, [rbp-72]
 	mov rax, [rax]
 	push rax
@@ -8226,9 +8528,9 @@ fn_wx_do_sj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse427
-	jmp .Llend426
-.Lelse427:
+	jne .Lelse447
+	jmp .Llend446
+.Lelse447:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -8251,7 +8553,7 @@ fn_wx_do_sj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse428
+	jz .Lelse448
 	lea rax, [rbp-72]
 	mov rax, [rax]
 	push rax
@@ -8260,7 +8562,7 @@ fn_wx_do_sj:
 	pop rax
 	add rax, rcx
 	mov [rbp-72], rax
-.Lelse428:
+.Lelse448:
 	lea rax, [rbp-56]
 	mov rax, [rax]
 	push rax
@@ -8271,11 +8573,11 @@ fn_wx_do_sj:
 	setne al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse429
-	jmp .Llend426
-.Lelse429:
-	jmp .Lltop425
-.Llend426:
+	jz .Lelse449
+	jmp .Llend446
+.Lelse449:
+	jmp .Lltop445
+.Llend446:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -8298,7 +8600,7 @@ fn_wx_do_sj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse430
+	jz .Lelse450
 	lea rax, [rbp-72]
 	mov rax, [rax]
 	push rax
@@ -8307,10 +8609,10 @@ fn_wx_do_sj:
 	pop rax
 	add rax, rcx
 	mov [rbp-72], rax
-.Lelse430:
+.Lelse450:
 	mov rax, 2
 	mov [rbp-64], rax
-.Lltop431:
+.Lltop451:
 	lea rax, [rbp-72]
 	mov rax, [rax]
 	push rax
@@ -8319,9 +8621,9 @@ fn_wx_do_sj:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse433
-	jmp .Llend432
-.Lelse433:
+	jne .Lelse453
+	jmp .Llend452
+.Lelse453:
 	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
@@ -8344,9 +8646,9 @@ fn_wx_do_sj:
 	sete al
 	movzx rax, al
 	test rax, rax
-	jz .Lelse434
-	jmp .Llend432
-.Lelse434:
+	jz .Lelse454
+	jmp .Llend452
+.Lelse454:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp-64]
@@ -8376,8 +8678,8 @@ fn_wx_do_sj:
 	pop rax
 	add rax, rcx
 	mov [rbp-72], rax
-	jmp .Lltop431
-.Llend432:
+	jmp .Lltop451
+.Llend452:
 	mov rax, offset g_cmd_buf
 	push rax
 	lea rax, [rbp-64]
@@ -8468,26 +8770,11 @@ fn_wx_do_st:
 fn_wx_do_hj:
 	push rbp
 	mov rbp, rsp
-	sub rsp, 16
-	mov rax, 0
-	mov rax, 1
-	mov [rbp-8], rax
-	mov rax, 0
-	jmp .Lret_wx_do_hj
-.Lret_wx_do_hj:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_hm
-fn_wx_do_hm:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 96
+	sub rsp, 80
 	mov rax, 0
 	mov rax, 0
 	mov [rbp-24], rax
-.Lltop435:
+.Lltop455:
 	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
@@ -8496,713 +8783,164 @@ fn_wx_do_hm:
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	jne .Lelse437
-	jmp .Llend436
-.Lelse437:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-16], rax
-	lea rax, [rbp-16]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse438
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-24], rax
-.Lelse438:
-	lea rax, [rbp-16]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setne al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse439
-	jmp .Llend436
-.Lelse439:
-	jmp .Lltop435
-.Llend436:
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setb al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse440
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-32], rax
-	lea rax, [rbp-32]
-	mov rax, [rax]
-	push rax
-	mov rax, 97
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setae al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse441
-	lea rax, [rbp-32]
-	mov rax, [rax]
-	push rax
-	mov rax, 122
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setbe al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse442
-	mov rax, 0
-	mov [rbp-64], rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov [rbp-72], rax
-.Lltop443:
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	jne .Lelse445
-	jmp .Llend444
-.Lelse445:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-56], rax
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse446
-	jmp .Llend444
-.Lelse446:
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	mov rax, 10
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse447
-	jmp .Llend444
-.Lelse447:
-	lea rax, [rbp-64]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-64], rax
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-72], rax
-	jmp .Lltop443
-.Llend444:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	lea rax, [rbp-64]
-	mov rax, [rax]
-	push rax
-	call fn_wx_find_var
-	add rsp, 16
-	mov [rbp-88], rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	jmp .Lret_wx_do_hm
-.Lelse442:
-.Lelse441:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	sub rax, rcx
-	push rax
-	call fn_wx_eval
-	add rsp, 16
-	mov [rbp-88], rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	jmp .Lret_wx_do_hm
-.Lelse440:
-	mov rax, 0
-	jmp .Lret_wx_do_hm
-.Lret_wx_do_hm:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_hs
-fn_wx_do_hs:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 16
-	mov rax, 0
-	mov rax, 0
-	mov [rbp-8], rax
-	mov rax, 0
-	jmp .Lret_wx_do_hs
-.Lret_wx_do_hs:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_hh
-fn_wx_do_hh:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 16
-	mov rax, 0
-	mov rax, 0
-	mov [rbp-8], rax
-	mov rax, 0
-	jmp .Lret_wx_do_hh
-.Lret_wx_do_hh:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_ht
-fn_wx_do_ht:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_ht
-.Lret_wx_do_ht:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_tj
-fn_wx_do_tj:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 96
-	mov rax, 0
-	mov rax, 0
-	mov [rbp-88], rax
-.Lltop448:
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	jne .Lelse450
-	jmp .Llend449
-.Lelse450:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-72], rax
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse451
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-88], rax
-.Lelse451:
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setne al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse452
-	jmp .Llend449
-.Lelse452:
-	jmp .Lltop448
-.Llend449:
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	mov [rbp-32], rax
-.Lltop453:
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	jne .Lelse455
-	jmp .Llend454
-.Lelse455:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-72], rax
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse456
-	jmp .Llend454
-.Lelse456:
-	lea rax, [rbp-72]
-	mov rax, [rax]
-	push rax
-	mov rax, 61
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse457
-	jmp .Llend454
+	jne .Lelse457
+	jmp .Llend456
 .Lelse457:
-	lea rax, [rbp-88]
+	lea rax, [rbp+24]
 	mov rax, [rax]
 	push rax
-	mov rax, 1
+	lea rax, [rbp-24]
+	mov rax, [rax]
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-88], rax
-	jmp .Lltop453
-.Llend454:
-	lea rax, [rbp-88]
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-40], rax
+	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
-	lea rax, [rbp-32]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	sub rax, rcx
-	mov [rbp-56], rax
-	mov rax, 0
-	mov [rbp-96], rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
+	mov rax, 32
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	setb al
+	sete al
 	movzx rax, al
 	test rax, rax
 	jz .Lelse458
-	lea rax, [rbp+24]
+	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
+	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-72], rax
-	lea rax, [rbp-72]
+	mov [rbp-24], rax
+.Lelse458:
+	lea rax, [rbp-40]
 	mov rax, [rax]
 	push rax
-	mov rax, 61
+	mov rax, 32
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	sete al
+	setne al
 	movzx rax, al
 	test rax, rax
 	jz .Lelse459
-	lea rax, [rbp-88]
+	jmp .Llend456
+.Lelse459:
+	jmp .Lltop455
+.Llend456:
+	lea rax, [rbp-24]
+	mov rax, [rax]
+	mov [rbp-32], rax
+.Lltop460:
+	lea rax, [rbp-24]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp+16]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	jne .Lelse462
+	jmp .Llend461
+.Lelse462:
+	lea rax, [rbp+24]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-24]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	add rax, rcx
+	push rax
+	call fn_fn_get_byte
+	add rsp, 8
+	mov [rbp-40], rax
+	lea rax, [rbp-40]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	cmp rax, rcx
+	sete al
+	movzx rax, al
+	test rax, rax
+	jz .Lelse463
+	jmp .Llend461
+.Lelse463:
+	lea rax, [rbp-24]
 	mov rax, [rax]
 	push rax
 	mov rax, 1
 	mov rcx, rax
 	pop rax
 	add rax, rcx
-	mov [rbp-88], rax
-.Lelse459:
+	mov [rbp-24], rax
+	jmp .Lltop460
+.Llend461:
+	lea rax, [rbp-24]
+	mov rax, [rax]
+	push rax
+	lea rax, [rbp-32]
+	mov rax, [rax]
+	mov rcx, rax
+	pop rax
+	sub rax, rcx
+	mov [rbp-48], rax
+	mov rax, offset g_g_func_count
+	mov rax, [rax]
+	mov [rbp-56], rax
+	lea rax, [rbp-56]
+	mov rax, [rax]
+	push rax
+	mov rax, 32
+	mov rcx, rax
+	pop rax
+	imul rax, rcx
+	mov [rbp-64], rax
+	mov rax, 0
+	mov [rbp-72], rax
+.Lltop464:
 	lea rax, [rbp-72]
 	mov rax, [rax]
 	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse460
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-88], rax
-.Lelse460:
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
+	lea rax, [rbp-48]
 	mov rax, [rax]
 	mov rcx, rax
 	pop rax
 	cmp rax, rcx
-	setb al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse461
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-88]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	sub rax, rcx
-	push rax
-	call fn_wx_eval
-	add rsp, 16
-	mov [rbp-96], rax
-.Lelse461:
-.Lelse458:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-32]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-96]
-	mov rax, [rax]
-	push rax
-	call fn_wx_set_var
-	add rsp, 24
-	mov rax, 0
-	jmp .Lret_wx_do_tj
-.Lret_wx_do_tj:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_tm
-fn_wx_do_tm:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_tm
-.Lret_wx_do_tm:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_ts
-fn_wx_do_ts:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_ts
-.Lret_wx_do_ts:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_th
-fn_wx_do_th:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 32
-	mov rax, 0
-	mov rax, 0
-	mov [rbp-24], rax
-.Lltop462:
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	jne .Lelse464
-	jmp .Llend463
-.Lelse464:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-16], rax
-	lea rax, [rbp-16]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse465
-	lea rax, [rbp-24]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-24], rax
-.Lelse465:
-	lea rax, [rbp-16]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setne al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse466
-	jmp .Llend463
+	jne .Lelse466
+	jmp .Llend465
 .Lelse466:
-	jmp .Lltop462
-.Llend463:
-	lea rax, [rbp+24]
-	mov rax, [rax]
+	mov rax, offset g_g_func_names
 	push rax
-	lea rax, [rbp-24]
+	lea rax, [rbp-64]
 	mov rax, [rax]
 	mov rcx, rax
 	pop rax
 	add rax, rcx
 	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-24]
+	lea rax, [rbp-72]
 	mov rax, [rax]
 	mov rcx, rax
 	pop rax
-	sub rax, rcx
+	add rax, rcx
 	push rax
-	call fn_wx_eval
-	add rsp, 16
-	mov [rbp-32], rax
+	lea rax, [rbp+24]
+	mov rax, [rax]
+	push rax
 	lea rax, [rbp-32]
 	mov rax, [rax]
-	jmp .Lret_wx_do_th
-.Lret_wx_do_th:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_tt
-fn_wx_do_tt:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_tt
-.Lret_wx_do_tt:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_Ch
-fn_wx_do_Ch:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_Ch
-.Lret_wx_do_Ch:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_Xh
-fn_wx_do_Xh:
-	push rbp
-	mov rbp, rsp
-	mov rax, 0
-	mov rax, 0
-	jmp .Lret_wx_do_Xh
-.Lret_wx_do_Xh:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_Qh
-fn_wx_do_Qh:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 64
-	mov rax, 0
-	mov rax, 0
-	mov [rbp-56], rax
-.Lltop467:
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
 	mov rcx, rax
 	pop rax
-	cmp rax, rcx
-	jne .Lelse469
-	jmp .Llend468
-.Lelse469:
-	lea rax, [rbp+24]
-	mov rax, [rax]
+	add rax, rcx
 	push rax
-	lea rax, [rbp-56]
+	lea rax, [rbp-72]
 	mov rax, [rax]
 	mov rcx, rax
 	pop rax
@@ -9210,126 +8948,4 @@ fn_wx_do_Qh:
 	push rax
 	call fn_fn_get_byte
 	add rsp, 8
-	mov [rbp-40], rax
-	lea rax, [rbp-40]
-	mov rax, [rax]
 	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse470
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-56], rax
-.Lelse470:
-	lea rax, [rbp-40]
-	mov rax, [rax]
-	push rax
-	mov rax, 32
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	setne al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse471
-	jmp .Llend468
-.Lelse471:
-	jmp .Lltop467
-.Llend468:
-	mov rax, 0
-	mov [rbp-48], rax
-.Lltop472:
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp+16]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	jne .Lelse474
-	jmp .Llend473
-.Lelse474:
-	lea rax, [rbp+24]
-	mov rax, [rax]
-	push rax
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	push rax
-	call fn_fn_get_byte
-	add rsp, 8
-	mov [rbp-40], rax
-	lea rax, [rbp-40]
-	mov rax, [rax]
-	push rax
-	mov rax, 47
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse475
-	jmp .Llend473
-.Lelse475:
-	lea rax, [rbp-40]
-	mov rax, [rax]
-	push rax
-	mov rax, 34
-	mov rcx, rax
-	pop rax
-	cmp rax, rcx
-	sete al
-	movzx rax, al
-	test rax, rax
-	jz .Lelse476
-	jmp .Llend473
-.Lelse476:
-	lea rax, [rbp-48]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-48], rax
-	lea rax, [rbp-56]
-	mov rax, [rax]
-	push rax
-	mov rax, 1
-	mov rcx, rax
-	pop rax
-	add rax, rcx
-	mov [rbp-56], rax
-	jmp .Lltop472
-.Llend473:
-	lea rax, [rbp-48]
-	mov rax, [rax]
-	jmp .Lret_wx_do_Qh
-.Lret_wx_do_Qh:
-	mov rsp, rbp
-	pop rbp
-	ret
-
-	.globl fn_wx_do_Qt
-fn_wx_do_Qt:
-	push rbp
-	mov rbp, rsp
-	sub rsp, 1424
-	mov rax, 0
-	mov rax, 41
-	mov [rbp-272], rax
-	mov rax, 2
