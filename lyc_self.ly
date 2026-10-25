@@ -813,6 +813,21 @@ tt lzc 01  02 -> u64  08
     lr dtt != 3  08 zz 0  09
     tz name = dtz
     tz namelen = dtu
+    00 先查找变量是否已经存在
+    tz vi = lfv 01 name 02
+    lr vi < dnv  08
+        00 变量已经存在，当成赋值
+        llt 01  02
+        lr dtt == 4  08 lr dth == 61  08
+            llt 01  02
+            zzd 01  02
+            st dd 03mov 04
+            zt lfoutvar 01 vi 02
+            st dd 03, rax 07 10 04
+         09  09
+        zz 0
+     09
+    00 变量不存在，声明新变量
     tz vi = dnv
     dtv[vi] = name
     dtvl[vi] = namelen
