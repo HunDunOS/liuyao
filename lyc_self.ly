@@ -641,11 +641,13 @@ tt zzp 01  02 -> u64  08
         st dd 03mov rdx, rax 07 10xor rax, rax 07 10in al, dx 07 10 04
         zz 0
      09  09  09
-    00 fs 读结构体成员（简化：当成读内存）
+    00 fs 读结构体成员
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
-        st dd 03mov rax, [rax]07 10 04
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10mov rax, [rax+rcx]07 10 04
         zz 0
      09  09  09
     00 zf 取地址
