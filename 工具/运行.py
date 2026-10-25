@@ -46,8 +46,7 @@ def main():
         if skip and '.section .text' in line:
             skip = False
             continue
-        if '_start:' in line:
-            skip = True
+        if '_start' in line:  # 删掉 _start 相关所有行
             continue
         if skip and '.globl fn_' in line:
             skip = False
