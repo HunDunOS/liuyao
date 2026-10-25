@@ -1258,11 +1258,15 @@ tt zzh 01  02 -> u64  08
     00 st 输出
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 116  08 lzs 01  02 05 zz 0  09  09  09
 
-    00 sz 写文件流（简化：当成写屏幕）
+    00 sz 写文件流
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 122  08
         llt 01  02
         zzd 01  02
-        st dd 03push rax 07 10call _rt_puts 07 10add rsp, 8 07 10 04
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03mov rdx, rax 07 10pop rsi 07 10pop rdi 07 10mov rax, 1 07 10syscall 07 10 04
         zz 0
      09  09  09
 
