@@ -171,22 +171,26 @@ tt zhu 01 fname 02 -> u64  08
 
     00 计算斐波那契
     tz fib10 = zt fib 01 10 02
-    st dd 03 07 10fib(10) = 04
+    st dd 03 
+fib(10) = 04
     zt print_num 01 fib10 02
 
     00 数组求和
     tz s = zt sum_arr 01 g_arr, 16 02
-    st dd 03 07 10sum(arr) = 04
+    st dd 03 
+sum(arr) = 04
     zt print_num 01 s 02
 
     00 判断质数
     tz p = zt is_prime 01 97 02
-    st dd 03 07 10is_prime(97) = 04
+    st dd 03 
+is_prime(97) = 04
     zt print_num 01 p 02
 
     00 冒泡排序
     zt bubble_sort 01 g_arr, 16 02
-    st dd 03 07 10after sort: 04
+    st dd 03 
+after sort: 04
     tz j = 0
     ll  08
         lz j 16  08 ls  09
@@ -199,9 +203,12 @@ tt zhu 01 fname 02 -> u64  08
     00 字符串测试
     tz str = 03hello world04
     tz len = zt str_len 01 str 02
-    st dd 03 07 10str_len("hello world") = 04
+    st dd 03 
+str_len("hello world") = 04
     zt print_num 01 len 02
 
-    st dd 03 07 10done!07 10 04
+    st dd 03 
+done!
+04
     zz 0
  09
