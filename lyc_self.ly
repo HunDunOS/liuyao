@@ -1302,13 +1302,15 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 ss 写结构体成员（简化：当成写内存）
+    00 ss 写结构体成员
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 07 10 04
         zzd 01  02
-        st dd 03pop rcx 07 10mov [rax], rcx 07 10 04
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rcx 07 10pop rdx 07 10mov [rax+rcx], rdx 07 10 04
         zz 0
      09  09  09
 
