@@ -575,7 +575,7 @@ tt zzp 01  02 -> u64  08
         dsv[idx] = dtz
         dsl[idx] = dtu
         dsn = dsn ht 1
-        st dd 03lea rax, [rip+.Lstr
+        st dd 03lea rax, [rip+.Lstr04
         st dt idx
         st dd 03]07 10 04
         llt 01  02
@@ -1584,7 +1584,7 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03.section .rodata 07 10 04
     ll  08
         lz si dsn  08 ls  09
-        st dd 03.Lstr
+        st dd 03.Lstr04
         st dt si
         st dd 03:.asciz 07 34 04
         00 输出字符串内容（跳过03头04尾）
