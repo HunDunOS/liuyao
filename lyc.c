@@ -277,6 +277,7 @@ typedef struct {
     int mut, declared;
     int is_ptr;            /* 是否为指针变量 */
     int struct_idx;        /* 结构体类型索引，-1 表示非结构体 */
+    long init_val;         /* 全局变量初始值（仅第一个元素） */
     char glabel[1024];
 } Var;
 
@@ -834,12 +835,12 @@ static void stmt(void) {
         globals[g].struct_idx = sidx;
         globals[g].mut = 1; globals[g].declared = 1;
         snprintf(globals[g].glabel, sizeof globals[g].glabel, "g_%s", mangle(name));
-        /* ★ 全局初始化：.bss 天生全 0，只接受 = 0（或省略）；
-           非零初值要放 .data，纯 .bss 模型下不支持，明确报错 */
+        globals[g].init_val = 0;  /* 默认全 0 */
+        /* ★ 全局初始化：零初始化放 .bss，非零初始化放 .data */
         if (is_p("=")) {
             adv();
-            if (cur()->k != TK_NUM) die("第 %d 行：全局初始化只支持数字字面量（.bss 仅全0）", cur()->line);
-            if (cur()->v != 0) die("第 %d 行：全局变量非零初始化不支持（.bss 天生全0）", cur()->line);
+            if (cur()->k != TK_NUM) die("第 %d 行：全局初始化只支持数字字面量", cur()->line);
+            globals[g].init_val = cur()->v;
             adv();
             if (is_p(";")) adv();
         }
@@ -1553,27 +1554,51 @@ static void emit_header(void) {
 
 static void emit_globals_bss(void) {
     if (!nglobals) return;
-    if (bin_mode) {                     /* ★ 全局变量：放进 .bss */
+    if (bin_mode) {                     /* ★ 全局变量：零初始化放 .bss，非零放 .data */
+        /* 先输出 .bss 段（全零的全局变量） */
         换区(区_未初);
         while (区长[区_未初] & 3) 出(0);
         for (int i = 0; i < nglobals; i++) {
+            if (globals[i].init_val != 0) continue;  /* 非零初始化的放 .data */
             记标号(globals[i].glabel);
             int n = globals[i].size * globals[i].count;
             for (int k = 0; k < n; k++) 出(0);
         }
+        /* 再输出 .data 段（非零初始化的全局变量） */
+        换区(区_数据);
+        while (区长[区_数据] & 7) 出(0);
+        for (int i = 0; i < nglobals; i++) {
+            if (globals[i].init_val == 0) continue;  /* 零初始化的放 .bss */
+            记标号(globals[i].glabel);
+            int n = globals[i].size * globals[i].count;
+            for (int k = 0; k < n; k++) {
+                /* 第一个元素写初始值，其余写 0 */
+                long v = (k == 0) ? globals[i].init_val : 0;
+                for (int b = 0; b < 8; b++) 出((v >> (b * 8)) & 0xFF);
+            }
+        }
         换区(区_文本);
         return;
     }
+    /* 文本模式：零初始化放 .bss，非零放 .data */
     fprintf(out, "\n\t.section .bss\n\t.align 4\n");
-    for (int i = 0; i < nglobals; i++)
-        /* 模块模式：用 .comm 声明公共符号 —— 多个模块同名全局由链接器
-           合并成一份。这正是"对象区在内核里只有一份"的物理保证。 */
+    for (int i = 0; i < nglobals; i++) {
+        if (globals[i].init_val != 0) continue;
         if (mod_mode || main_mode)
             fprintf(out, "\t.comm %s, %d, 4\n", globals[i].glabel,
                     globals[i].size * globals[i].count);
         else
             fprintf(out, "%s:\n\t.space %d\n", globals[i].glabel,
                     globals[i].size * globals[i].count);
+    }
+    fprintf(out, "\n\t.section .data\n\t.align 8\n");
+    for (int i = 0; i < nglobals; i++) {
+        if (globals[i].init_val == 0) continue;
+        fprintf(out, "%s:\n\t.quad %d\n", globals[i].glabel, (int)globals[i].init_val);
+        /* 数组其余元素补 0 */
+        int rest = globals[i].size * globals[i].count - 8;
+        if (rest > 0) fprintf(out, "\t.space %d\n", rest);
+    }
 }
 
 static void emit_strings(void) {

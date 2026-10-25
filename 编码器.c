@@ -25,7 +25,8 @@
 #define 区_文本 0
 #define 区_只读 1
 #define 区_未初 2
-#define 区数    3
+#define 区_数据 3
+#define 区数    4
 
 static unsigned char 区体[区数][1 << 22];
 static int           区长[区数];
