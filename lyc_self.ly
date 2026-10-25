@@ -617,11 +617,10 @@ tt zzp 01  02 -> u64  08
         st dd 03pop rcx 07 10mov rax, [rax+rcx*8]07 10 04
         zz 0
      09  09  09
-    00 fr 解引用
+    00 fr 获取栈指针（Retrieve SP）
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
         llt 01  02
-        zzd 01  02
-        st dd 03mov rax, [rax]07 10 04
+        st dd 03mov rax, rsp 07 10 04
         zz 0
      09  09  09
     00 fz 读文件流（简化：当成读内存）
@@ -1061,15 +1060,19 @@ tt lzll 01  02 -> u64  08
 tt zzh 01  02 -> u64  08
     lr dtt == 0  08 zz 0  09
 
-    00 rt 进入作用域 {
+    00 rt 栈上分配空间（Alloc on Stack）
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 116  08
         llt 01  02
+        zzd 01  02
+        st dd 03sub rsp, rax 07 10 04
         zz 0
      09  09  09
 
-    00 rz 退出作用域 }
+    00 rz 栈空间回收（Free on Stack）
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 122  08
         llt 01  02
+        zzd 01  02
+        st dd 03add rsp, rax 07 10 04
         zz 0
      09  09  09
 
@@ -1080,10 +1083,14 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 rl 运行时类型检查（简化：空操作）
+    00 rl 内存重分配（Realloc）
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 108  08
         llt 01  02
+        st dd 03push rax 07 10 04
         zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03pop rdi 07 10pop rsi 07 10mov rdi, rax 07 10mov rax, 12 07 10syscall 07 10 04
         zz 0
      09  09  09
 
@@ -1291,13 +1298,11 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 sr 指针写入
+    00 sr 重置栈指针（Reset SP）
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
-        st dd 03push rax 07 10 04
-        zzd 01  02
-        st dd 03pop rcx 07 10mov [rax], rcx 07 10 04
+        st dd 03mov rsp, rax 07 10 04
         zz 0
      09  09  09
 
