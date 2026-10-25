@@ -549,16 +549,77 @@ tt zzp 01  02 -> u64  08
         st dd 03mov rax, 0 07 10 04
         zz 0
      09  09  09
-    00 df 数组字面量（简化：返回0）
+    00 df 数组字面量
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 102  08
         llt 01  02
-        st dd 03mov rax, 0 07 10 04
+        00 跳过 [
+        lr dtt == 4  08 lr dth == 91  08 llt 01  02  09
+        tz cnt = 0
+        ll  08
+            lr dtt == 4  08 lr dth == 93  08 ls  09  09
+            zzd 01  02
+            st dd 03push rax 07 10 04
+            cnt = cnt ht 1
+            lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
+         09
+        00 跳过 ]
+        llt 01  02
+        00 sub rsp, cnt * 8
+        st dd 03sub rsp, 04
+        tz nbytes = cnt hh 8
+        st dt nbytes
+        st dd 03 07 10 04
+        00 逆序pop到连续栈空间
+        tz i = 0
+        ll  08
+            lr i >= cnt  08 ls  09  09
+            st dd 03pop rax 07 10 04
+            st dd 03mov [rsp+04 07 10 04
+            tz offset = i hh 8
+            st dt offset
+            st dd 03], rax 07 10 04
+            i = i ht 1
+         09
+        st dd 03mov rax, rsp 07 10 04
         zz 0
      09  09  09
-    00 ds 结构体字面量（简化：返回0）
+    00 ds 结构体字面量
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 115  08
         llt 01  02
-        st dd 03mov rax, 0 07 10 04
+        00 跳过 {
+        lr dtt == 4  08 lr dth == 123  08 llt 01  02  09
+        tz cnt = 0
+        ll  08
+            lr dtt == 4  08 lr dth == 125  08 ls  09  09
+            00 跳过 .field = （如果有）
+            lr dtt == 3  08 lr dth == 0  08
+                llt 01  02
+                lr dtt == 4  08 lr dth == 61  08 llt 01  02  09  09
+             09  09
+            zzd 01  02
+            st dd 03push rax 07 10 04
+            cnt = cnt ht 1
+            lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
+         09
+        00 跳过 }
+        llt 01  02
+        00 sub rsp, cnt * 8
+        st dd 03sub rsp, 04
+        tz nbytes = cnt hh 8
+        st dt nbytes
+        st dd 03 07 10 04
+        00 逆序pop到连续栈空间
+        tz i = 0
+        ll  08
+            lr i >= cnt  08 ls  09  09
+            st dd 03pop rax 07 10 04
+            st dd 03mov [rsp+04 07 10 04
+            tz offset = i hh 8
+            st dt offset
+            st dd 03], rax 07 10 04
+            i = i ht 1
+         09
+        st dd 03mov rax, rsp 07 10 04
         zz 0
      09  09  09
     00 数字
