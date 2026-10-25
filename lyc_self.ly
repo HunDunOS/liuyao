@@ -623,11 +623,15 @@ tt zzp 01  02 -> u64  08
         st dd 03mov rax, rsp 07 10 04
         zz 0
      09  09  09
-    00 fz 读文件流（简化：当成读内存）
+    00 fz 读文件流
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 122  08
         llt 01  02
         zzd 01  02
-        st dd 03mov rax, [rax]07 10 04
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03mov rdx, rax 07 10pop rsi 07 10pop rdi 07 10xor rax, rax 07 10syscall 07 10 04
         zz 0
      09  09  09
     00 fl 读硬件IO端口
