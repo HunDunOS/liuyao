@@ -1309,9 +1309,9 @@ tt zzh 01  02 -> u64  08
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
-        st dd 03test rax, rax 07 10jnz .Lok04
+        st dd 03test rax, rax 07 10jnz .LokOk04
         st dd 03mov rax, 60 07 10xor rdi, rdi 07 10syscall 07 10 04
-        st dd 03.Lok04:07 10 04
+        st dd 03.LokOk: 07 10 04 
         zz 0
      09  09  09
 
@@ -1564,9 +1564,9 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03.section .rodata 07 10 04
     ll  08
         lz si dsn  08 ls  09
-        st dd 03.Lstr04
+        st dd 03.Lstr04 
         st dt si
-        st dd 03: .asciz 07 34 04
+        st dd 03:.asciz 07 34 04 
         00 输出字符串内容（跳过03头04尾）
         tz sptr = dsv[si] ht 2
         tz slen2 = dsl[si] hz 4
