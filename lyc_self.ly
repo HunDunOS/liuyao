@@ -1333,11 +1333,14 @@ tt zzh 01  02 -> u64  08
     00 zz 返回
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 122  08 lzr 01  02 05 zz 0  09  09  09
 
-    00 zl 函数指针/回调（简化：当成函数调用）
+    00 zl 函数指针/回调（取函数地址）
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 108  08
         llt 01  02
-        zzd 01  02
-        st dd 03call rax 07 10 04
+        lr dtt == 3  08
+            st dd 03mov rax, offset fn_04
+            zt lfoutname 01  02
+            st dd 03 07 10 04
+         09
         zz 0
      09  09  09
 
