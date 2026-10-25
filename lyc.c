@@ -97,26 +97,18 @@ static char *还原数字标点(const char *src) {
         if (code && 允许) {
             p += 2;
             if (code != 3 && code != 7 && *p && *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r') {
-                fprintf(stderr, "DBG: 0%d后=%d '%c' ctx=%.30s\n", code, *p, *p, p-5);
                 die("0%d编码后必须跟空格", code);
             }
-            if (code == 3 || code == 4) {
-                out[o++] = '"';
-                在串里 = !在串里;
+            if (code == 3) {
+                out[o++] = '"';                        /* 03 总是输出双引号 */
+                if (!在串里) { 在串里 = 1; }           /* 不在串里 → 进入串模式 */
                 末是标识符 = 0;
                 continue;
             }
-            if (code == 7 && 在串里) {
-                /* 07 转义：原样保留07和后面的数字，等字符串生成阶段再转成实际字节 */
-                out[o++] = '0';
-                out[o++] = '7';
-                if (*p != ' ' && *p != '\t')
-                    die("07转义符后必须跟空格，禁止数字粘连（如0710应写07 10）");
-                while (*p == ' ' || *p == '\t') { out[o++] = *p++; }
-                if (!(p[0] >= '0' && p[0] <= '9'))
-                    die("07转义符后必须跟数字，禁止英文字母");
-                out[o++] = *p++;
-                if (p[0] >= '0' && p[0] <= '9') out[o++] = *p++;
+            if (code == 4) {
+                if (!在串里) { die("语法错误：04 出现在字符串外，第 %d 行", srcline); }
+                out[o++] = '\'';                        /* 04 输出单引号 */
+                在串里 = 0;                             /* 退出串模式 */
                 末是标识符 = 0;
                 continue;
             }
@@ -166,31 +158,12 @@ static char *还原数字标点(const char *src) {
 
         if (*p == '"') {
             p++; char buf[8192]; int n = 0;
-            while (*p && *p != '"') {
+            while (*p && *p != '\'') {
                 if (n >= (int)sizeof(buf) - 8)
                     die("第 %d 行：字符串字面量太长（上限 %d 字节）", srcline, (int)sizeof(buf) - 8);
-                /* 纯血07转义：铁律——07后必须先跟空格，再读两位数字 */
-                if (*p == '0' && p[1] == '7') {
-                    p += 2;
-                    if (*p != ' ' && *p != '\t')
-                        die("第 %d 行：07转义符后必须跟空格，禁止数字粘连（如0710应写07 10）", srcline);
-                    while (*p == ' ' || *p == '\t') p++;
-                    if (!(*p >= '0' && *p <= '9'))
-                        die("第 %d 行：07转义符后必须跟数字，禁止英文字母", srcline);
-                    int asc = *p - '0'; p++;
-                    if (*p >= '0' && *p <= '9') { asc = asc * 10 + (*p - '0'); p++; }
-                    buf[n++] = (char)asc;
-                    continue;
-                }
-                /* C风格转义兼容 */
-                if (*p == '\\' && p[1]) {
-                    p++; char c = *p;
-                    buf[n++] = (c == 'n') ? '\n' : (c == 't') ? '\t' : (c == '0') ? '\0'
-                             : (c == 'e') ? 27 : (c == 'r') ? 13 : (c == 'b') ? 8 : c;
-                    p++;
-                } else buf[n++] = *p++;
+                buf[n++] = *p++;
             }
-            if (*p != '"') die("第 %d 行：字符串没有闭合", srcline);
+            if (*p != '\'') die("第 %d 行：字符串没有闭合", srcline);
             p++; buf[n] = 0;
             char *s = xmalloc(n + 1); memcpy(s, buf, n + 1);
             toks[ntoks++] = (Tok){TK_STR, 0, s, srcline};
@@ -397,6 +370,7 @@ static void expect_p(const char *s) {
 static void expr(int minprec);
 static void block(void);
 static void stmt(void);
+static void binop_emit(const char *op);
 
 static int prec_of(const char *op) {
     if (!strcmp(op, "||")) return 1;
@@ -468,8 +442,11 @@ static int lvalue_full(const char *name, int *width, int *had, int ln) {
         }
         if (elem > 1) em("imul rax, %d", elem);
         em("push rax");
-        if (li >= 0) em("lea rax, [rbp%+d]", vars[li].off);
-        else         em("mov rax, offset %s", globals[gi].glabel);
+        if (li >= 0) {
+            em("lea rax, [rbp%+d]", vars[li].off);
+            /* ★ 标量/指针参数：栈槽里存的是指针值，取出来当数组基址 */
+            if (count == 1) em("mov rax, [rax]");
+        } else         em("mov rax, offset %s", globals[gi].glabel);
         em("mov rcx, rax");
         em("pop rax");
         em("add rax, rcx");
@@ -689,6 +666,16 @@ static void unary(void) {
         if (!in_wx) die("第 %d 行：解引用原始指针是危险操作，必须写在 wx { } 危险块内", cur()->line);
         adv(); raw_ops++; unary(); em("movzx rax, byte ptr [rax]"); return;
     }
+    /* ★ 前缀运算：ht a b = a + b（对齐自举编译器 zzp） */
+    if (cur()->k == TK_KW && in_list(OPKW, cur()->s)) {
+        char obuf[4]; strncpy(obuf, cur()->s, 3); obuf[3] = 0;
+        adv();
+        expr(0);
+        em("push rax");
+        expr(0);
+        binop_emit(obuf);
+        return;
+    }
     primary();
 }
 
@@ -847,6 +834,15 @@ static void stmt(void) {
         globals[g].struct_idx = sidx;
         globals[g].mut = 1; globals[g].declared = 1;
         snprintf(globals[g].glabel, sizeof globals[g].glabel, "g_%s", mangle(name));
+        /* ★ 全局初始化：.bss 天生全 0，只接受 = 0（或省略）；
+           非零初值要放 .data，纯 .bss 模型下不支持，明确报错 */
+        if (is_p("=")) {
+            adv();
+            if (cur()->k != TK_NUM) die("第 %d 行：全局初始化只支持数字字面量（.bss 仅全0）", cur()->line);
+            if (cur()->v != 0) die("第 %d 行：全局变量非零初始化不支持（.bss 天生全0）", cur()->line);
+            adv();
+            if (is_p(";")) adv();
+        }
         return;
     }
 
@@ -905,7 +901,9 @@ static void stmt(void) {
         int 不等 = is_kw("lh");
         adv();
         expr(0); em("push rax");          /* 左边 */
-        expr(0); em("mov rcx, rax");      /* 右边 */
+        /* ★ 单表达式形式：lz A {块} = 若 A==0 执行块（对齐自举编译器） */
+        if (is_p("{")) em("mov rcx, 0");
+        else { expr(0); em("mov rcx, rax"); }      /* 右边 */
         em("pop rax");
         em("cmp rax, rcx");
         char le2[32];
@@ -958,7 +956,8 @@ static void stmt(void) {
 
     if (is_kw("zz")) {
         adv();
-        if (cur()->k != TK_NL && !is_p("}")) expr(0); else em("mov rax, 0");
+        /* ★ 对齐自举 lzr：zz 表达式 = 求值返回；裸 zz（后接换行/}）= 保持 rax 返回 */
+        if (cur()->k != TK_NL && !is_p("}")) expr(0);
         em("jmp %s", retlabel);
         return;
     }
@@ -1049,11 +1048,10 @@ static void stmt(void) {
         return;
     }
 
-    /* ---- fr 解引用读内存 ---- */
+    /* ---- fr 获取栈指针（Retrieve SP） ---- */
     if (is_kw("fr")) {
         adv();
-        expr(0);
-        em("mov rax, [rax]");
+        em("mov rax, rsp");
         return;
     }
 
@@ -1075,33 +1073,29 @@ static void stmt(void) {
         return;
     }
 
-    /* ---- sr 指针写入 ---- */
+    /* ---- sr 重置栈指针（Reset SP） ---- */
     if (is_kw("sr")) {
         adv();
-        expr(0); em("push rax");
-        expect_p(",");
-        expr(0); em("mov rcx, rax"); em("pop rax");
-        em("mov [rax], rcx");
+        expr(0);                   /* rax = 目标栈指针 */
+        em("mov rsp, rax");
         return;
     }
 
-    /* ---- rr 申请堆内存(brk) ---- */
+    /* ---- rr 申请堆内存(malloc) ---- */
     if (is_kw("rr")) {
         adv();
         expr(0);
-        em("mov rsi, rax");        /* size */
-        em("xor rdi, rdi");        /* addr=0 → 取当前brk */
-        em("mov rax, 12"); em("syscall");  /* brk → rax=当前堆顶 */
-        em("mov rdi, rax"); em("add rdi, rsi");  /* 新堆顶 */
-        em("mov rax, 12"); em("syscall");  /* rax=旧堆顶=分配地址 */
+        em("mov rdi, rax");
+        em("call malloc");
         return;
     }
 
-    /* ---- rs 释放内存(空操作，brk不释放) ---- */
+    /* ---- rs 释放堆内存(free) ---- */
     if (is_kw("rs")) {
         adv();
         expr(0);
-        em("xor rax, rax");
+        em("mov rdi, rax");
+        em("call free");
         return;
     }
 
@@ -1185,28 +1179,38 @@ static void stmt(void) {
     /* ---- rh 强制类型转换 ---- */
     if (is_kw("rh")) {
         adv();
-        expr(0);  /* 直接传递，六爻都是u32 */
+        /* 跳过类型名（u64/i8 等标识符），再求值表达式 */
+        if (cur()->k == TK_ID) adv();
+        expr(0);  /* 六爻全 u64，转换即取值 */
         return;
     }
 
-    /* ---- rl 运行时类型检查 ---- */
+    /* ---- rl 内存重分配（Realloc，brk syscall） ---- */
     if (is_kw("rl")) {
         adv();
-        expr(0);  /* 基础实现：直接返回值 */
+        expr(0); em("push rax");        /* 旧指针（brk 语义下忽略，只调堆顶） */
+        expect_p(",");
+        expr(0);                        /* 新大小 → rax */
+        em("mov rdi, rax");             /* rdi = 新堆大小 */
+        em("mov rax, 12");              /* brk */
+        em("syscall");
+        em("pop rsi");                  /* 弹掉旧指针，保持栈平衡 */
         return;
     }
 
-    /* ---- rt 进入作用域 ---- */
+    /* ---- rt 栈上分配空间（Alloc on Stack） ---- */
     if (is_kw("rt")) {
         adv();
-        scope_depth++;
+        expr(0);                        /* rax = 分配字节数 */
+        em("sub rsp, rax");
         return;
     }
 
-    /* ---- rz 退出作用域 ---- */
+    /* ---- rz 栈空间回收（Free on Stack） ---- */
     if (is_kw("rz")) {
         adv();
-        if (scope_depth > 0) scope_depth--;
+        expr(0);                        /* rax = 回收字节数 */
+        em("add rsp, rax");
         return;
     }
 
@@ -1327,9 +1331,7 @@ static void stmt(void) {
         int li_chk = var_find_local(name);
         int gi_chk = global_find(name);
         if (li_chk < 0 && gi_chk < 0) die("第 %d 行：名字不存在：%s", ln, name);
-        if (li_chk >= 0 && !vars[li_chk].mut)
-            die("第 %d 行：不可变绑定不可赋值：%s（要可变请用 kb 声明）", ln, name);
-
+        /* ★ 下标/字段赋值改的是元素/成员，不修改变量本身，跳过不可变检查 */
         if (is_p("[") || is_p(".")) {
             int width = 8, had = 0;
             (void)lvalue_full(name, &width, &had, ln);
@@ -1439,7 +1441,10 @@ static void parse_fn(void) {
     int np = 0; char *pname[32];
     if (!is_p(")")) {
         for (;;) {
-            if (cur()->k != TK_ID) die("第 %d 行：参数名缺失", cur()->line);
+            /* ★ 对齐自举编译器：参数空格/逗号分隔皆可，类型名可省略（全u64） */
+            if (is_p(")")) break;
+            if (is_p(",")) { adv(); continue; }
+            if (cur()->k != TK_ID) { adv(); continue; }   /* 类型名等其它token直接跳过 */
             pname[np] = cur()->s;
             { char *qn = cur()->s; int qs = 8, qp = 0;   /* ★ 记下参数类型，符号表导出要用 */
               strncpy(函记[函记数].参名[np], qn, 127);
@@ -1450,13 +1455,13 @@ static void parse_fn(void) {
                       if (cur()->k != TK_TY) die("第 %d 行：参数类型缺失", cur()->line); adv(); }
                   else if (cur()->k == TK_TY) { qs = elem_size_of_type(cur()->s); adv(); }
                   else die("第 %d 行：参数类型缺失", cur()->line);
+              } else if (cur()->k == TK_TY) {           /* ★ 无冒号裸类型名：读掉，对齐自举 */
+                  qs = elem_size_of_type(cur()->s); adv();
               }
               函记[函记数].参尺寸[np] = qs;
               函记[函记数].参指针[np] = qp;
               np++;
             }
-            if (is_p(",")) { adv(); continue; }
-            break;
         }
     }
     expect_p(")");
