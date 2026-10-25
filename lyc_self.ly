@@ -630,10 +630,11 @@ tt zzp 01  02 -> u64  08
         st dd 03mov rax, [rax]07 10 04
         zz 0
      09  09  09
-    00 fl 读硬件IO端口（简化：返回0）
+    00 fl 读硬件IO端口
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 108  08
         llt 01  02
-        st dd 03mov rax, 0 07 10 04
+        zzd 01  02
+        st dd 03mov rdx, rax 07 10xor rax, rax 07 10in al, dx 07 10 04
         zz 0
      09  09  09
     00 fs 读结构体成员（简化：当成读内存）
@@ -1271,10 +1272,13 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 sl 写硬件IO端口（简化：空操作）
+    00 sl 写硬件IO端口
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 108  08
         llt 01  02
         zzd 01  02
+        st dd 03push rax 07 10 04
+        zzd 01  02
+        st dd 03mov rcx, rax 07 10pop rdx 07 10mov rax, rcx 07 10out dx, al 07 10 04
         zz 0
      09  09  09
 
