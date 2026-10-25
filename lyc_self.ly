@@ -1001,12 +1001,15 @@ tt lzlz 01 unequal 02 -> u64  08
     00 lz 相等跳转 / lh 不等跳转
     llt 01  02
     zzd 01  02
+    st dd 03push rax 07 10 04
+    zzd 01  02
+    st dd 03mov rcx, rax 07 10pop rax 07 10cmp rax, rcx 07 10 04
     tz lab = dtlab
     dtlab = dtlab ht 1
     lr unequal == 0  08
-        st dd 03test rax, rax 07 10jnz .Lelse04
+        st dd 03jne .Lelse04
      09 ld  08
-        st dd 03test rax, rax 07 10jz .Lelse04
+        st dd 03je .Lelse04
      09
     st dt lab
     st dd 03 07 10 04
