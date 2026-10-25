@@ -614,7 +614,7 @@ tt zzp 01  02 -> u64  08
         zzd 01  02
         st dd 03push rax 07 10 04
         zzd 01  02
-        st dd 03pop rcx 07 10mov rax, [rax+rcx*8]07 10 04
+        st dd 03pop rcx 07 10mov rax, [rcx+rax*8]07 10 04
         zz 0
      09  09  09
     00 fr 获取栈指针（Retrieve SP）
