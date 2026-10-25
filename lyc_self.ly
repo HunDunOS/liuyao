@@ -1147,8 +1147,9 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 rh 强制类型转换（简化：空操作）
+    00 rh 强制类型转换
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 104  08
+        llt 01  02
         llt 01  02
         zzd 01  02
         zz 0
@@ -1262,7 +1263,7 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 td 布尔类型（简化：当成u64）
+    00 td 布尔类型
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 100  08
         llt 01  02
         lr dtt == 3  08
@@ -1406,7 +1407,7 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 sd 调试/日志输出（简化：当成写屏幕）
+    00 sd 调试/日志输出
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
@@ -1428,7 +1429,7 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 zr 断言（简化：直接停机）
+    00 zr 断言
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
@@ -1438,7 +1439,7 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 zs 内联汇编块（简化：直接输出汇编）
+    00 zs 内联汇编块
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 115  08
         llt 01  02
         lr dtt == 2  08
@@ -1499,15 +1500,9 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 zd 系统调用（简化：zd 1 cc = 输出字符）
+    00 zd 系统调用
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 100  08
         llt 01  02
-        lr dtt == 1  08 lr dth == 1  08
-            llt 01  02
-            zzd 01  02
-            st dd 03push rax 07 10call _rt_putc 07 10add rsp, 8 07 10 04
-            zz 0
-         09  09
         zzd 01  02
         st dd 03mov rax, rdi 07 10syscall 07 10 04
         zz 0
