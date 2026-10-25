@@ -1405,7 +1405,7 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 ld 开关分支（简化：当成if-else链）
+    00 ld 开关分支
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
