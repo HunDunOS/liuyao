@@ -1240,16 +1240,25 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 tr 枚举类型（简化：当成全局变量）
+    00 tr 枚举类型
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 114  08
         llt 01  02
-        lr dtt == 3  08
-            tz gi = gcount
-            gname[gi] = dtz
-            glen[gi] = dtu
-            gsize[gi] = 8
-            gcount = gcount ht 1
+        lr dtt == 4  08 lr dth == 123  08 llt 01  02  09  09
+        ll  08
+            lr dtt == 4  08 lr dth == 125  08 ls  09  09
+            lr dtt == 3  08
+                tz gi = gcount
+                gname[gi] = dtz
+                glen[gi] = dtu
+                gsize[gi] = 8
+                gcount = gcount ht 1
+                llt 01  02
+             09
+            lr dtt == 4  08 lr dth == 61  08 llt 01  02  09  09
+            zzd 01  02
+            lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
          09
+        llt 01  02
         zz 0
      09  09  09
 
