@@ -1039,7 +1039,7 @@ tt lzll 01  02 -> u64  08
     00 条件循环（不是  08）
     lr dtt != 4  08
         zzd 01  02
-        st dd 03test rax, rax 07 10jz .Lend 04
+        st dd 03test rax, rax 07 10jz .Lend
         st dt end
         st dd 03 07 10 04
      09
