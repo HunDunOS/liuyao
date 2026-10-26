@@ -40,3 +40,24 @@ tt interpret 01  02 -> u64  08
      09
     zz 0
  09
+
+00 ============================================================
+00 读下一个 token
+00 ============================================================
+tt next_token 01  02 -> u64  08
+    00 跳过空格
+    ll  08
+        lz g_pos g_len  08 zz 0  09
+        tz c = fh 01 g_src ht g_pos 02
+        g_pos = g_pos ht 1
+     09
+    00 读 token 名
+    tz s = 0
+    ll  08
+        lz g_pos g_len  08 ls  09
+        tz c = fh 01 g_src ht g_pos 02
+        g_pos = g_pos ht 1
+     09
+    tz len = g_pos hz s
+    zz len
+ 09
