@@ -15,6 +15,10 @@ tt zhu 01 fname 02 -> u64  08
     st dd 03wuxing interpreter v0.1004
     00 检测环境
     g_env = 1
+    00 硬编码测试字符串
+    g_src = 03jj hello world04
+    g_len = 14
+    g_pos = 0
     00 开始解释
     zt interpret 01 02
     zz 0
@@ -25,5 +29,14 @@ tt zhu 01 fname 02 -> u64  08
 00 ============================================================
 tt interpret 01  02 -> u64  08
     st dd 03interpret loop started04
+    00 主循环
+    ll  08
+        lz g_pos g_len  08 ls  09
+        00 读下一个字符
+        tz c = fh 01 g_src ht g_pos 02
+        g_pos = g_pos ht 1
+        00 打印字符（调试用）
+        zt _rt_putc 01 c 02
+     09
     zz 0
  09
