@@ -35,7 +35,7 @@ tt zhu 01 fname 02 -> u64  08
     tz shl = dh 1 4
     tz shr = dl 16 2
     tz not = dr 255
-    tz str = dd 03hello04
+    tz str = dd 03hello03
 
     00 ---- f类输入 ----
     tz c = ft 0
@@ -45,9 +45,9 @@ tt zhu 01 fname 02 -> u64  08
     tz not = fd x
 
     00 ---- s类输出 ----
-    st dd 03test04
+    st dd 03test03
     st dt x
-    sd dd 03debug04
+    sd dd 03debug03
 
     00 ---- z类函数 ----
     tz r = zt test_func 01 1 2 02
