@@ -1,10 +1,3 @@
-00 ============================================================
-00 六爻自举编译器 lyc_self.ly - 纯血六爻版 v0.3.0
-00 规范版本: 六爻指令集 SPEC_v1.0 01 64指令 02
-00 架构：dt全局 + tf表 + tt函数 | 目标: x86-64 裸奔无libc
-00 状态: 完整自举版 - 支持tt/tz/st/zz/运算/赋值/循环/条件/函数调用/数组/指针
-00 ============================================================
-
 00 ---- 全局状态 ----
 tz dtd      00 当前字符
 tz dtt      00 token类型: 0=EOF 1=数字 2=字符串 3=标识符 4=标点 5=卦指令
@@ -45,9 +38,7 @@ tf pname[16]: u64    00 参数名临时表
 tf plen[16]: u64     00 参数名长度临时表
 tz pcount            00 参数总数
 
-00 ============================================================
 00 基础工具
-00 ============================================================
 
 tt lds 01 s 02 -> u64  08
     tz i = 0
@@ -101,9 +92,7 @@ tt ltm 01 a, b 02 -> u64  08
      09
  09
 
-00 ============================================================
 00 词法分析
-00 ============================================================
 
 tt lft 01  02 -> u64  08
     ll  08
@@ -162,7 +151,6 @@ tt lst 01  02 -> u64  08
  09
 
 tt lstc 01 02 -> u64  08
-    00 纯血字符串扫描：零三开始零四结束，零七转义
     tz start = dtb
     dtb = dtb ht 2
     ll  08
@@ -208,7 +196,7 @@ tt llt 01  02 -> u64  08
     tz c = r hs 255
     dtd = c
 
-    00 注释 01 00 02
+00 注释 01 00 02
     lr c == 48  08
         lr dtb ht 1 < dtend  08
             tz na = dtb ht 1
@@ -230,7 +218,7 @@ tt llt 01  02 -> u64  08
          09
      09
 
-    00 零一至零九数字编码（纯血标点）
+00 零一至零九数字编码
     lr c == 48  08
         lr dtb ht 1 < dtend  08
             tz ncp = dtb ht 1
@@ -240,11 +228,11 @@ tt llt 01  02 -> u64  08
                 lr ncc <= 57  08
                     tz code = ncc hz 48
                     lr code == 3  08
-                        00 零三 = 字符串开始
+00 零三 = 字符串开始
                         lstc 01 02
                         zz 1
                      09
-                    00 转换成对应西洋标点码值
+00 转换成对应西洋标点码值
                     lr code == 1  08 dth = 40  09
                     lr code == 2  08 dth = 41  09
                     lr code == 5  08 dth = 59  09
@@ -263,13 +251,13 @@ tt llt 01  02 -> u64  08
          09
      09
 
-    00 数字
+00 数字
     lr ldh 01 c 02 == 1  08 ldn 01  02 05 zz 1  09
 
-    00 字符串
+00 字符串
     lr c == 34  08 lst 01  02 05 zz 1  09
 
-    00 两字节卦指令（第三字符若是标识符字符则是变量名，不是指令）
+00 两字节卦指令
     lr lsg 01 c 02 == 1  08
         lr dtb ht 1 < dtend  08
             tz a3 = dtb ht 1
@@ -296,7 +284,7 @@ tt llt 01  02 -> u64  08
          09
      09
 
-    00 标识符
+00 标识符
     lr lsl 01 c 02 == 1  08
         tz start = dtb
         ll  08
@@ -314,7 +302,7 @@ tt llt 01  02 -> u64  08
         zz 1
      09
 
-    00 标点（单字符）
+00 标点
     dtt = 4
     dth = c
     dtz = 0
@@ -323,16 +311,14 @@ tt llt 01  02 -> u64  08
     zz 1
  09
 
-00 ============================================================
 00 变量表
-00 ============================================================
 
 tt lfv 01 name 02 -> u64  08
     tz i = 0
     tz j = 0
     tz vlen = 0
     tz match = 0
-    00 先查局部变量表
+00 先查局部变量表
     ll  08
         lz i dnv  08 ls  09
         vlen = dtvl[i]
@@ -352,7 +338,7 @@ tt lfv 01 name 02 -> u64  08
         lr match == 1  08 zz i  09
         i = i ht 1
      09
-    00 局部没找到，查全局变量表
+00 局部没找到，查全局变量表
     tz gi = 0
     ll  08
         lz gi gcount  08 zz dnv  09  00 全局也没找到，返回dnv
@@ -380,10 +366,10 @@ tt lfv 01 name 02 -> u64  08
  09
 
 tt lfoutvar 01 vi 02 -> u64  08
-    00 全局变量（vi > dnv）
+00 全局变量
     lr vi > dnv  08
         tz gi = vi hz dnv hz 1
-        st dd 03[g_04
+        st dd 03[g_03
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
@@ -391,28 +377,24 @@ tt lfoutvar 01 vi 02 -> u64  08
         zt lfoutname 01  02
         dtcurfn = sf0
         dtcurfnl = sf1
-        st dd 03]04
+        st dd 03]03
         zz 0
      09
-    00 参数用[rbp+N]，局部变量用[rbp-N]
     lr dtisparam[vi] == 1  08
-        st dd 03[rbp+04
+        st dd 03[rbp+03
         st dt dtw[vi]
-        st dd 03]04
+        st dd 03]03
         zz 0
      09
-    st dd 03[rbp-04
+    st dd 03[rbp-03
     st dt dtw[vi]
-    st dd 03]04
+    st dd 03]03
     zz 0
  09
 
-00 ============================================================
 00 预扫描：计算函数栈帧大小
-00 ============================================================
 
 tt lprescan 01  02 -> u64  08
-    00 进入时当前token是 08后面的第一个token
     tz depth = 1
     ll  08
         lz dtt 0  08 zz 0  09
@@ -422,26 +404,22 @@ tt lprescan 01  02 -> u64  08
             lz depth 0  08 zz 0  09
          09  09
         lr dtt == 5  08 lr dtf == 116  08 lr dts == 122  08
-            00 tz 声明，每个占8字节
+00 tz 声明，每个占8字节
             dfr = dfr ht 8
          09  09  09
         llt 01  02
      09
  09
 
-00 ============================================================
 00 基础输出
-00 ============================================================
 
 tt chu 01 c 02 -> u64  08
-    00 输出一个字符到 stdout（用运行时 _rt_putc）
+00 输出一个字符到 stdout
     zt _rt_putc 01 c 02
     zz 0
  09
 
-00 ============================================================
 00 函数名mangle输出
-00 ============================================================
 
 tt lfoutname 01  02 -> u64  08
     tz i = 0
@@ -471,49 +449,46 @@ tt lfoutname 01  02 -> u64  08
     zz i
  09
 
-00 ============================================================
 00 表达式解析
-00 ============================================================
 
 tt zzp 01  02 -> u64  08
-    00 前缀运算：ht a b = a + b, hz a b = a - b 等
     lr dtt == 5  08 lr dtf == 104  08
         tz preop1 = dtf
         tz preop2 = dts
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03mov rcx, rax 
 pop rax 
- 04
+ 03
         lr preop1 == 104  08 lr preop2 == 116  08 st dd 03add rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 122  08 st dd 03sub rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 104  08 st dd 03imul rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 108  08 st dd 03xor rdx, rdx 
 div rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 102  08 st dd 03xor rdx, rdx 
 div rcx 
 mov rax, rdx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 115  08 st dd 03and rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 114  08 st dd 03or rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 104  08 lr preop2 == 100  08 st dd 03xor rax, rcx 
- 04  09  09
+ 03  09  09
         lr preop1 == 100  08 lr preop2 == 104  08 st dd 03shl rax, cl 
- 04  09  09
+ 03  09  09
         lr preop1 == 100  08 lr preop2 == 108  08 st dd 03shr rax, cl 
- 04  09  09
+ 03  09  09
         zz 0
      09  09
-    00 zt 函数调用前缀
+00 zt 函数调用前缀
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
         llt 01  02
         lr dtt == 3  08
@@ -527,7 +502,7 @@ mov rax, rdx
                     lr dtt == 4  08 lr dth == 41  08 ls  09  09
                     zzd 01  02
                     st dd 03push rax 
- 04
+ 03
                     nargs = nargs ht 1
                     lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
                  09
@@ -536,231 +511,229 @@ mov rax, rdx
                 tz savefnl = dtcurfnl
                 dtcurfn = name
                 dtcurfnl = namelen
-                st dd 03call fn_04
+                st dd 03call fn_03
                 zt lfoutname 01  02
                 st dd 03 
- 04
+ 03
                 dtcurfn = savefn
                 dtcurfnl = savefnl
                 lr nargs > 0  08
-                    st dd 03add rsp, 04
+                    st dd 03add rsp, 03
                     tz nbytes = nargs hh 8
                     st dt nbytes
                     st dd 03 
- 04
+ 03
                  09
                 zz 0
              09  09
          09
         zz 0
      09  09  09
-    00 dz 空值/Null字面量
+00 dz 空值/Null字面量
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 122  08
         llt 01  02
         st dd 03mov rax, 0 
- 04
+ 03
         zz 0
      09  09  09
-    00 df 数组字面量
+00 df 数组字面量
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 102  08
         llt 01  02
-        00 跳过 [
+00 跳过 [
         lr dtt == 4  08 lr dth == 91  08 llt 01  02  09
         tz cnt = 0
         ll  08
             lr dtt == 4  08 lr dth == 93  08 ls  09  09
             zzd 01  02
             st dd 03push rax 
- 04
+ 03
             cnt = cnt ht 1
             lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
          09
-        00 跳过 ]
+00 跳过 ]
         llt 01  02
-        00 sub rsp, cnt * 8
-        st dd 03sub rsp, 04
+        st dd 03sub rsp, 03
         tz nbytes = cnt hh 8
         st dt nbytes
         st dd 03 
- 04
-        00 逆序pop到连续栈空间
+ 03
+00 逆序pop到连续栈空间
         tz i = 0
         ll  08
             lr i >= cnt  08 ls  09  09
             st dd 03pop rax 
- 04
-            st dd 03mov [rsp+04 
+ 03
+            st dd 03mov [rsp+03 
  04
             tz offset = i hh 8
             st dt offset
             st dd 03], rax 
- 04
+ 03
             i = i ht 1
          09
         st dd 03mov rax, rsp 
- 04
+ 03
         zz 0
      09  09  09
-    00 ds 结构体字面量
+00 ds 结构体字面量
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 115  08
         llt 01  02
-        00 跳过 {
+00 跳过 {
         lr dtt == 4  08 lr dth == 123  08 llt 01  02  09
         tz cnt = 0
         ll  08
             lr dtt == 4  08 lr dth == 125  08 ls  09  09
-            00 跳过 .field = （如果有）
+00 跳过 .field =
             lr dtt == 3  08 lr dth == 0  08
                 llt 01  02
                 lr dtt == 4  08 lr dth == 61  08 llt 01  02  09  09
              09  09
             zzd 01  02
             st dd 03push rax 
- 04
+ 03
             cnt = cnt ht 1
             lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
          09
-        00 跳过 }
+00 跳过 }
         llt 01  02
-        00 sub rsp, cnt * 8
-        st dd 03sub rsp, 04
+        st dd 03sub rsp, 03
         tz nbytes = cnt hh 8
         st dt nbytes
         st dd 03 
- 04
-        00 逆序pop到连续栈空间
+ 03
+00 逆序pop到连续栈空间
         tz i = 0
         ll  08
             lr i >= cnt  08 ls  09  09
             st dd 03pop rax 
- 04
-            st dd 03mov [rsp+04 
+ 03
+            st dd 03mov [rsp+03 
  04
             tz offset = i hh 8
             st dt offset
             st dd 03], rax 
- 04
+ 03
             i = i ht 1
          09
         st dd 03mov rax, rsp 
- 04
+ 03
         zz 0
      09  09  09
-    00 数字
+00 数字
     lr dtt == 1  08
-        st dd 03mov rax, 04
+        st dd 03mov rax, 03
         st dt dth
         st dd 03 
- 04
+ 03
         llt 01  02
         zz 0
      09
-    00 字符串
+00 字符串
     lr dtt == 2  08
         tz idx = dsn
         dsv[idx] = dtz
         dsl[idx] = dtu
         dsn = dsn ht 1
-        st dd 03lea rax, [rip+.Lstr04
+        st dd 03lea rax, [rip+.Lstr03
         st dt idx
         st dd 03]
- 04
+ 03
         llt 01  02
         zz 0
      09
-    00 dr 按位取反
+00 dr 按位取反
     lr dtt == 5  08 lr dtf == 100  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
         st dd 03not rax 
- 04
+ 03
         zz 0
      09  09  09
-    00 fd 逻辑非
+00 fd 逻辑非
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
         st dd 03test rax, rax 
 sete al 
 movzx rax, al 
- 04
+ 03
         zz 0
      09  09  09
-    00 ft 读键盘
+00 ft 读键盘
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 116  08
         llt 01  02
         st dd 03call _rt_getc 
- 04
+ 03
         zz 0
      09  09  09
-    00 fh 读内存地址
+00 fh 读内存地址
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 104  08
         llt 01  02
         zzd 01  02
         st dd 03mov rax, [rax]
- 04
+ 03
         zz 0
      09  09  09
-    00 ff 读数组元素
+00 ff 读数组元素
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 102  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 mov rax, [rcx+rax*8]
- 04
+ 03
         zz 0
      09  09  09
-    00 fr 获取栈指针（Retrieve SP）
+00 fr 获取栈指针
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 114  08
         llt 01  02
         st dd 03mov rax, rsp 
- 04
+ 03
         zz 0
      09  09  09
-    00 fz 读文件流
+00 fz 读文件流
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 122  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03mov rdx, rax 
 pop rsi 
 pop rdi 
 xor rax, rax 
 syscall 
- 04
+ 03
         zz 0
      09  09  09
-    00 fl 读硬件IO端口
+00 fl 读硬件IO端口
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 108  08
         llt 01  02
         zzd 01  02
         st dd 03mov rdx, rax 
 xor rax, rax 
 in al, dx 
- 04
+ 03
         zz 0
      09  09  09
-    00 fs 读结构体成员
+00 fs 读结构体成员
     lr dtt == 5  08 lr dtf == 102  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 mov rax, [rax+rcx]
- 04
+ 03
         zz 0
      09  09  09
-    00 zf 取地址
+00 zf 取地址
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 102  08
         llt 01  02
         lr dtt == 3  08
@@ -768,40 +741,40 @@ mov rax, [rax+rcx]
             llt 01  02
             tz vi = lfv 01 name 02
             lr vi < dnv  08
-                st dd 03lea rax, 04
+                st dd 03lea rax, 03
                 zt lfoutvar 01 vi 02
                 st dd 03 
- 04
+ 03
                 zz 0
              09
          09
         st dd 03mov rax, 0 
- 04
+ 03
         zz 0
      09  09  09
-    00 标识符/数组下标/函数调用
+00 标识符/数组下标/函数调用
     lr dtt == 3  08
         tz name = dtz
         tz namelen = dtu
         llt 01  02
-        00 数组下标 arr[i]
+00 数组下标 arr[i]
         lr dtt == 4  08 lr dth == 91  08
             llt 01  02
             zzd 01  02
-            00 跳过 ]
+00 跳过 ]
             ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
             st dd 03imul rax, 8 
- 04
+ 03
             st dd 03push rax 
- 04
+ 03
             tz vi = lfv 01 name 02
             lr vi < dnv  08
-                st dd 03lea rax, 04
+                st dd 03lea rax, 03
                 zt lfoutvar 01 vi 02
                 st dd 03 
- 04
+ 03
              09 ld  08
-                st dd 03mov rax, offset g_04
+                st dd 03mov rax, offset g_03
                 tz sf0 = dtcurfn
                 tz sf1 = dtcurfnl
                 dtcurfn = name
@@ -810,17 +783,16 @@ mov rax, [rax+rcx]
                 dtcurfn = sf0
                 dtcurfnl = sf1
                 st dd 03 
- 04
+ 03
              09
             st dd 03mov rcx, rax 
 pop rax 
 add rax, rcx 
- 04
+ 03
             st dd 03mov rax, [rax]
- 04
+ 03
             zz 0
          09  09
-        00 函数调用 name01 args 02
         lr dtt == 4  08 lr dth == 40  08
             llt 01  02
             tz nargs = 0
@@ -828,62 +800,61 @@ add rax, rcx
                 lr dtt == 4  08 lr dth == 41  08 ls  09  09
                 zzd 01  02
                 st dd 03push rax 
- 04
+ 03
                 nargs = nargs ht 1
                 lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
              09
             llt 01  02
-            00 临时设置函数名用于mangle
             tz savefn = dtcurfn
             tz savefnl = dtcurfnl
             dtcurfn = name
             dtcurfnl = namelen
-            st dd 03call fn_04
+            st dd 03call fn_03
             zt lfoutname 01  02
             st dd 03 
- 04
+ 03
             dtcurfn = savefn
             dtcurfnl = savefnl
             lr nargs > 0  08
-                st dd 03add rsp, 04
+                st dd 03add rsp, 03
                 tz nbytes = nargs hh 8
                 st dt nbytes
                 st dd 03 
- 04
+ 03
              09
             zz 0
          09  09
-        00 普通变量
+00 普通变量
         tz vi = lfv 01 name 02
         lr vi != dnv  08
-            st dd 03mov rax, 04
+            st dd 03mov rax, 03
             zt lfoutvar 01 vi 02
             st dd 03 
- 04
+ 03
             zz 0
          09
         st dd 03mov rax, 0 
- 04
+ 03
         zz 0
      09
-    00 未知，返回0
+00 未知，返回0
     llt 01  02
     st dd 03mov rax, 0 
- 04
+ 03
     zz 0
  09
 
 tt zzd 01  02 -> u64  08
     zzp 01  02
     ll  08
-        00 卦指令运算符（h_系, dh/dl）
+00 卦指令运算符
         tz isop = 0
         lr dtt == 5  08
             lr dtf == 104  08 tz isop = 1  09
             lr dtf == 100  08 lr dts == 104  08 tz isop = 1  09  09
             lr dtf == 100  08 lr dts == 108  08 tz isop = 1  09  09
          09
-        00 比较运算符（标点）
+00 比较运算符
         lr dtt == 4  08
             lr dth == 60  08 tz isop = 1  09
             lr dth == 62  08 tz isop = 1  09
@@ -892,102 +863,100 @@ tt zzd 01  02 -> u64  08
          09
         lr isop == 0  08 ls  09
 
-        00 比较运算符
+00 比较运算符
         lr dtt == 4  08
             tz cmpop = dth
             llt 01  02
-            00 >= <= == !=
+00 >= <= == !=
             lr cmpop == 62  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 262 05 llt 01  02  09  09  09
             lr cmpop == 60  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 260 05 llt 01  02  09  09  09
             lr cmpop == 61  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 261 05 llt 01  02  09  09  09
             lr cmpop == 33  08 lr dtt == 4  08 lr dth == 61  08 tz cmpop = 233 05 llt 01  02  09  09  09
             st dd 03push rax 
- 04
+ 03
             zzd 01  02
             st dd 03mov rcx, rax 
 pop rax 
 cmp rax, rcx 
- 04
+ 03
             lr cmpop == 261  08 st dd 03sete al 
- 04  09
+ 03  09
             lr cmpop == 233  08 st dd 03setne al 
- 04  09
+ 03  09
             lr cmpop == 60  08 st dd 03setb al 
- 04  09
+ 03  09
             lr cmpop == 62  08 st dd 03seta al 
- 04  09
+ 03  09
             lr cmpop == 260  08 st dd 03setbe al 
- 04  09
+ 03  09
             lr cmpop == 262  08 st dd 03setae al 
- 04  09
+ 03  09
             st dd 03movzx rax, al 
- 04
+ 03
             zz 0
          09
 
-        00 卦指令运算符
+00 卦指令运算符
         tz opf = dtf
         tz ops = dts
         llt 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03mov rcx, rax 
 pop rax 
- 04
+ 03
         lr opf == 104  08 lr ops == 116  08 st dd 03add rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 122  08 st dd 03sub rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 104  08 st dd 03imul rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 108  08 st dd 03xor rdx, rdx 
 div rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 102  08 st dd 03xor rdx, rdx 
 div rcx 
 mov rax, rdx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 115  08 st dd 03and rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 114  08 st dd 03or rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 104  08 lr ops == 100  08 st dd 03xor rax, rcx 
- 04  09  09
+ 03  09  09
         lr opf == 100  08 lr ops == 104  08 st dd 03shl rax, cl 
- 04  09  09
+ 03  09  09
         lr opf == 100  08 lr ops == 108  08 st dd 03shr rax, cl 
- 04  09  09
+ 03  09  09
      09
     zz 0
  09
 
-00 ============================================================
 00 语句处理
-00 ============================================================
 
 tt lzc 01  02 -> u64  08
-    00 tz 变量声明
+00 tz 变量声明
     llt 01  02
     lr dtt != 3  08 zz 0  09
     tz name = dtz
     tz namelen = dtu
-    00 先查找变量是否已经存在
+00 先查找变量是否已经存在
     tz vi = lfv 01 name 02
     lr vi < dnv  08
-        00 变量已经存在，当成赋值
+00 变量已经存在，当成赋值
         llt 01  02
         lr dtt == 4  08 lr dth == 61  08
             llt 01  02
             zzd 01  02
-            st dd 03mov 04
+            st dd 03mov 03
             zt lfoutvar 01 vi 02
             st dd 03, rax 
- 04
+ 03
          09  09
         zz 0
      09
-    00 变量不存在，声明新变量
+00 变量不存在，声明新变量
     tz vi = dnv
     dtv[vi] = name
     dtvl[vi] = namelen
@@ -996,98 +965,96 @@ tt lzc 01  02 -> u64  08
     dtisparam[vi] = 0
     dnv = dnv ht 1
     llt 01  02
-    00 = 赋值
+00 = 赋值
     lr dtt == 4  08 lr dth == 61  08
         llt 01  02
         zzd 01  02
-        st dd 03mov 04
+        st dd 03mov 03
         zt lfoutvar 01 vi 02
         st dd 03, rax 
- 04
+ 03
      09  09
     zz 0
  09
 
 tt lzs 01  02 -> u64  08
-    00 st 输出
+00 st 输出
     llt 01  02
     lr dtt != 5  08 zz 0  09
     lr dtf == 100  08 lr dts == 100  08
-        00 st dd 字符串
+00 st dd 字符串
         llt 01  02
         lr dtt == 2  08
             dsv[dsn] = dtz
             dsl[dsn] = dtu
-            st dd 03lea rax, [rip+.Lstr04
+            st dd 03lea rax, [rip+.Lstr03
             st dt dsn
             st dd 03]
- 04
+ 03
             st dd 03push rax 
 call _rt_puts 
 add rsp, 8 
- 04
+ 03
             dsn = dsn ht 1
          09
         zz 0
      09  09
     lr dtf == 100  08 lr dts == 116  08
-        00 st dt 整数
+00 st dt 整数
         llt 01  02
         zzd 01  02
         st dd 03push rax 
 call _rt_puti 
 add rsp, 8 
- 04
+ 03
         zz 0
      09  09
     zz 0
  09
 
 tt lzr 01  02 -> u64  08
-    00 zz 返回
+00 zz 返回
     llt 01  02
     lr dtt == 1  08
-        st dd 03mov rax, 04
+        st dd 03mov rax, 03
         st dt dth
         st dd 03 
- 04
+ 03
         llt 01  02
      09
     lr dtt != 4  08 lr dth != 125  08
-        00 返回表达式
+00 返回表达式
         zzd 01  02
      09  09
-    st dd 03jmp .Lret_04
+    st dd 03jmp .Lret_03
     zt lfoutname 01  02
     st dd 03 
- 04
+ 03
     zz 0
  09
 
 tt lzassign 01  02 -> u64  08
-    00 赋值语句：变量=表达式 或 数组[i]=表达式
-    00 进入时当前token是标识符
+00 进入时当前token是标识符
     tz name = dtz
     tz namelen = dtu
     llt 01  02
-    00 数组下标 arr[i] = expr
     lr dtt == 4  08 lr dth == 91  08
         llt 01  02
         zzd 01  02
-        00 跳过 ]
+00 跳过 ]
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
         st dd 03imul rax, 8 
- 04
+ 03
         st dd 03push rax 
- 04
+ 03
         tz vi = lfv 01 name 02
         lr vi < dnv  08
-            st dd 03lea rax, 04
+            st dd 03lea rax, 03
             zt lfoutvar 01 vi 02
             st dd 03 
- 04
+ 03
          09 ld  08
-            st dd 03mov rax, offset g_04
+            st dd 03mov rax, offset g_03
             tz sf0 = dtcurfn
             tz sf1 = dtcurfnl
             dtcurfn = name
@@ -1096,127 +1063,124 @@ tt lzassign 01  02 -> u64  08
             dtcurfn = sf0
             dtcurfnl = sf1
             st dd 03 
- 04
+ 03
          09
         st dd 03mov rcx, rax 
 pop rax 
 add rax, rcx 
- 04
+ 03
         st dd 03push rax 
- 04
-        00 跳过 =
+ 03
+00 跳过 =
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 61  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
         zzd 01  02
         st dd 03mov rcx, rax 
 pop rax 
 mov [rax], rcx 
- 04
+ 03
         zz 0
      09  09
-    00 普通变量赋值
-    00 跳过 =
+00 普通变量赋值
+00 跳过 =
     ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 61  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
     zzd 01  02
     tz vi = lfv 01 name 02
     lr vi != dnv  08
-        st dd 03mov 04
+        st dd 03mov 03
         zt lfoutvar 01 vi 02
         st dd 03, rax 
- 04
+ 03
      09
     zz 0
  09
 
 tt lzlr 01  02 -> u64  08
-    00 lr 条件  08 ...  09 [ld  08 ...  09]
     llt 01  02
     zzd 01  02
     tz lab = dtlab
     dtlab = dtlab ht 1
     st dd 03test rax, rax 
-jz .Lelse04
+jz .Lelse03
     st dt lab
     st dd 03 
- 04
-    00 跳过  08
+ 03
+00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-    00 then 块
+00 then 块
     ll  08
         lr dtt == 4  08 lr dth == 125  08 ls  09  09
         zzh 01  02
      09
     llt 01  02
-    00 ld else
+00 ld else
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 100  08
         llt 01  02
         tz lab2 = dtlab
         dtlab = dtlab ht 1
-        st dd 03jmp .Lendif04
+        st dd 03jmp .Lendif03
         st dt lab2
         st dd 03 
-.Lelse04
+.Lelse03
         st dt lab
         st dd 03:
- 04
-        00 跳过  08
+ 03
+00 跳过  08
         ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 123  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-        00 else 块
+00 else 块
         ll  08
             lr dtt == 4  08 lr dth == 125  08 ls  09  09
             zzh 01  02
          09
         llt 01  02
-        st dd 03.Lendif04
+        st dd 03.Lendif03
         st dt lab2
         st dd 03:
- 04
+ 03
         zz 0
      09  09  09
-    st dd 03.Lelse04
+    st dd 03.Lelse03
     st dt lab
     st dd 03:
- 04
+ 03
     zz 0
  09
 
 tt lzlz 01 unequal 02 -> u64  08
-    00 lz 相等跳转 / lh 不等跳转
     llt 01  02
     zzd 01  02
     st dd 03push rax 
- 04
+ 03
     zzd 01  02
     st dd 03mov rcx, rax 
 pop rax 
 cmp rax, rcx 
- 04
+ 03
     tz lab = dtlab
     dtlab = dtlab ht 1
     lr unequal == 0  08
-        st dd 03jne .Lelse04
+        st dd 03jne .Lelse03
      09 ld  08
-        st dd 03je .Lelse04
+        st dd 03je .Lelse03
      09
     st dt lab
     st dd 03 
- 04
-    00 跳过  08
+ 03
+00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-    00 块
+00 块
     ll  08
         lr dtt == 4  08 lr dth == 125  08 ls  09  09
         zzh 01  02
      09
     llt 01  02
-    st dd 03.Lelse04
+    st dd 03.Lelse03
     st dt lab
     st dd 03:
- 04
+ 03
     zz 0
  09
 
 tt lzll 01  02 -> u64  08
-    00 ll [条件]  08 ...  09
     llt 01  02
     tz top = dtlab
     tz end = dtlab ht 1
@@ -1224,64 +1188,62 @@ tt lzll 01  02 -> u64  08
     dltop[dln] = top
     dlend[dln] = end
     dln = dln ht 1
-    st dd 03.Ltop04
+    st dd 03.Ltop03
     st dt top
     st dd 03:
- 04
-    00 条件循环（不是  08）
+ 03
+00 条件循环
     lr dtt != 4  08
         zzd 01  02
         st dd 03test rax, rax 
-jz .Lend04
+jz .Lend03
         st dt end
         st dd 03 
- 04
+ 03
      09
-    00 跳过  08
+00 跳过  08
     ll  08 lr dtt == 4  08 lr dth == 123  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-    00 循环体
+00 循环体
     ll  08
         lr dtt == 4  08 lr dth == 125  08 ls  09  09
         zzh 01  02
      09
     llt 01  02
-    st dd 03jmp .Ltop04
+    st dd 03jmp .Ltop03
     st dt top
     st dd 03 
-.Lend04
+.Lend03
     st dt end
     st dd 03:
- 04
+ 03
     dln = dln hz 1
     zz 0
  09
 
-00 ============================================================
 00 语句分派
-00 ============================================================
 
 tt zzh 01  02 -> u64  08
     lr dtt == 0  08 zz 0  09
 
-    00 rt 栈上分配空间（Alloc on Stack）
+00 rt 栈上分配空间
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 116  08
         llt 01  02
         zzd 01  02
         st dd 03sub rsp, rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rz 栈空间回收（Free on Stack）
+00 rz 栈空间回收
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 122  08
         llt 01  02
         zzd 01  02
         st dd 03add rsp, rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rh 强制类型转换
+00 rh 强制类型转换
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 104  08
         llt 01  02
         llt 01  02
@@ -1289,106 +1251,106 @@ tt zzh 01  02 -> u64  08
         zz 0
      09  09  09
 
-    00 rl 内存重分配（Realloc）
+00 rl 内存重分配
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 108  08
         llt 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rdi 
 pop rsi 
 mov rdi, rax 
 mov rax, 12 
 syscall 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rf 内存清零
+00 rf 内存清零
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 102  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 pop rdi 
 mov rdi, rax 
 mov rax, rcx 
 call memset 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rs 释放内存
+00 rs 释放内存
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
         st dd 03mov rdi, rax 
 call free 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rr 申请堆内存
+00 rr 申请堆内存
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
         st dd 03mov rdi, rax 
 call malloc 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 rd 内存拷贝
+00 rd 内存拷贝
     lr dtt == 5  08 lr dtf == 114  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rdx 
 pop rsi 
 pop rdi 
 call memcpy 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 lt 无条件跳转
+00 lt 无条件跳转
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 116  08
         llt 01  02
         lr dtt == 3  08
-            st dd 03jmp .L04
+            st dd 03jmp .L03
             zt lfoutname 01  02
             st dd 03 
- 04
+ 03
          09
         zz 0
      09  09  09
 
-    00 zh 标签定义
+00 zh 标签定义
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 104  08
         llt 01  02
         lr dtt == 3  08
-            st dd 03.L04
+            st dd 03.L03
             zt lfoutname 01  02
             st dd 03:
- 04
+ 03
          09
         zz 0
      09  09  09
 
-    00 ts 全局变量声明（Global Var）
+00 ts 全局变量声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 115  08
         llt 01  02
         lr dtt == 3  08
@@ -1401,7 +1363,7 @@ call memcpy
         zz 0
      09  09  09
 
-    00 th 只读常量
+00 th 只读常量
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 104  08
         llt 01  02
         lr dtt == 3  08
@@ -1414,7 +1376,7 @@ call memcpy
         zz 0
      09  09  09
 
-    00 tr 枚举类型
+00 tr 枚举类型
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 114  08
         llt 01  02
         lr dtt == 4  08 lr dth == 123  08 llt 01  02  09  09
@@ -1436,7 +1398,7 @@ call memcpy
         zz 0
      09  09  09
 
-    00 td 布尔类型
+00 td 布尔类型
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 100  08
         llt 01  02
         lr dtt == 3  08
@@ -1449,7 +1411,7 @@ call memcpy
         zz 0
      09  09  09
 
-    00 tl 结构体蓝图
+00 tl 结构体蓝图
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 108  08
         llt 01  02
         lr dtt == 4  08 lr dth == 123  08 llt 01  02  09  09
@@ -1471,7 +1433,7 @@ call memcpy
         zz 0
      09  09  09
 
-    00 tf 全局数组声明
+00 tf 全局数组声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 102  08
         llt 01  02
         lr dtt == 3  08
@@ -1479,13 +1441,13 @@ call memcpy
             gname[gi] = dtz
             glen[gi] = dtu
             llt 01  02
-            00 跳过 [
+00 跳过 [
             ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 91  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
             tz arrn = dth
             llt 01  02
-            00 跳过 ]
+00 跳过 ]
             ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 93  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
-            00 跳过 : type
+00 跳过 : type
             ll  08 lz dtt 0  08 ls  09 05 lr dtt == 4  08 lr dth == 58  08 llt 01  02 05 ls  09  09 05 llt 01  02  09
             llt 01  02  00 跳过类型名
             gsize[gi] = arrn hh 8
@@ -1493,11 +1455,10 @@ call memcpy
          09
         zz 0
      09  09  09
-    00 tz 声明
+00 tz 声明
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 122  08
 
         lr infunc == 0  08
-            00 全局tz变量：记录到全局表，.bss分配8字节
             llt 01  02
 
             lr dtt == 3  08
@@ -1513,215 +1474,215 @@ call memcpy
         zz 0
      09  09  09
 
-    00 st 输出
+00 st 输出
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 116  08 lzs 01  02 05 zz 0  09  09  09
 
-    00 sz 写文件流
+00 sz 写文件流
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 122  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03mov rdx, rax 
 pop rsi 
 pop rdi 
 mov rax, 1 
 syscall 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 sh 写内存地址
+00 sh 写内存地址
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 104  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 mov [rcx], rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 sl 写硬件IO端口
+00 sl 写硬件IO端口
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 108  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03mov rcx, rax 
 pop rdx 
 mov rax, rcx 
 out dx, al 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 sf 写数组元素
+00 sf 写数组元素
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 102  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 pop rdx 
 mov [rdx+rcx*8], rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 ss 写结构体成员
+00 ss 写结构体成员
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 115  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zzd 01  02
         st dd 03pop rcx 
 pop rdx 
 mov [rax+rcx], rdx 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 sr 重置栈指针（Reset SP）
+00 sr 重置栈指针
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
         st dd 03mov rsp, rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 sd 调试/日志输出
+00 sd 调试/日志输出
     lr dtt == 5  08 lr dtf == 115  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
 call _rt_puti 
 add rsp, 8 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 zz 返回
+00 zz 返回
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 122  08 lzr 01  02 05 zz 0  09  09  09
 
-    00 zl 函数指针/回调（取函数地址）
+00 zl 函数指针/回调
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 108  08
         llt 01  02
         lr dtt == 3  08
-            st dd 03mov rax, offset fn_04
+            st dd 03mov rax, offset fn_03
             zt lfoutname 01  02
             st dd 03 
- 04
+ 03
          09
         zz 0
      09  09  09
 
-    00 zr 断言
+00 zr 断言
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 114  08
         llt 01  02
         zzd 01  02
         st dd 03test rax, rax 
-jnz .LokOk04
+jnz .LokOk03
         st dd 03mov rax, 60 
 xor rdi, rdi 
 syscall 
- 04
+ 03
         st dd 03.LokOk: 
- 04 
+ 03 
         zz 0
      09  09  09
 
-    00 zs 内联汇编块
+00 zs 内联汇编块
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 115  08
         llt 01  02
         lr dtt == 2  08
-            st dd 03 04
+            st dd 03 03
             llt 01  02
          09
         zz 0
      09  09  09
 
-    00 lr 条件
+00 lr 条件
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 114  08 lzlr 01  02 05 zz 0  09  09  09
 
-    00 lz 相等跳转
+00 lz 相等跳转
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 122  08 zt lzlz 01 0 02 05 zz 0  09  09  09
 
-    00 lh 不等跳转
+00 lh 不等跳转
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 104  08 zt lzlz 01 1 02 05 zz 0  09  09  09
 
-    00 ll 循环
+00 ll 循环
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 108  08 lzll 01  02 05 zz 0  09  09  09
 
-    00 ls 跳出
+00 ls 跳出
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 115  08
         llt 01  02
         lr dln > 0  08
-            st dd 03jmp .Lend04
+            st dd 03jmp .Lend03
             tz idx = dln hz 1
             st dt dlend[idx]
             st dd 03 
- 04
+ 03
          09
         zz 0
      09  09  09
 
-    00 lf 继续
+00 lf 继续
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 102  08
         llt 01  02
         lr dln > 0  08
-            st dd 03jmp .Ltop04
+            st dd 03jmp .Ltop03
             tz idx = dln hz 1
             st dt dltop[idx]
             st dd 03 
- 04
+ 03
          09
         zz 0
      09  09  09
 
-    00 ld 开关分支
+00 ld 开关分支
     lr dtt == 5  08 lr dtf == 108  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
         st dd 03push rax 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 zt 函数调用语句
+00 zt 函数调用语句
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 116  08
         llt 01  02
         zzd 01  02
         zz 0
      09  09  09
 
-    00 zd 系统调用
+00 zd 系统调用
     lr dtt == 5  08 lr dtf == 122  08 lr dts == 100  08
         llt 01  02
         zzd 01  02
         st dd 03mov rax, rdi 
 syscall 
- 04
+ 03
         zz 0
      09  09  09
 
-    00 tt 函数定义
+00 tt 函数定义
     lr dtt == 5  08 lr dtf == 116  08 lr dts == 116  08
         llt 01  02
         tz save_dtb = dtb
@@ -1729,34 +1690,33 @@ syscall
             dtcurfn = dtz
             dtcurfnl = dtu
          09
-        00 跳过参数列表
+00 跳过参数列表
         ll  08 llt 01  02 05 lr dtt == 4  08 lr dth == 41  08 ls  09  09  09
-        00 跳过返回类型 -> u64  08
         ll  08 llt 01  02 05 lr dtt == 4  08 lr dth == 123  08 ls  09  09  09
         llt 01  02
-        00 预扫描
+00 预扫描
         dfr = 0
         dnv = 0
         zt lprescan 01  02
-        00 恢复重新解析
+00 恢复重新解析
         dtb = save_dtb
         llt 01  02
-        00 生成函数标签和序言
-        st dd 03.globl fn_04
+00 生成函数标签和序言
+        st dd 03.globl fn_03
         zt lfoutname 01  02
         st dd 03 
-fn_04
+fn_03
         zt lfoutname 01  02
         st dd 03:
- 04
+ 03
         st dd 03push rbp 
 mov rbp, rsp 
-sub rsp, 04
+sub rsp, 03
         st dt dfr
         st dd 03 
- 04
+ 03
         dnv = 0
-        00 解析参数列表
+00 解析参数列表
         pcount = 0
         llt 01  02  00 跳过 01 
         ll  08
@@ -1770,7 +1730,6 @@ sub rsp, 04
             lr dtt == 4  08 lr dth == 44  08 llt 01  02  09  09
          09
         llt 01  02  00 跳过  02
-        00 参数加入变量表: 第i个参数偏移=16+8*01 pcount-1-i 02
         tz pi2 = 0
         ll  08
             lz pi2 pcount  08 ls  09
@@ -1782,21 +1741,21 @@ sub rsp, 04
             pi2 = pi2 ht 1
          09
         dloc = 0
-        00 跳过返回类型
+00 跳过返回类型
         ll  08 llt 01  02 05 lr dtt == 4  08 lr dth == 123  08 ls  09  09  09
         llt 01  02
-        00 解析函数体
+00 解析函数体
         infunc = 1
         ll  08
             lr dtt == 4  08 lr dth == 125  08
                 infunc = 0
-                st dd 03.Lret_04
+                st dd 03.Lret_03
                 zt lfoutname 01  02
                 st dd 03:
 mov rsp, rbp 
 pop rbp 
 ret 
- 04
+ 03
                 llt 01  02
                 zz 0
              09  09
@@ -1806,7 +1765,6 @@ ret
         zz 0
      09  09  09
 
-    00 标识符开头：=或[走赋值，否则表达式语句（函数调用）
     lr dtt == 3  08
         tz s_dtd = dtd
         tz s_dtt = dtt
@@ -1845,17 +1803,15 @@ ret
         zz 0
      09
 
-    00 未知，跳过
+00 未知，跳过
     llt 01  02
     zz 0
  09
 
-00 ============================================================
 00 主函数
-00 ============================================================
 
 tt zhu 01 fname 02 -> u64  08
-    00 从命令行参数读取源码文件
+00 从命令行参数读取源码文件
     tz slen = 0
     tz src = zt _rt_slurp 01 fname, zf slen 02
     lz src 0  08 zz 1  09
@@ -1871,26 +1827,26 @@ tt zhu 01 fname 02 -> u64  08
     dln = 0
     gcount = 0
 
-    00 吐汇编头部
+00 吐汇编头部
     st dd 03.intel_syntax noprefix 
 .section .text 
- 04
+ 03
 
-    00 解析
+00 解析
     llt 01  02
     ll  08
         lz dtt 0  08 ls  09
         zzh 01  02
      09
 
-    00 输出 .bss 全局变量
+00 输出 .bss 全局变量
     st dd 03.section .bss 
 .align 8 
- 04
+ 03
     tz gi = 0
     ll  08
         lz gi gcount  08 ls  09
-        st dd 03g_04
+        st dd 03g_03
         tz sf0 = dtcurfn
         tz sf1 = dtcurfnl
         dtcurfn = gname[gi]
@@ -1898,22 +1854,22 @@ tt zhu 01 fname 02 -> u64  08
         zt lfoutname 01  02
         dtcurfn = sf0
         dtcurfnl = sf1
-        st dd 03: .space 04
+        st dd 03: .space 03
         st dt gsize[gi]
         st dd 03 
- 04
+ 03
         gi = gi ht 1
      09
-    00 输出字符串表
+00 输出字符串表
     tz si = 0
     st dd 03.section .rodata 
- 04
+ 03
     ll  08
         lz si dsn  08 ls  09
-        st dd 03.Lstr04
+        st dd 03.Lstr03
         st dt si
-        st dd 03:.asciz 0304
-        00 输出字符串内容（跳过03头04尾）
+        st dd 03:.asciz 0303
+00 输出字符串内容
         tz sptr = dsv[si] ht 2
         tz slen2 = dsl[si] hz 4
         tz j = 0
@@ -1924,7 +1880,6 @@ tt zhu 01 fname 02 -> u64  08
             tz c = r hs 255
             tz h07nxt = c
             tz h07jump = 1
-            00 零三串内引号 零七串内反斜杠 绝对无转义
             lr c == 48  08
                 tz h07q1a = sptr ht j ht 1
                 tz h07q1r = fh h07q1a
@@ -1945,7 +1900,7 @@ tt zhu 01 fname 02 -> u64  08
             tz j = j ht h07jump
          09
         st dd 0303
- 04
+ 03
         tz si = si ht 1
      09
 
