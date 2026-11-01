@@ -6,7 +6,7 @@ A pure imperative compiled language for x86-64 bare metal, 64 instructions full 
 ## Punctuation Encoding (00-09)
 ```
 00 = #    01 = (    02 = )    03 = "    04 = "
-05 = ;    06 = /    07 = \    08 = {    09 = }
+05 = ;    06 = @    07 = ^    08 = {    09 = }
 ```
 
 ## 64 Instruction Set
