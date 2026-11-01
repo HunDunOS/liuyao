@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """小链接.py —— 把【多个】「-对象」文件 + 运行时 拼成一个可执行文件  v1.0
   每个对象来自 `lyc -c -对象 源.ly -o 对象.bin`，它旁边有三个表：
       对象.bin.重定位    每行 <偏移> <类> <符号名>     （要补的位置）
@@ -46,8 +44,6 @@ def 造运行时(基址):
     O, E, D, M = (os.path.join(B, '宿主64.' + x) for x in ('o', 'elf', 'bin', '镜像'))
     os.makedirs(B, exist_ok=True)
     L = os.path.join(B, '宿主64.影')
-    # ★ 有现成的运行时就直接用（Termux 上的 as 是 aarch64，汇编不了 x86-64）
-    # ★ 不会汇编就用包里【预造好的】运行时（手机/苹果的 as 是 aarch64，汇编不了 x86-64）
     if not 能汇编():
         预 = os.path.join(ROOT, '宿主', '预造')
         if os.path.exists(os.path.join(预, '宿主64.elf')) or os.path.exists(os.path.join(预, '宿主64.elf')):
@@ -132,7 +128,6 @@ def main():
         基址 = int(sys.argv[sys.argv.index('--基址') + 1], 0)
     os.makedirs(B, exist_ok=True)
 
-    # ── 1) 运行时（as+ld 造一次，固定基座）──
     运行镜像, 运行_bss, 全部符号 = 造运行时(基址)
     符号来源 = {}
     重复符号 = []
@@ -140,7 +135,6 @@ def main():
     运行总长 = len(运行镜像) + 运行_bss
     镜像 = bytearray(运行镜像) + bytes(运行总长 - len(运行镜像))
 
-    # ── 2) 排版：每个对象 text | rodata | bss ──
     排 = []
     位 = 基址 + 运行总长
     for o in 对象们:
@@ -151,12 +145,10 @@ def main():
         未 = (只 + r + 15) & ~15
         排.append({'对象': o, '体': 体, 't': t, 'r': r, 'b': b, '本': {},
                    '文': 文, '只': 只, '未': 未, '重': 读重定位(o + '.重定位')})
-        # ★ 每个对象先建自己的符号表（.Lstr0 这种本地标签必须各算各的）
         本 = {}
         for 名, 区, 偏 in 读定义(o + '.符号'):
             本[名] = [文, 只, 未][区] + 偏
         p2 = 排[-1]; p2['本'] = 本
-        # 只有导出的名字（fn_ / g__）才进全局表
         for 名, 值 in 本.items():
             if 名.startswith(('fn_', 'g__')):
                 if 名 in 全部符号:
@@ -168,9 +160,7 @@ def main():
     总内存 = 位 - 基址
     镜像 += bytes(总内存 - len(镜像))
 
-    # ── 3) 写正文 ──
     for p in 排:
-        # ★ 镜像下标从【基址】算，不是绝对地址
         文o = p['文'] - 基址
         只o = p['只'] - 基址
         while len(镜像) < 文o + p['t']: 镜像.append(0)
@@ -178,11 +168,10 @@ def main():
         补 = (p['t'] + 3) & ~3
         镜像[只o:只o + p['r']] = p['体'][补:补 + p['r']]
 
-    # ── 4) 回填 ──
     补了几笔, 缺 = 0, []
     for p in 排:
         for (处, 类, 名) in p['重']:
-            t = p['本'].get(名)          # ★ 先找本对象的（本地标签）
+            t = p['本'].get(名)
             if t is None: t = 全部符号.get(名)
             if t is None:
                 缺.append(名); continue
@@ -194,7 +183,6 @@ def main():
                 镜像[位 - 基址 + k] = (v >> (8 * k)) & 255
             补了几笔 += 1
 
-    # ── 5) 入口：找用户的tt zhu主函数，从用户对象里找，不要运行时的 ──
     入口函数 = None
     主候选 = ('fn_zhu', 'fn__e4_b8_bb')
     for 名 in 主候选:
@@ -220,7 +208,6 @@ def main():
         位 = 全部符号['_宿_入口'] - 基址
         for k in range(8): 镜像[位 + k] = (入口函数 >> (8 * k)) & 255
 
-    # ── 重复符号检查 ──
     if 重复符号:
         print('小链接：发现 %d 个重复符号（保留首次定义）：' % len(重复符号))
         已见 = set()
