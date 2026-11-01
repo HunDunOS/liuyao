@@ -4,6 +4,6 @@ tt lft 01  02 -> u64 08
 
 tt zhu 01 fname 02 -> u64 08
     zt lft 01  02
-    st dd 03done04
+    st dd 03done03
     zz 0
 09
